@@ -1,25 +1,27 @@
-import { Request, Response } from 'express';
-import UserService from '../services/UserService';
+import { Request, Response } from "express";
+import UserService from "../services/UserService";
+import { ErrorHandler } from "../middleware/errorHandler";
+import handleError from "../utils/errorHandler";
 
 class UserController {
-  public async register(req: Request, res: Response): Promise<Response> {
+  public async register(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
       const userId = await UserService.register(username, password);
-      return res.status(201).json({ userId });
-    } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+      res.status(201).json({ userId });
+    } catch (error) {
+      handleError(res, error);
     }
   }
 
-  public async login(req: Request, res: Response): Promise<Response> {
+  public async login(req: Request, res: Response): Promise<void> {
     try {
       const { username, password } = req.body;
       const token = await UserService.login(username, password);
-      if (!token) return res.status(401).json({ message: 'Invalid credentials' });
-      return res.json({ token });
-    } catch (error: any) {
-      return res.status(500).json({ error: error.message });
+      if (!token) throw new ErrorHandler(401, "Invalid credentials");
+      res.json({ token });
+    } catch (error) {
+      handleError(res, error);
     }
   }
 }

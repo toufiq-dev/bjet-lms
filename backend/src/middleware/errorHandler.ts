@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 
 class ErrorHandler extends Error {
   constructor(public status: number, public message: string) {
@@ -6,9 +6,14 @@ class ErrorHandler extends Error {
   }
 }
 
-const errorHandler = (err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (
+  err: ErrorHandler,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
   res.status(status).json({ status, message });
 };
 
