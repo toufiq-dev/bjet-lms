@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../services/UserService";
-import { ErrorHandler } from "../middleware/errorHandler";
-import handleError from "../utils/errorHandler";
+import { handleError } from "../utils/errorHandler";
 
 class UserController {
   public async register(req: Request, res: Response): Promise<void> {
@@ -10,7 +9,8 @@ class UserController {
       const userId = await UserService.register(username, password);
       res.status(201).json({ userId });
     } catch (error) {
-      handleError(res, error);
+      const err = handleError(error);
+      res.status(err.status).json({ message: err.message });
     }
   }
 
@@ -18,10 +18,11 @@ class UserController {
     try {
       const { username, password } = req.body;
       const token = await UserService.login(username, password);
-      if (!token) throw new ErrorHandler(401, "Invalid credentials");
+      if (!token) throw new Error("Invalid credentials");
       res.json({ token });
     } catch (error) {
-      handleError(res, error);
+      const err = handleError(error);
+      res.status(err.status).json({ message: err.message });
     }
   }
 }

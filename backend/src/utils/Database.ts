@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-dotenv.config();
+import config from "../config";
 
 class Database {
   constructor() {
@@ -10,7 +8,7 @@ class Database {
 
   private connect(): void {
     mongoose
-      .connect(process.env.MONGO_URI!, {
+      .connect(config.mongoUri!, {
         serverSelectionTimeoutMS: 3000,
       })
       .then(() => {

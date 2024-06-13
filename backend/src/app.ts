@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import userRoutes from "./routes/UserRoutes";
 import Database from "./utils/Database";
-import { errorHandler } from "./middleware/errorHandler";
+import { errorMiddleware } from "./utils/errorHandler";
 import requestLogger from "./middleware/logger";
 
 class App {
@@ -15,6 +15,7 @@ class App {
     this.database = new Database();
     this.config();
     this.routes();
+    this.app.use(errorMiddleware);
   }
 
   private config(): void {
@@ -25,7 +26,6 @@ class App {
 
   private routes(): void {
     this.app.use("/api/users", userRoutes);
-    this.app.use(errorHandler);
   }
 }
 
