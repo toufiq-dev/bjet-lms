@@ -1,7 +1,9 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import userRoutes from './routes/UserRoutes';
-import Database from './utils/Database';
+import express from "express";
+import bodyParser from "body-parser";
+import userRoutes from "./routes/UserRoutes";
+import Database from "./utils/Database";
+import { errorHandler } from "./middleware/errorHandler";
+import requestLogger from "./middleware/logger";
 
 class App {
   public app: express.Application;
@@ -16,11 +18,13 @@ class App {
 
   private config(): void {
     this.app.use(bodyParser.json());
+    this.app.use(requestLogger);
   }
 
   private routes(): void {
-    this.app.use('/api/users', userRoutes);
-}
+    this.app.use("/api/users", userRoutes);
+    this.app.use(errorHandler);
+  }
 }
 
 export default new App().app;
