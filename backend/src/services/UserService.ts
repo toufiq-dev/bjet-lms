@@ -1,9 +1,7 @@
-import User from '../models/User';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import User from "../models/User";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import config from "../config";
 
 class UserService {
   public async register(username: string, password: string): Promise<string> {
@@ -13,14 +11,21 @@ class UserService {
     return user.id;
   }
 
-  public async login(username: string, password: string): Promise<string | null> {
+  public async login(
+    username: string,
+    password: string
+  ): Promise<string | null> {
     const user = await User.findOne({ username });
     if (!user) return null;
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return null;
 
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      config.jwtSecret!,
+      { expiresIn: "1h" }
+    );
     return token;
   }
 }

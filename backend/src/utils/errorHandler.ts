@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { logger } from "./logger";
 
 class ErrorHandler extends Error {
   constructor(public status: number, public message: string) {
@@ -22,7 +23,16 @@ const errorMiddleware = (
 ) => {
   const status = err.status || 500;
   const message = err.message || "Internal Server Error";
+  logger.error(`${status} - ${message}`);
   res.status(status).json({ status, message });
 };
 
-export { ErrorHandler, handleError, errorMiddleware };
+const notFoundMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  res.status(404).json({ message: "Resource not found" });
+};
+
+export { ErrorHandler, handleError, errorMiddleware, notFoundMiddleware };

@@ -1,10 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import helmet from "helmet";
+import config from "./config";
 import userRoutes from "./routes/UserRoutes";
 import Database from "./utils/Database";
-import { errorMiddleware } from "./utils/errorHandler";
-import requestLogger from "./middleware/logger";
+import { errorMiddleware, notFoundMiddleware } from "./utils/errorHandler";
+import { requestLogger } from "./utils/logger";
 
 class App {
   public app: express.Application;
@@ -15,6 +17,7 @@ class App {
     this.database = new Database();
     this.config();
     this.routes();
+    this.app.use(notFoundMiddleware);
     this.app.use(errorMiddleware);
   }
 
@@ -22,6 +25,11 @@ class App {
     this.app.use(helmet());
     this.app.use(bodyParser.json());
     this.app.use(requestLogger);
+    this.app.use(
+      cors({
+        origin: "http://localhost:3000",
+      })
+    );
   }
 
   private routes(): void {
