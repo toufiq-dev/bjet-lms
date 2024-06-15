@@ -5,22 +5,22 @@ This project is a Learning Management System (LMS) that consists of both fronten
 ## Prerequisites
 
 Ensure you have the following installed on your machine:
+
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-
 
 ## Installation
 
 1. **Clone the repository:**
 
-    ```sh
-    git clone https://github.com/yourusername/bjet-lms.git
-    cd bjet-lms
-    ```
+   ```sh
+   git clone https://github.com/yourusername/bjet-lms.git
+   cd bjet-lms
+   ```
 
 2. **Create environment variable files:**
 
-    Create a `.env` file in the `backend` directory.
+   Create a `.env` file in the `backend` directory.
 
 ## Running the Project
 
@@ -28,16 +28,13 @@ To start both the backend and frontend services, use Docker Compose.
 
 1. **Build and start the services:**
 
-    ```sh
-    docker-compose up --build
-    ```
+   ```sh
+   docker-compose up --build
+   ```
 
-    This command will build the Docker images for both frontend and backend and start the services.
+   This command will build the Docker images for both frontend and backend and start the services.
 
 2. **Access the services:**
 
-    - Frontend: `http://localhost:3000`
-    - Backend API: `http://localhost:8080`
-
-
-
+   - Frontend: `http://localhost:5173`
+   - Backend API: `http://localhost:8080`
