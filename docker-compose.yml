@@ -1,5 +1,5 @@
 services:
-  app:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -9,6 +9,13 @@ services:
       - ./backend/.env
     depends_on:
       - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
 
   mongo:
     image: mongo:latest
