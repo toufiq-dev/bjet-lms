@@ -1,6 +1,7 @@
-import ChangePasswordForm from "../components/profile/ChangePasswordForm";
+import ChangePasswordForm from "../components/forms/ChangePasswordForm";
+
 const ProfilePage = () => {
-  return <ChangePasswordForm />
+	return <ChangePasswordForm />;
 };
 
 export default ProfilePage;

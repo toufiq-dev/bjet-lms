@@ -1,6 +1,6 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import SignInPage from "./pages/sign-in/SignInPage";
+import SignInPage from "./pages/SignInPage";
 import ProfilePage from "./pages/ProfilePage";
 import CssBaseline from "@mui/material/CssBaseline";
 
