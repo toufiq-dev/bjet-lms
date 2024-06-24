@@ -1,8 +1,14 @@
 import app from "./app";
-import config from "./config";
 import { logger } from "./utils/logger";
 
-const PORT = config.port;
+const startServer = async () => {
+  try {
+    await app.start();
+  } catch (error) {
+    logger.error("Failed to start the server", error);
+    process.exit(1);
+  }
+};
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (error) => {
@@ -14,6 +20,4 @@ process.on("unhandledRejection", (reason: any) => {
   logger.error(`Unhandled Rejection: ${reason}`);
 });
 
-app.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}`);
-});
+startServer();
