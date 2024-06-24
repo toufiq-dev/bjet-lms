@@ -1,38 +1,51 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "./logger";
+import HTTP_STATUS from "../constants/statusCodes";
 
-class ErrorHandler extends Error {
-  constructor(public status: number, public message: string) {
+export class ErrorHandler extends Error {
+  constructor(
+    public status: number,
+    public message: string,
+    public errors?: any
+  ) {
     super(message);
   }
 }
 
-const handleError = (error: unknown): ErrorHandler => {
-  if (error instanceof Error) {
-    return new ErrorHandler(500, error.message);
-  } else {
-    return new ErrorHandler(500, "An unexpected error occurred");
+export const errorMiddleware = (
+  err: ErrorHandler | Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  let status = HTTP_STATUS.INTERNAL_SERVER_ERROR;
+  let message = "Internal Server Error";
+  let errors;
+
+  if (err instanceof ErrorHandler) {
+    status = err.status;
+    message = err.message;
+    errors = err.errors;
+  } else if (err instanceof Error) {
+    message = err.message;
   }
-};
 
-const errorMiddleware = (
-  err: ErrorHandler,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const status = err.status || 500;
-  const message = err.message || "Internal Server Error";
   logger.error(`${status} - ${message}`);
-  res.status(status).json({ status, message });
+  if (errors) {
+    logger.error(JSON.stringify(errors));
+  }
+
+  res.status(status).json({
+    status,
+    message,
+    errors,
+  });
 };
 
-const notFoundMiddleware = (
+export const notFoundMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  res.status(404).json({ message: "Resource not found" });
+  res.status(HTTP_STATUS.NOT_FOUND).json({ message: "Resource not found" });
 };
-
-export { ErrorHandler, handleError, errorMiddleware, notFoundMiddleware };

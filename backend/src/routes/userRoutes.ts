@@ -1,11 +1,28 @@
 import { Router } from "express";
 import UserController from "../controllers/userController";
-import { validateRegister, validateLogin } from "../validators/userValidation";
-import { validate } from "../middleware/validationMiddleware";
+import { UserValidator } from "../validators/userValidation";
+import { ValidationMiddleware } from "../middleware/validationMiddleware";
 
-const router = Router();
+class UserRoutes {
+  public router: Router;
 
-router.post("/register", validate(validateRegister), UserController.register);
-router.post("/login", validate(validateLogin), UserController.login);
+  constructor() {
+    this.router = Router();
+    this.initializeRoutes();
+  }
 
-export default router;
+  private initializeRoutes(): void {
+    this.router.post(
+      "/register",
+      ValidationMiddleware.validate(UserValidator.validateRegister),
+      UserController.register
+    );
+    this.router.post(
+      "/login",
+      ValidationMiddleware.validate(UserValidator.validateLogin),
+      UserController.login
+    );
+  }
+}
+
+export default new UserRoutes().router;

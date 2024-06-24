@@ -1,15 +1,24 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+class Config {
+  public readonly port: number;
+  public readonly mongoUri: string;
+  public readonly jwtSecret: string;
 
-const config = {
-  port: process.env.PORT || 8080,
-  mongoUri: process.env.MONGO_URI,
-  jwtSecret: process.env.JWT_SECRET,
-};
+  constructor() {
+    dotenv.config();
+    this.port = parseInt(process.env.PORT || "8080", 10);
+    this.mongoUri = process.env.MONGO_URI || "";
+    this.jwtSecret = process.env.JWT_SECRET || "";
 
-if (!config.port || !config.mongoUri || !config.jwtSecret) {
-  throw new Error("Missing required environment variables");
+    this.validateConfig();
+  }
+
+  private validateConfig(): void {
+    if (!this.port || !this.mongoUri || !this.jwtSecret) {
+      throw new Error("Missing required environment variables");
+    }
+  }
 }
 
-export default config;
+export default new Config();

@@ -5,35 +5,52 @@ import helmet from "helmet";
 import userRoutes from "./routes/userRoutes";
 import Database from "./utils/database";
 import { errorMiddleware, notFoundMiddleware } from "./utils/errorHandler";
-import { requestLogger } from "./utils/logger";
+import { requestLogger, logger } from "./utils/logger";
+import config from "./config";
 
 class App {
-  public app: express.Application;
-  public database: Database;
+  private express: express.Application;
+  private database: Database;
 
   constructor() {
-    this.app = express();
-    this.database = new Database();
-    this.config();
-    this.routes();
-    this.app.use(notFoundMiddleware);
-    this.app.use(errorMiddleware);
+    this.express = express();
+    this.database = Database.getInstance();
+    this.initializeMiddlewares();
+    this.initializeRoutes();
+    this.initializeErrorHandling();
   }
 
-  private config(): void {
-    this.app.use(helmet());
-    this.app.use(bodyParser.json());
-    this.app.use(requestLogger);
-    this.app.use(
-      cors({
-        origin: "http://localhost:3000",
-      })
-    );
+  private initializeMiddlewares(): void {
+    this.express.use(helmet());
+    this.express.use(bodyParser.json());
+    this.express.use(requestLogger);
+    this.express.use(cors({ origin: "http://localhost:3000" }));
   }
 
-  private routes(): void {
-    this.app.use("/api/users", userRoutes);
+  private initializeRoutes(): void {
+    this.express.use("/api/users", userRoutes);
+  }
+
+  private initializeErrorHandling(): void {
+    this.express.use(notFoundMiddleware);
+    this.express.use(errorMiddleware);
+  }
+
+  public async start(): Promise<void> {
+    try {
+      await this.database.connect();
+      this.express.listen(config.port, () => {
+        logger.info(`Server is running on port ${config.port}`);
+      });
+    } catch (error) {
+      logger.error("Failed to start the server", error);
+      throw error;
+    }
+  }
+
+  public async stop(): Promise<void> {
+    await this.database.disconnect();
   }
 }
 
-export default new App().app;
+export default new App();
