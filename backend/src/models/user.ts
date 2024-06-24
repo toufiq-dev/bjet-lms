@@ -1,6 +1,10 @@
 import { Schema, model, Document } from "mongoose";
+import {
+  emailValidator,
+  passwordValidator,
+} from "../validators/userValidation";
 
-interface IUser extends Document {
+export interface IUser extends Document {
   email: string;
   password: string;
   role: "Student" | "Teacher" | "Admin";
@@ -15,16 +19,6 @@ interface IUser extends Document {
   teacherRef?: Schema.Types.ObjectId | null;
   adminRef?: Schema.Types.ObjectId | null;
 }
-
-const emailValidator = (email: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const passwordValidator = (password: string) => {
-  const passwordRegex = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])/;
-  return passwordRegex.test(password);
-};
 
 const userSchema = new Schema<IUser>(
   {
@@ -43,7 +37,7 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "Password is required"],
-      minlength: 8,
+      minlength: [8, "Password must be at least 8 characters long"],
       validate: {
         validator: passwordValidator,
         message:
@@ -62,6 +56,7 @@ const userSchema = new Schema<IUser>(
     },
     invalidLoginAttempts: {
       type: Number,
+      default: 0,
     },
     lockLogin: {
       type: Date,

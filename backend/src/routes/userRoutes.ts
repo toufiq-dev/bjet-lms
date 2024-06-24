@@ -18,9 +18,14 @@ class UserRoutes {
       UserController.register
     );
     this.router.post(
-      "/login",
+      "/signin",
       ValidationMiddleware.validate(UserValidator.validateLogin),
-      UserController.login
+      UserController.signin
+    );
+    this.router.post(
+      "/change-password",
+      ValidationMiddleware.validate(UserValidator.validateLogin),
+      UserController.signin
     );
   }
 }
