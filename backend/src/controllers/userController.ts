@@ -9,8 +9,9 @@ class UserController {
 
   public register = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { username, password } = req.body;
-      const userId = await this.userService.register(username, password);
+      const { email, password, role } = req.body;
+      const userId = await this.userService.register(email, password, role);
+
       ResponseUtil.sendSuccess(
         res,
         HTTP_STATUS.CREATED,
@@ -22,13 +23,15 @@ class UserController {
     }
   };
 
-  public login = async (req: Request, res: Response): Promise<void> => {
+  public signin = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { username, password } = req.body;
-      const token = await this.userService.login(username, password);
+      const { email, password } = req.body;
+
+      const token = await this.userService.signin(email, password);
       if (!token)
         throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid credentials");
-      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Login successful", {
+
+      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful", {
         token,
       });
     } catch (error) {
