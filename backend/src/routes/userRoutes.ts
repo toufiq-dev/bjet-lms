@@ -1,7 +1,8 @@
 import { Router } from "express";
 import UserController from "../controllers/userController";
 import { UserValidator } from "../validators/userValidation";
-import { ValidationMiddleware } from "../middleware/validationMiddleware";
+import { ValidationMiddleware } from "../middlewares/validationMiddleware";
+import { authGuard } from "../middlewares/authGuard";
 
 class UserRoutes {
   public router: Router;
@@ -15,6 +16,7 @@ class UserRoutes {
     this.router.post(
       "/register",
       ValidationMiddleware.validate(UserValidator.validateRegister),
+      // authGuard(["Admin"]), // Only admins can register new users
       UserController.register
     );
     this.router.post(
@@ -22,10 +24,12 @@ class UserRoutes {
       ValidationMiddleware.validate(UserValidator.validateLogin),
       UserController.signin
     );
+    this.router.post("/refresh-token", UserController.refreshToken);
     this.router.post(
       "/change-password",
-      ValidationMiddleware.validate(UserValidator.validateLogin),
-      UserController.signin
+      authGuard(), // Any authenticated user can change their password
+      ValidationMiddleware.validate(UserValidator.validateChangePassword),
+      UserController.changePassword
     );
   }
 }
