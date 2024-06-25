@@ -38,4 +38,15 @@ export class UserValidator {
       .withMessage("Invalid email format"),
     body("password").isString().notEmpty().withMessage("Password is required"),
   ];
+  public static validateChangePassword: ValidationChain[] = [
+    body("oldPassword")
+      .isString()
+      .notEmpty()
+      .withMessage("Old Password is required"),
+    body("newPassword")
+      .isString()
+      .notEmpty()
+      .isLength({ min: 8, max: 20 })
+      .withMessage("New Password is required"),
+  ];
 }

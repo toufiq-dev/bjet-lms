@@ -7,6 +7,7 @@ import Database from "./utils/database";
 import { errorMiddleware, notFoundMiddleware } from "./utils/errorHandler";
 import { requestLogger, logger } from "./utils/logger";
 import config from "./config";
+import { connectRedis } from "./utils/redis";
 
 class App {
   private express: express.Application;
@@ -39,6 +40,8 @@ class App {
   public async start(): Promise<void> {
     try {
       await this.database.connect();
+      await connectRedis();
+
       this.express.listen(config.port, () => {
         logger.info(`Server is running on port ${config.port}`);
       });

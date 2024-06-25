@@ -3,6 +3,7 @@ import UserService from "../services/userService";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import { ResponseUtil } from "../utils/responseUtil";
+import config from "../config";
 
 class UserController {
   constructor(private userService: UserService) {}
@@ -26,14 +27,70 @@ class UserController {
   public signin = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
+      const { accessToken, refreshToken } = await this.userService.signin(
+        email,
+        password
+      );
 
-      const token = await this.userService.signin(email, password);
-      if (!token)
-        throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid credentials");
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: config.refreshTokenExpiration,
+      });
 
       ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful", {
-        token,
+        accessToken,
       });
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public refreshToken = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        throw new ErrorHandler(
+          HTTP_STATUS.UNAUTHORIZED,
+          "Refresh token required"
+        );
+      }
+
+      const { accessToken, refreshToken: newRefreshToken } =
+        await this.userService.refreshToken(refreshToken);
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Token refreshed successfully",
+        { accessToken }
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public changePassword = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const userId = req.user!.id;
+      await this.userService.changePassword(userId, oldPassword, newPassword);
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.ACCEPTED,
+        "Password changed successfully",
+        {}
+      );
     } catch (error) {
       ResponseUtil.sendError(res, error);
     }

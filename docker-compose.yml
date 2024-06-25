@@ -9,6 +9,7 @@ services:
       - ./backend/.env
     depends_on:
       - mongo
+      - redis
 
   frontend:
     build:
@@ -24,5 +25,13 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 volumes:
   mongo-data:
+  redis-data:
