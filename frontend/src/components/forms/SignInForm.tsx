@@ -12,10 +12,18 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import CustomAlert from "../alerts/CustomAlert";
 
 const SignInForm = () => {
 	const [showCircularProgress, setShowCircularProgress] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const [openAlert, setOpenAlert] = useState(false);
+	const [data, setData] = useState({
+		success: true,
+		message: "",
+		data: {},
+	});
 
 	const {
 		handleSubmit,
@@ -40,144 +48,170 @@ const SignInForm = () => {
 		};
 
 		const result = await signIn(formData);
+		setShowCircularProgress(false);
 		if (result.error) {
-			setShowCircularProgress(false);
-		} else {
-			setShowCircularProgress(false);
+			setData(result.error.response.data);
+			setOpenAlert(true);
 		}
 	};
 
 	return (
-		<Container component="main" maxWidth="xs">
-			<Box
-				sx={{
-					marginTop: 16,
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-				}}
-			>
-				<Typography component="h1" variant="h4">
-					Sign in
-				</Typography>
-				<Box
-					component="form"
-					onSubmit={handleSubmit(handlerOnSubmit)}
-					sx={{ mt: 1 }}
+		<Box bgcolor="#ECEFF1" height="100vh" pt={16}>
+			<Container component="main" maxWidth="xs">
+				{openAlert && (
+					<CustomAlert
+						open={openAlert}
+						onClose={() => setOpenAlert(false)}
+						severity="error"
+						message={data.message}
+					/>
+				)}
+				<Paper
+					elevation={0}
+					square
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						padding: 4,
+					}}
 				>
-					<Controller
-						name="email"
-						control={control}
-						rules={{
-							maxLength: {
-								value: 320,
-								message: "Invalid email format",
-							},
-							pattern: {
-								value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-								message: "Invalid email format",
-							},
-						}}
-						render={({ field }) => (
-							<TextField
-								margin="normal"
-								required
-								fullWidth
-								id="email"
-								label={
-									errors.email
-										? errors.email.message
-										: "Email"
-								}
-								autoComplete="email"
-								autoFocus
-								{...field}
-								error={errors.email ? true : false}
-							/>
-						)}
+					<img
+						src="https://bjet-lms.s3.ap-south-1.amazonaws.com/images/bjet-logo.webp"
+						alt="B-JET Logo"
+						width={80}
 					/>
-					<Controller
-						name="password"
-						control={control}
-						rules={{
-							minLength: {
-								value: 8,
-								message:
-									"Password must contain at least 8 characters",
-							},
-							maxLength: {
-								value: 20,
-								message: "Character limit exceeded",
-							},
-							pattern: {
-								value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-								message:
-									"Password must contain at least 8 characters, 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol",
-							},
-						}}
-						render={({ field }) => (
-							<TextField
-								type={showPassword ? "text" : "password"}
-								margin="normal"
-								required
-								fullWidth
-								id="password"
-								label={
-									errors.password
-										? "Invalid password format"
-										: "Password"
-								}
-								helperText={
-									errors.password && errors.password.message
-								}
-								autoComplete="current-password"
-								InputProps={{
-									endAdornment: (
-										<InputAdornment position="end">
-											<IconButton
-												aria-label="toggle password visibility"
-												edge="end"
-												onClick={() =>
-													setShowPassword(
-														!showPassword
-													)
-												}
-												onMouseDown={(
-													e: React.MouseEvent<HTMLButtonElement>
-												) => e.preventDefault()}
-											>
-												{showPassword ? (
-													<VisibilityOff />
-												) : (
-													<Visibility />
-												)}
-											</IconButton>
-										</InputAdornment>
-									),
-								}}
-								{...field}
-								error={errors.password ? true : false}
-							/>
-						)}
-					/>
-					<Button
-						type="submit"
-						variant="contained"
-						fullWidth
-						sx={{ mt: 3, mb: 2 }}
+					<Typography
+						component="h1"
+						variant="h4"
+						sx={{ marginTop: 2 }}
 					>
-						{showCircularProgress === true ? (
-							<CircularProgress color="inherit" size={25} />
-						) : (
-							<>Sign In</>
-						)}
-					</Button>
-					<Link href="/forgot-password" variant="body2">
-						Forgot password?
-					</Link>
-				</Box>
-			</Box>
-		</Container>
+						Sign in
+					</Typography>
+					<Box
+						component="form"
+						onSubmit={handleSubmit(handlerOnSubmit)}
+						sx={{ mt: 1 }}
+					>
+						<Controller
+							name="email"
+							control={control}
+							rules={{
+								maxLength: {
+									value: 320,
+									message: "Invalid email format",
+								},
+								pattern: {
+									value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+									message: "Invalid email format",
+								},
+							}}
+							render={({ field }) => (
+								<TextField
+									margin="normal"
+									required
+									fullWidth
+									id="email"
+									label={
+										errors.email
+											? errors.email.message
+											: "Email"
+									}
+									autoComplete="email"
+									autoFocus
+									{...field}
+									error={errors.email ? true : false}
+								/>
+							)}
+						/>
+						<Controller
+							name="password"
+							control={control}
+							rules={{
+								minLength: {
+									value: 8,
+									message:
+										"Password must contain at least 8 characters",
+								},
+								maxLength: {
+									value: 20,
+									message: "Character limit exceeded",
+								},
+								pattern: {
+									value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,}$/,
+									message:
+										"Password must contain at least 8 characters, 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol",
+								},
+							}}
+							render={({ field }) => (
+								<TextField
+									type={showPassword ? "text" : "password"}
+									margin="normal"
+									required
+									fullWidth
+									id="password"
+									label={
+										errors.password
+											? "Invalid password format"
+											: "Password"
+									}
+									helperText={
+										errors.password &&
+										errors.password.message
+									}
+									autoComplete="current-password"
+									InputProps={{
+										endAdornment: (
+											<InputAdornment position="end">
+												<IconButton
+													aria-label="toggle password visibility"
+													edge="end"
+													onClick={() =>
+														setShowPassword(
+															!showPassword
+														)
+													}
+													onMouseDown={(
+														e: React.MouseEvent<HTMLButtonElement>
+													) => e.preventDefault()}
+												>
+													{showPassword ? (
+														<VisibilityOff />
+													) : (
+														<Visibility />
+													)}
+												</IconButton>
+											</InputAdornment>
+										),
+									}}
+									{...field}
+									error={errors.password ? true : false}
+								/>
+							)}
+						/>
+						<Button
+							type="submit"
+							variant="contained"
+							fullWidth
+							sx={{ mt: 3, mb: 2 }}
+						>
+							{showCircularProgress === true ? (
+								<CircularProgress color="inherit" size={25} />
+							) : (
+								<>Sign In</>
+							)}
+						</Button>
+						<Link
+							href="/forgot-password"
+							variant="body2"
+							underline="none"
+						>
+							Forgot password?
+						</Link>
+					</Box>
+				</Paper>
+			</Container>
+		</Box>
 	);
 };
 
