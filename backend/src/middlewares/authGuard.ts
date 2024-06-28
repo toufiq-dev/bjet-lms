@@ -20,7 +20,7 @@ declare global {
 export const authGuard = (roles: string[] = []) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.header("Authorization")?.replace("Bearer ", "");
+      const token = req.cookies.accessToken;
 
       if (!token) {
         throw new ErrorHandler(

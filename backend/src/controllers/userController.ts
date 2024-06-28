@@ -32,14 +32,16 @@ class UserController {
         password
       );
 
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: config.accessTokenExpiration,
+      });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         maxAge: config.refreshTokenExpiration,
       });
 
-      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful", {
-        accessToken,
-      });
+      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful");
     } catch (error) {
       ResponseUtil.sendError(res, error);
     }
@@ -58,18 +60,19 @@ class UserController {
       const { accessToken, refreshToken: newRefreshToken } =
         await this.userService.refreshToken(refreshToken);
 
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: config.accessTokenExpiration,
+      });
       res.cookie("refreshToken", newRefreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: config.refreshTokenExpiration,
       });
 
       ResponseUtil.sendSuccess(
         res,
         HTTP_STATUS.OK,
-        "Token refreshed successfully",
-        { accessToken }
+        "Token refreshed successfully"
       );
     } catch (error) {
       ResponseUtil.sendError(res, error);

@@ -6,6 +6,7 @@ class Config {
   public readonly jwtSecret: string;
   public readonly refreshTokenSecret: string;
   public readonly redisUrl: string;
+  public readonly accessTokenExpiration: number;
   public readonly refreshTokenExpiration: number;
 
   constructor() {
@@ -16,6 +17,7 @@ class Config {
     this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "";
     this.redisUrl = process.env.REDIS_URL || "redis://redis:6379";
     this.refreshTokenExpiration = 7 * 24 * 60 * 60;
+    this.accessTokenExpiration = 15 * 60 * 1000;
 
     this.validateConfig();
   }

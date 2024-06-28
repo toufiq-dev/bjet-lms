@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
 import Database from "./utils/database";
 import { errorMiddleware, notFoundMiddleware } from "./utils/errorHandler";
@@ -24,6 +25,7 @@ class App {
   private initializeMiddlewares(): void {
     this.express.use(helmet());
     this.express.use(bodyParser.json());
+    this.express.use(cookieParser());
     this.express.use(requestLogger);
     this.express.use(cors({ origin: "http://localhost:3000" }));
   }
