@@ -3,7 +3,7 @@ import userInstance from "../utils/userInstance";
 const useUser = () => {
 	const signIn = async (formData: { email: string; password: string }) => {
 		try {
-			const response = await userInstance.post("/login", formData, {
+			const response = await userInstance.post("/signin", formData, {
 				headers: {
 					"Content-Type": "application/json",
 				},
