@@ -14,7 +14,20 @@ const useUser = () => {
 		}
 	};
 
-	return { signIn };
+	const changePassword = async (formData: { oldPassword: string; newPassword: string }) => {
+        try {
+            const response = await userInstance.post("/change-password", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            return { error: error };
+        }
+    };
+
+    return { signIn, changePassword };
 };
 
 export default useUser;

@@ -8,14 +8,22 @@ import {
     Typography,
     Container,
     CircularProgress,
+    Paper,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
+import useUser from "../../hooks/useUser";
+import CustomAlert from "../alerts/CustomAlert";
 
 const ChangePasswordForm = () => {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showCircularProgress, setShowCircularProgress] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
+    const [alertData, setAlertData] = useState({
+        success: true,
+        message: "",
+    });
 
     const {
         handleSubmit,
@@ -30,6 +38,8 @@ const ChangePasswordForm = () => {
         },
     });
 
+    const { changePassword } = useUser();
+
     const handleClickShowOldPassword = () => setShowOldPassword(!showOldPassword);
     const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
     const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,14 +53,22 @@ const ChangePasswordForm = () => {
             newPassword: getValues("newPassword"),
         };
 
-        setTimeout(() => {
-            setShowCircularProgress(false);
-            console.log("Password changed successfully", formData);
-        }, 2000);
+        const result = await changePassword(formData);
+        setShowCircularProgress(false);
+        setAlertData(result.error ? { success: false, message: result.error.response.data.message } : { success: true, message: "Password changed successfully" });
+        setOpenAlert(true);
     };
 
     return (
         <Container component="main" maxWidth="xs">
+            {openAlert && (
+                <CustomAlert
+                    open={openAlert}
+                    onClose={() => setOpenAlert(false)}
+                    severity={alertData.success ? "success" : "error"}
+                    message={alertData.message}
+                />
+            )}
             <Box
                 sx={{
                     marginTop: 16,
