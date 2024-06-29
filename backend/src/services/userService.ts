@@ -1,4 +1,8 @@
+import { Schema, startSession } from "mongoose";
 import User, { IUser } from "../models/user";
+import Student, { IStudentProfile } from "../models/studentProfile";
+import Teacher, { ITeacherProfile } from "../models/teacherProfile";
+import Admin, { IAdminProfile } from "../models/adminProfile";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../config";
@@ -7,11 +11,21 @@ import HTTP_STATUS from "../constants/statusCodes";
 import redisClient from "../utils/redis";
 import { logger } from "../utils/logger";
 
+type ProfileModel = IStudentProfile | ITeacherProfile | IAdminProfile;
+
 class UserService {
+  /**
+   * Registers a new user with the specified role.
+   * @param email - The email of the user.
+   * @param password - The password of the user.
+   * @param role - The role of the user, which can be "Student", "Teacher", or "Admin".
+   * @returns The ID of the newly registered user.
+   * @throws {ErrorHandler} If the user already exists or if there is an error during registration.
+   */
   public async register(
     email: string,
     password: string,
-    role: string
+    role: "Student" | "Teacher" | "Admin"
   ): Promise<string> {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -19,17 +33,65 @@ class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const name = email.split("@")[0];
     const user = new User({ email, password: hashedPassword, role });
 
-    await user.save();
+    const session = await startSession();
+    session.startTransaction();
 
-    return user.id;
+    try {
+      let profile: ProfileModel;
+      switch (role) {
+        case "Student":
+          profile = new Student({ name, email });
+          break;
+        case "Teacher":
+          profile = new Teacher({ name, email });
+          break;
+        case "Admin":
+          profile = new Admin({ name, email });
+          break;
+        default:
+          throw new ErrorHandler(HTTP_STATUS.BAD_REQUEST, "Invalid role");
+      }
+
+      await profile.save({ session });
+
+      (user as IUser & { [key: string]: Schema.Types.ObjectId })[
+        `${role.toLowerCase()}Ref`
+      ] = profile._id as Schema.Types.ObjectId;
+
+      await user.save({ session });
+      await session.commitTransaction();
+
+      return user.id;
+    } catch (error) {
+      await session.abortTransaction();
+      throw new ErrorHandler(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Registration failed"
+      );
+    } finally {
+      session.endSession();
+    }
   }
 
+  /**
+   * Signs in a user and generates access and refresh tokens.
+   * @param email - The email of the user.
+   * @param password - The password of the user.
+   * @returns An object containing the access token, refresh token, name, and role of the user.
+   * @throws {ErrorHandler} If the credentials are invalid or if there is an error during sign-in.
+   */
   public async signin(
     email: string,
     password: string
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    name: string;
+    role: string;
+  }> {
     const user = await User.findOne({ email });
     if (!user) {
       throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid credentials");
@@ -41,28 +103,61 @@ class UserService {
     }
 
     const accessToken = this.generateAccessToken(user);
-    const refreshToken = this.generateRefreshToken(user);
+    let refreshToken = await redisClient.get(`refresh_token:${user.id}`);
 
-    try {
-      if (!redisClient.isReady) {
-        throw new Error("Redis client is not ready");
+    if (refreshToken) {
+      try {
+        jwt.verify(refreshToken, config.refreshTokenSecret);
+      } catch (error) {
+        // Token is invalid or expired, generate a new one
+        refreshToken = this.generateRefreshToken(user);
+        await redisClient.set(`refresh_token:${user.id}`, refreshToken, {
+          EX: config.refreshTokenExpiration,
+        });
       }
+    }
+
+    if (!refreshToken) {
+      refreshToken = this.generateRefreshToken(user);
+
       await redisClient.set(`refresh_token:${user.id}`, refreshToken, {
         EX: config.refreshTokenExpiration,
       });
-    } catch (error) {
-      logger.error("Failed to set refresh token in Redis", error);
-      throw new ErrorHandler(
-        HTTP_STATUS.INTERNAL_SERVER_ERROR,
-        "Failed to complete signin process"
-      );
     }
 
-    await user.save();
+    let profile;
+    switch (user.role) {
+      case "Student":
+        profile = await Student.findById(user.studentRef);
+        break;
+      case "Teacher":
+        profile = await Teacher.findById(user.teacherRef);
+        break;
+      case "Admin":
+        profile = await Admin.findById(user.adminRef);
+        break;
+      default:
+        throw new ErrorHandler(HTTP_STATUS.BAD_REQUEST, "Invalid user role");
+    }
 
-    return { accessToken, refreshToken };
+    if (!profile) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User profile not found");
+    }
+
+    return {
+      accessToken,
+      refreshToken,
+      name: profile.name,
+      role: user.role,
+    };
   }
 
+  /**
+   * Refreshes the access and refresh tokens for a user.
+   * @param token - The refresh token of the user.
+   * @returns An object containing the new access token and refresh token.
+   * @throws {ErrorHandler} If the refresh token is invalid or if there is an error during token refresh.
+   */
   public async refreshToken(
     token: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
@@ -101,6 +196,13 @@ class UserService {
     }
   }
 
+  /**
+   * Changes the password for a user.
+   * @param userId - The ID of the user.
+   * @param oldPassword - The current password of the user.
+   * @param newPassword - The new password for the user.
+   * @throws {ErrorHandler} If the user is not found, the old password is incorrect, or if there is an error during password change.
+   */
   public async changePassword(
     userId: string,
     oldPassword: string,
@@ -127,14 +229,23 @@ class UserService {
     user.password = hashedNewPassword;
     await user.save();
 
-    // Optionally, you might want to invalidate all existing refresh tokens for this user
     await redisClient.del(`refresh_token:${user.id}`);
   }
 
+  /**
+   * Generates an access token for a user.
+   * @param user - The user for whom the access token is generated.
+   * @returns The generated access token.
+   */
   private generateAccessToken(user: IUser): string {
     return jwt.sign({ sub: user.id }, config.jwtSecret, { expiresIn: "15m" });
   }
 
+  /**
+   * Generates a refresh token for a user.
+   * @param user - The user for whom the refresh token is generated.
+   * @returns The generated refresh token.
+   */
   private generateRefreshToken(user: IUser): string {
     return jwt.sign({ sub: user.id }, config.refreshTokenSecret, {
       expiresIn: config.refreshTokenExpiration,
