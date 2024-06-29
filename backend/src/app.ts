@@ -27,7 +27,7 @@ class App {
     this.express.use(bodyParser.json());
     this.express.use(cookieParser());
     this.express.use(requestLogger);
-    this.express.use(cors({ origin: "http://localhost:3000" }));
+    this.express.use(cors({ origin: "http://localhost:5173" }));
   }
 
   private initializeRoutes(): void {
