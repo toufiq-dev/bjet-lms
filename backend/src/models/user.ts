@@ -20,7 +20,7 @@ export interface IUser extends Document {
   adminRef?: Schema.Types.ObjectId | null;
 }
 
-const userSchema = new Schema<IUser>(
+const userSchema: Schema = new Schema<IUser>(
   {
     email: {
       type: String,
