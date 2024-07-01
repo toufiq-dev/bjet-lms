@@ -9,7 +9,6 @@ import config from "../config";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import redisClient from "../utils/redis";
-import { logger } from "../utils/logger";
 
 type ProfileModel = IStudentProfile | ITeacherProfile | IAdminProfile;
 
@@ -97,10 +96,33 @@ class UserService {
       throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid credentials");
     }
 
+    if (!user.active) {
+      throw new ErrorHandler(HTTP_STATUS.FORBIDDEN, "Account is inactive");
+    }
+
+    if (user.lockLogin && new Date() < user.lockLogin) {
+      throw new ErrorHandler(
+        HTTP_STATUS.FORBIDDEN,
+        "Account is locked due to multiple invalid login attempts"
+      );
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      user.invalidLoginAttempts = (user.invalidLoginAttempts || 0) + 1;
+
+      if (user.invalidLoginAttempts >= config.maxInvalidLoginAttempts) {
+        user.lockLogin = new Date(Date.now() + config.lockDuration);
+      }
+
+      await user.save();
       throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid credentials");
     }
+
+    // Reset invalid login attempts on successful login
+    user.invalidLoginAttempts = 0;
+    user.lockLogin = null;
+    await user.save();
 
     const accessToken = this.generateAccessToken(user);
     let refreshToken = await redisClient.get(`refresh_token:${user.id}`);
@@ -119,7 +141,6 @@ class UserService {
 
     if (!refreshToken) {
       refreshToken = this.generateRefreshToken(user);
-
       await redisClient.set(`refresh_token:${user.id}`, refreshToken, {
         EX: config.refreshTokenExpiration,
       });
@@ -250,6 +271,19 @@ class UserService {
     return jwt.sign({ sub: user.id }, config.refreshTokenSecret, {
       expiresIn: config.refreshTokenExpiration,
     });
+  }
+
+  /**
+   * Signs out a user and revoke refreshToken
+   * @param userId
+   */
+  public async signout(userId: string): Promise<void> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
+    }
+
+    await redisClient.del(`refresh_token:${userId}`);
   }
 }
 

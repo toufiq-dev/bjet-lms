@@ -27,10 +27,8 @@ class UserController {
   public signin = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const { accessToken, refreshToken } = await this.userService.signin(
-        email,
-        password
-      );
+      const { accessToken, refreshToken, name, role } =
+        await this.userService.signin(email, password);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
@@ -41,7 +39,10 @@ class UserController {
         maxAge: config.refreshTokenExpiration,
       });
 
-      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful");
+      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful", {
+        name,
+        role,
+      });
     } catch (error) {
       ResponseUtil.sendError(res, error);
     }
@@ -94,6 +95,21 @@ class UserController {
         "Password changed successfully",
         {}
       );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public signout = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.user!.id;
+      await this.userService.signout(userId);
+
+      // Clear the cookies
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
+      ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signout successful", {});
     } catch (error) {
       ResponseUtil.sendError(res, error);
     }

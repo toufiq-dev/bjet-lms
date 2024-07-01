@@ -27,10 +27,11 @@ class UserRoutes {
     this.router.post("/refresh-token", UserController.refreshToken);
     this.router.post(
       "/change-password",
-      authGuard(), // Any authenticated user can change their password
+      authGuard(),
       ValidationMiddleware.validate(UserValidator.validateChangePassword),
       UserController.changePassword
     );
+    this.router.post("/signout", authGuard(), UserController.signout);
   }
 }
 

@@ -8,6 +8,8 @@ class Config {
   public readonly redisUrl: string;
   public readonly accessTokenExpiration: number;
   public readonly refreshTokenExpiration: number;
+  public readonly maxInvalidLoginAttempts: number;
+  public readonly lockDuration: number;
 
   constructor() {
     dotenv.config();
@@ -18,6 +20,8 @@ class Config {
     this.redisUrl = process.env.REDIS_URL || "redis://redis:6379";
     this.refreshTokenExpiration = 7 * 24 * 60 * 60;
     this.accessTokenExpiration = 15 * 60 * 1000;
+    this.maxInvalidLoginAttempts = 5;
+    this.lockDuration = 60 * 60 * 1000;
 
     this.validateConfig();
   }
