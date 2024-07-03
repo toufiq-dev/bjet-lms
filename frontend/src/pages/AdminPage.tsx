@@ -1,7 +1,7 @@
-import UserCreationForm from "../components/forms/UserCreationForm";
+import UserCreationModal from "../components/modals/UserCreationModal";
 
 const AdminPage = () => {
-    return <UserCreationForm />;
+    return <UserCreationModal />;
 };
 
 export default AdminPage;
