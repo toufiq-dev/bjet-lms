@@ -14,6 +14,16 @@ const useUser = () => {
 		}
 	};
 
+	const signOut = async () => {
+		try {
+			const response = await userInstance.post("/signout");
+			console.log(response.data);
+			return response.data;
+		} catch (error) {
+			return { error: error };
+		}
+	};
+
 	const changePassword = async (formData: {
 		oldPassword: string;
 		newPassword: string;
@@ -34,7 +44,7 @@ const useUser = () => {
 		}
 	};
 
-	return { signIn, changePassword };
+	return { signIn, signOut, changePassword };
 };
 
 export default useUser;
