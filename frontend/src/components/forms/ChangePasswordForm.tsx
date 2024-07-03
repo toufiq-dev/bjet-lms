@@ -8,7 +8,6 @@ import {
     Typography,
     Container,
     CircularProgress,
-    Paper,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
@@ -140,7 +139,7 @@ const ChangePasswordForm = () => {
                                 message: "Password must contain at most 20 characters.",
                             },
                             pattern: {
-                                value: /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#^(){}+=/_|-])/,
+                                value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,}$/,
                                 message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol.",
                             },
                             validate: value =>
