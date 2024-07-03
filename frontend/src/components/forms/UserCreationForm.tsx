@@ -70,7 +70,7 @@ const UserCreationForm = () => {
 				}}
 			>
 				<Typography component="h1" variant="h4">
-					Create User
+					User Information
 				</Typography>
 				<Paper
 					elevation={0}
