@@ -14,6 +14,9 @@ import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 import CustomAlert from "../alerts/CustomAlert";
+import { useDispatch } from "react-redux";
+import { saveSignIn } from "../../redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const SignInForm = () => {
 	const [showCircularProgress, setShowCircularProgress] = useState(false);
@@ -39,6 +42,8 @@ const SignInForm = () => {
 	});
 
 	const { signIn } = useUser();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const handlerOnSubmit = async () => {
 		setShowCircularProgress(true);
@@ -52,6 +57,9 @@ const SignInForm = () => {
 		if (result.error) {
 			setData(result.error.response.data);
 			setOpenAlert(true);
+		} else {
+			dispatch(saveSignIn(result.data));
+			result.data.role === "Admin" ? navigate("/admin") : navigate("/");
 		}
 	};
 
@@ -102,7 +110,7 @@ const SignInForm = () => {
 									message: "Invalid email format",
 								},
 								pattern: {
-									value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+									value: /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/,
 									message: "Invalid email format",
 								},
 							}}
@@ -138,7 +146,7 @@ const SignInForm = () => {
 									message: "Character limit exceeded",
 								},
 								pattern: {
-									value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,}$/,
+									value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,20}$/,
 									message:
 										"Password must contain at least 8 characters, 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol",
 								},
