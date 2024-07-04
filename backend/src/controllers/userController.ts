@@ -4,6 +4,7 @@ import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import { ResponseUtil } from "../utils/responseUtil";
 import config from "../config";
+import { IUser } from "../models/user";
 
 class UserController {
   constructor(private userService: UserService) {}
@@ -116,7 +117,7 @@ class UserController {
   ): Promise<void> => {
     try {
       const { oldPassword, newPassword } = req.body;
-      const userId = req.user!.id;
+      const userId = req.user as IUser;
       await this.userService.changePassword(userId, oldPassword, newPassword);
 
       ResponseUtil.sendSuccess(
@@ -132,8 +133,8 @@ class UserController {
 
   public signout = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user!.id;
-      await this.userService.signout(userId);
+      const user = req.user as IUser;
+      await this.userService.signout(user.id);
 
       // Clear the cookies
       res.clearCookie("accessToken");
