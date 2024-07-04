@@ -24,6 +24,32 @@ class UserController {
     }
   };
 
+  public bulkRegisterStudents = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const emails: string[] = req.body;
+
+      if (!Array.isArray(emails) || emails.length === 0) {
+        throw new ErrorHandler(
+          HTTP_STATUS.BAD_REQUEST,
+          "Invalid input: expected an array of email addresses"
+        );
+      }
+
+      const result = await this.userService.bulkRegisterStudents(emails);
+
+      res.status(HTTP_STATUS.OK).json({
+        message: "Bulk registration completed",
+        success: result.success,
+        failures: result.failures,
+      });
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
   public signin = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
@@ -32,10 +58,14 @@ class UserController {
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
+        secure: true,
+        sameSite: "strict",
         maxAge: config.accessTokenExpiration,
       });
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
+        secure: true,
+        sameSite: "strict",
         maxAge: config.refreshTokenExpiration,
       });
 
