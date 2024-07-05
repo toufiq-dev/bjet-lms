@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
-    Button,
-    TextField,
-    InputAdornment,
-    IconButton,
-    Box,
-    Typography,
-    Container,
-    CircularProgress,
+  Button,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Box,
+  Typography,
+  Container,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
@@ -15,189 +15,190 @@ import useUser from "../../hooks/useUser";
 import CustomAlert from "../alerts/CustomAlert";
 
 const ChangePasswordForm = () => {
-    const [showOldPassword, setShowOldPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showCircularProgress, setShowCircularProgress] = useState(false);
-    const [openAlert, setOpenAlert] = useState(false);
-    const [alertData, setAlertData] = useState({
-        success: true,
-        message: "",
-    });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showCircularProgress, setShowCircularProgress] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertData, setAlertData] = useState({
+    success: true,
+    message: "",
+  });
 
-    const {
-        handleSubmit,
-        control,
-        formState: { errors },
-        getValues,
-    } = useForm({
-        mode: "onChange",
-        defaultValues: {
-            oldPassword: "",
-            newPassword: "",
-        },
-    });
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    getValues,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+    },
+  });
 
-    const { changePassword } = useUser();
+  const { changePassword } = useUser();
 
-    const handleClickShowOldPassword = () => setShowOldPassword(!showOldPassword);
-    const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
+  const handleClickShowOldPassword = () => setShowOldPassword(!showOldPassword);
+  const handleClickShowNewPassword = () => setShowNewPassword(!showNewPassword);
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
+
+  const handlerOnSubmit = async () => {
+    setShowCircularProgress(true);
+    const formData = {
+      oldPassword: getValues("oldPassword"),
+      newPassword: getValues("newPassword"),
     };
 
-    const handlerOnSubmit = async () => {
-        setShowCircularProgress(true);
-        const formData = {
-            oldPassword: getValues("oldPassword"),
-            newPassword: getValues("newPassword"),
-        };
-
-        const result = await changePassword(formData);
-        setShowCircularProgress(false);
-        setAlertData(result.error ? { success: false, message: result.error.response.data.message } : { success: true, message: "Password changed successfully" });
-        setOpenAlert(true);
-    };
-
-    return (
-        <Container component="main" maxWidth="xs">
-            {openAlert && (
-                <CustomAlert
-                    open={openAlert}
-                    onClose={() => setOpenAlert(false)}
-                    severity={alertData.success ? "success" : "error"}
-                    message={alertData.message}
-                />
-            )}
-            <Box
-                sx={{
-                    marginTop: 16,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <Typography component="h1" variant="h4">
-                    Change Password
-                </Typography>
-                <Box
-                    component="form"
-                    onSubmit={handleSubmit(handlerOnSubmit)}
-                    sx={{ mt: 1 }}
-                >
-                    <Controller
-                        name="oldPassword"
-                        control={control}
-                        rules={{ required: "This field cannot be empty." }}
-                        render={({ field }) => (
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="old-password"
-                                label={
-                                    errors.oldPassword
-                                        ? errors.oldPassword.message
-                                        : "Old Password"
-                                }
-                                type={showOldPassword ? "text" : "password"}
-                                {...field}
-                                error={!!errors.oldPassword}
-                                helperText={errors.oldPassword?.message}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle old password visibility"
-                                                onClick={handleClickShowOldPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
-                                            >
-                                                {showOldPassword ? (
-                                                    <VisibilityOff />
-                                                ) : (
-                                                    <Visibility />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        )}
-                    />
-                    <Controller
-                        name="newPassword"
-                        control={control}
-                        rules={{
-                            required: "This field cannot be empty.",
-                            minLength: {
-                                value: 8,
-                                message: "Password must contain at least 8 characters.",
-                            },
-                            maxLength: {
-                                value: 20,
-                                message: "Password must contain at most 20 characters.",
-                            },
-                            pattern: {
-                                value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,}$/,
-                                message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol.",
-                            },
-                            validate: value =>
-                                value !== getValues("oldPassword") || "New password must be different from the old password."
-                        }}
-                        render={({ field }) => (
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="new-password"
-                                label={
-                                    errors.newPassword
-                                        ? "Invalid password format"
-                                        : "New Password"
-                                }
-                                type={showNewPassword ? "text" : "password"}
-                                {...field}
-                                error={!!errors.newPassword}
-                                helperText={errors.newPassword?.message}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle new password visibility"
-                                                onClick={handleClickShowNewPassword}
-                                                onMouseDown={handleMouseDownPassword}
-                                                edge="end"
-                                            >
-                                                {showNewPassword ? (
-                                                    <VisibilityOff />
-                                                ) : (
-                                                    <Visibility />
-                                                )}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        )}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        {showCircularProgress ? (
-                            <CircularProgress color="inherit" size={25} />
-                        ) : (
-                            "Change Password"
-                        )}
-                    </Button>
-                </Box>
-            </Box>
-        </Container>
+    const result = await changePassword(formData);
+    setShowCircularProgress(false);
+    setAlertData(
+      result.error
+        ? { success: false, message: result.error.response.data.message }
+        : { success: true, message: "Password changed successfully" }
     );
+    setOpenAlert(true);
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      {openAlert && (
+        <CustomAlert
+          open={openAlert}
+          onClose={() => setOpenAlert(false)}
+          severity={alertData.success ? "success" : "error"}
+          message={alertData.message}
+        />
+      )}
+      <Box
+        sx={{
+          marginTop: 16,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h4">
+          Change Password
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(handlerOnSubmit)}
+          sx={{ mt: 1 }}
+        >
+          <Controller
+            name="oldPassword"
+            control={control}
+            rules={{ required: "This field cannot be empty." }}
+            render={({ field }) => (
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="old-password"
+                label={
+                  errors.oldPassword
+                    ? errors.oldPassword.message
+                    : "Old Password"
+                }
+                type={showOldPassword ? "text" : "password"}
+                {...field}
+                error={!!errors.oldPassword}
+                helperText={errors.oldPassword?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle old password visibility"
+                        onClick={handleClickShowOldPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showOldPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+          />
+          <Controller
+            name="newPassword"
+            control={control}
+            rules={{
+              required: "This field cannot be empty.",
+              minLength: {
+                value: 8,
+                message: "Password must contain at least 8 characters.",
+              },
+              maxLength: {
+                value: 20,
+                message: "Password must contain at most 20 characters.",
+              },
+              pattern: {
+                value:
+                  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,}$/,
+                message:
+                  "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol.",
+              },
+              validate: (value) =>
+                value !== getValues("oldPassword") ||
+                "New password must be different from the old password.",
+            }}
+            render={({ field }) => (
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="new-password"
+                label={
+                  errors.newPassword
+                    ? "Invalid password format"
+                    : "New Password"
+                }
+                type={showNewPassword ? "text" : "password"}
+                {...field}
+                error={!!errors.newPassword}
+                helperText={errors.newPassword?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle new password visibility"
+                        onClick={handleClickShowNewPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            {showCircularProgress ? (
+              <CircularProgress color="inherit" size={25} />
+            ) : (
+              "Change Password"
+            )}
+          </Button>
+        </Box>
+      </Box>
+    </Container>
+  );
 };
 
 export default ChangePasswordForm;

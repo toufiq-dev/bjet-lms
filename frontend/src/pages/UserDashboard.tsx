@@ -1,11 +1,11 @@
 import SignOutButton from "../components/buttons/SignOutButton";
 
 const UserDashboard = () => {
-	return (
-		<>
-			<SignOutButton />
-		</>
-	);
+  return (
+    <>
+      <SignOutButton />
+    </>
+  );
 };
 
 export default UserDashboard;
