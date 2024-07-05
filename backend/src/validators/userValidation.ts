@@ -31,6 +31,19 @@ export class UserValidator {
       .withMessage("Invalid role. Must be Student, Teacher, or Admin"),
   ];
 
+  public static validateBulkRegister: ValidationChain[] = [
+    body()
+      .isArray({ min: 1 })
+      .withMessage("Request body must be an array of emails"),
+    body("*.email")
+      .notEmpty()
+      .withMessage("Email is required")
+      .isEmail()
+      .withMessage("Invalid email format")
+      .custom(emailValidator)
+      .withMessage("Invalid email format"),
+  ];
+
   public static validateLogin: ValidationChain[] = [
     body("email")
       .isEmail()
