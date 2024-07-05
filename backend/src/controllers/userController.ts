@@ -4,6 +4,7 @@ import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import { ResponseUtil } from "../utils/responseUtil";
 import config from "../config";
+import { IUser } from "../models/user";
 
 class UserController {
   constructor(private userService: UserService) {}
@@ -19,6 +20,32 @@ class UserController {
         "User registered successfully",
         { userId }
       );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public bulkRegisterStudents = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const emails: string[] = req.body;
+
+      if (!Array.isArray(emails) || emails.length === 0) {
+        throw new ErrorHandler(
+          HTTP_STATUS.BAD_REQUEST,
+          "Invalid input: expected an array of email addresses"
+        );
+      }
+
+      const result = await this.userService.bulkRegisterStudents(emails);
+
+      res.status(HTTP_STATUS.OK).json({
+        message: "Bulk registration completed",
+        success: result.success,
+        failures: result.failures,
+      });
     } catch (error) {
       ResponseUtil.sendError(res, error);
     }
@@ -90,7 +117,7 @@ class UserController {
   ): Promise<void> => {
     try {
       const { oldPassword, newPassword } = req.body;
-      const userId = req.user!.id;
+      const userId = req.user as IUser;
       await this.userService.changePassword(userId, oldPassword, newPassword);
 
       ResponseUtil.sendSuccess(
@@ -106,8 +133,8 @@ class UserController {
 
   public signout = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user!.id;
-      await this.userService.signout(userId);
+      const user = req.user as IUser;
+      await this.userService.signout(user.id);
 
       // Clear the cookies
       res.clearCookie("accessToken");

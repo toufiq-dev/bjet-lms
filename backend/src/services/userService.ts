@@ -1,14 +1,17 @@
 import { Schema, startSession } from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
+import generator from "generate-password";
 import User, { IUser } from "../models/user";
 import Student, { IStudentProfile } from "../models/studentProfile";
 import Teacher, { ITeacherProfile } from "../models/teacherProfile";
 import Admin, { IAdminProfile } from "../models/adminProfile";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import config from "../config";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import redisClient from "../utils/redis";
+import { rabbitMQClient } from "../utils/messageBroker";
 
 type ProfileModel = IStudentProfile | ITeacherProfile | IAdminProfile;
 
@@ -71,6 +74,87 @@ class UserService {
         "Registration failed"
       );
     } finally {
+      session.endSession();
+    }
+  }
+
+  /**
+   * Bulk registers students and queues welcome emails.
+   * @param emails - Array of student email addresses.
+   * @returns Object with arrays of successfully registered students and failures.
+   */
+  public async bulkRegisterStudents(emails: string[]): Promise<{
+    success: string[];
+    failures: { email: string; reason: string }[];
+  }> {
+    const session = await startSession();
+    session.startTransaction();
+
+    const success: string[] = [];
+    const failures: { email: string; reason: string }[] = [];
+
+    try {
+      await rabbitMQClient.connect();
+
+      for (const email of emails) {
+        try {
+          const existingUser = await User.findOne({ email });
+          if (existingUser) {
+            failures.push({ email, reason: "User already exists" });
+            continue;
+          }
+
+          const temporaryPassword = this.generatePassword(9);
+          const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+          const resetPassToken = uuidv4();
+          const resetPassExperies = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          const role = "Student";
+
+          const user = new User({
+            email,
+            password: hashedPassword,
+            role,
+            resetPassToken,
+            resetPassExperies,
+          });
+
+          const profile = new Student({ name: email.split("@")[0], email });
+
+          await profile.save({ session });
+
+          (user as IUser & { [key: string]: Schema.Types.ObjectId })[
+            `${role.toLowerCase()}Ref`
+          ] = profile._id as Schema.Types.ObjectId;
+
+          await user.save({ session });
+
+          // Publish email notification to RabbitMQ
+          const message = this.createWelcomeEmailMessage(
+            email,
+            temporaryPassword,
+            resetPassToken
+          );
+          await rabbitMQClient.publish("emailQueue", message);
+
+          success.push(email);
+        } catch (error) {
+          console.log(error);
+          failures.push({ email, reason: "Registration failed" });
+        }
+      }
+
+      await session.commitTransaction();
+
+      return { success, failures };
+    } catch (error) {
+      // console.log(error);
+      await session.abortTransaction();
+      throw new ErrorHandler(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Bulk registration failed"
+      );
+    } finally {
+      await rabbitMQClient.close();
       session.endSession();
     }
   }
@@ -254,6 +338,19 @@ class UserService {
   }
 
   /**
+   * Signs out a user and revoke refreshToken
+   * @param userId
+   */
+  public async signout(userId: string): Promise<void> {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
+    }
+
+    await redisClient.del(`refresh_token:${userId}`);
+  }
+
+  /**
    * Generates an access token for a user.
    * @param user - The user for whom the access token is generated.
    * @returns The generated access token.
@@ -274,16 +371,60 @@ class UserService {
   }
 
   /**
-   * Signs out a user and revoke refreshToken
-   * @param userId
+   * Generates a random password
+   * @param
    */
-  public async signout(userId: string): Promise<void> {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
-    }
+  private generatePassword(length: number = 12): string {
+    return generator.generate({
+      length: length,
+      numbers: true,
+      symbols: true,
+      uppercase: true,
+      lowercase: true,
+      strict: true,
+    });
+  }
 
-    await redisClient.del(`refresh_token:${userId}`);
+  /**
+   * Creates a welcome email message for a newly registered student.
+   * @param email - The email address of the student.
+   * @param temporaryPassword - The temporary password for the student.
+   * @param resetPassToken - The token for resetting the password.
+   * @returns An object containing the email message details.
+   * @private
+   */
+  private createWelcomeEmailMessage(
+    email: string,
+    temporaryPassword: string,
+    resetPassToken: string
+  ): {
+    from: string;
+    to: string;
+    subject: string;
+    text: string;
+  } {
+    return {
+      from: '"BJET LMS" <from@mailtrap.io>',
+      to: email,
+      subject: "Welcome to BJET LMS",
+      text: `
+        Dear Student,
+
+        Your account has been created in our Learning Management System.
+
+        Your temporary password is: ${temporaryPassword}
+
+        Please click on the following link to set a new password:
+        http://localhost:5173/reset-password?token=${resetPassToken}
+
+        This link will expire in 24 hours.
+
+        If you have any questions, please contact our support team.
+
+        Best regards,
+        BJET LMS Team
+      `,
+    };
   }
 }
 

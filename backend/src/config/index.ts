@@ -10,6 +10,11 @@ class Config {
   public readonly refreshTokenExpiration: number;
   public readonly maxInvalidLoginAttempts: number;
   public readonly lockDuration: number;
+  public readonly rabbitMQUrl: string;
+  public readonly emailHost: string;
+  public readonly emailPort: string;
+  public readonly emailUser: string;
+  public readonly emailPass: string;
 
   constructor() {
     dotenv.config();
@@ -22,6 +27,11 @@ class Config {
     this.accessTokenExpiration = 15 * 60 * 1000;
     this.maxInvalidLoginAttempts = 5;
     this.lockDuration = 60 * 60 * 1000;
+    this.rabbitMQUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
+    this.emailHost = process.env.EMAIL_HOST || "";
+    this.emailPort = process.env.EMAIL_PORT || "";
+    this.emailUser = process.env.EMAIL_USER || "";
+    this.emailPass = process.env.EMAIL_PASS || "";
 
     this.validateConfig();
   }

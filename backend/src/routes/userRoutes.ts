@@ -16,8 +16,14 @@ class UserRoutes {
     this.router.post(
       "/register",
       ValidationMiddleware.validate(UserValidator.validateRegister),
-      // authGuard(["Admin"]), // Only admins can register new users
+      // authGuard(["Admin"]),
       UserController.register
+    );
+    this.router.post(
+      "/register-students",
+      ValidationMiddleware.validate(UserValidator.validateBulkRegister),
+      // authGuard(["Admin"]),
+      UserController.bulkRegisterStudents
     );
     this.router.post(
       "/signin",
