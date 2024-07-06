@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/userRoutes";
+import userProfileRoutes from "./routes/userProfileRoutes";
 import Database from "./utils/database";
 import { errorMiddleware, notFoundMiddleware } from "./utils/errorHandler";
 import { requestLogger, logger } from "./utils/logger";
@@ -35,6 +36,7 @@ class App {
 
   private initializeRoutes(): void {
     this.express.use("/api/users", userRoutes);
+    this.express.use("/api/user-profiles", userProfileRoutes);
   }
 
   private initializeErrorHandling(): void {

@@ -10,27 +10,27 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminAuth from "./middleware/AdminAuth";
 
 const App = () => {
-	return (
-		<>
-			<CssBaseline />
-			<Router>
-				<Routes>
-					<Route element={<NonUserAuth />}>
-						<Route path="/sign-in" element={<SignInPage />} />
-					</Route>
+  return (
+    <>
+      <CssBaseline />
+      <Router>
+        <Routes>
+          <Route element={<NonUserAuth />}>
+            <Route path="/sign-in" element={<SignInPage />} />
+          </Route>
 
-					<Route element={<UserAuth />}>
-						<Route path="/" element={<UserDashboard />} />
-						<Route path="/profile" element={<ProfilePage />} />
-					</Route>
+          <Route element={<UserAuth />}>
+            <Route path="/" element={<UserDashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
 
-					<Route element={<AdminAuth />}>
-						<Route path="/admin" element={<AdminDashboard />} />
-					</Route>
-				</Routes>
-			</Router>
-		</>
-	);
+          <Route element={<AdminAuth />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </>
+  );
 };
 
 export default App;
