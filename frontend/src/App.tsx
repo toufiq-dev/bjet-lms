@@ -8,6 +8,7 @@ import UserAuth from "./middleware/UserAuth";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAuth from "./middleware/AdminAuth";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 const App = () => {
 	return (
@@ -26,6 +27,10 @@ const App = () => {
 
 					<Route element={<AdminAuth />}>
 						<Route path="/admin" element={<AdminDashboard />} />
+					</Route>
+
+					<Route element={<NonUserAuth />}>
+						<Route path="/forgot-password" element={<ForgotPasswordPage></ForgotPasswordPage>} />
 					</Route>
 				</Routes>
 			</Router>
