@@ -1,219 +1,154 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-//import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useForm, Controller } from "react-hook-form";
-import useUser from "../../hooks/useUser";
-import InputAdornment from "@mui/material/InputAdornment";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import Paper from "@mui/material/Paper";
 import CustomAlert from "../alerts/CustomAlert";
-import { useDispatch } from "react-redux";
-import { saveSignIn } from "../../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
+//import { useDispatch } from "react-redux";
+//import { saveSignIn } from "../../redux/slices/userSlice";
+//import { useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios"; // Import Axios with AxiosError for error handling
 
-const ForgotPasswordform = () => { 
-	const [showCircularProgress, setShowCircularProgress] = useState(false);
-	const [showPassword, setShowPassword] = useState(false);
-	const [openAlert, setOpenAlert] = useState(false);
-	const [data, setData] = useState({
-		success: true,
-		message: "",
-		data: {},
-	});
+interface FormData {
+  email: string;
+}
 
-	const {
-		handleSubmit,
-		control,
-		formState: { errors },
-		getValues,
-	} = useForm({
-		mode: "onChange",
-		defaultValues: {
-			email: "",
-			password: "",
-		},
-	});
+interface ApiResponse {
+  message: string;
+ 
+}
 
-	const { signIn } = useUser(); // 
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
+const ForgotPasswordForm = () => {
+  const [showCircularProgress, setShowCircularProgress] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [apiMessage, setApiMessage] = useState<string>("");
 
-	const handlerOnSubmit = async () => {
-		setShowCircularProgress(true);
-		const formData = {
-			email: getValues("email"),
-			password: getValues("password"),
-		};
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    getValues,
+    reset,
+  } = useForm<FormData>({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+    },
+  });
 
-		const result = await signIn(formData);
-		setShowCircularProgress(false);
-		if (result.error) {
-			setData(result.error.response.data);
-			setOpenAlert(true);
-		} else {
-			dispatch(saveSignIn(result.data));
-			result.data.role === "Admin" ? navigate("/admin") : navigate("/");
-		}
-	};
+  //const dispatch = useDispatch();
+  //const navigate = useNavigate();
 
-	return (
-		<Box bgcolor="#ECEFF1" height="100vh" pt={16}>
-			<Container component="main" maxWidth="xs">
-				{openAlert && (
-					<CustomAlert
-						open={openAlert}
-						onClose={() => setOpenAlert(false)}
-						severity="error"
-						message={data.message}
-					/>
-				)}
-				<Paper
-					elevation={0}
-					square
-					sx={{
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						padding: 4,
-					}}
-				>
-					<img
-						src="https://bjet-lms.s3.ap-south-1.amazonaws.com/images/bjet-logo.webp"
-						alt="B-JET Logo"
-						width={80}
-					/>
-					<Typography
-						component="h1"
-						variant="h4"
-						sx={{ marginTop: 2 }}
-					>
-						Reset Password
-					</Typography>
-					<Box
-						component="form"
-						onSubmit={handleSubmit(handlerOnSubmit)}
-						sx={{ mt: 1 }}
-					>
-						<Controller
-							name="email"
-							control={control}
-							rules={{
-								maxLength: {
-									value: 320,
-									message: "Invalid email format",
-								},
-								pattern: {
-									value: /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/,
-									message: "Invalid email format",
-								},
-							}}
-							render={({ field }) => (
-								<TextField
-									margin="normal"
-									required
-									fullWidth
-									id="email"
-									label={
-										errors.email
-											? errors.email.message
-											: "Email"
-									}
-									autoComplete="email"
-									autoFocus
-									{...field}
-									error={errors.email ? true : false}
-								/>
-							)}
-						/>
-						<Controller
-							name="password"
-							control={control}
-							rules={{
-								minLength: {
-									value: 8,
-									message:
-										"Password must contain at least 8 characters",
-								},
-								maxLength: {
-									value: 20,
-									message: "Character limit exceeded",
-								},
-								pattern: {
-									value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/])[A-Za-z\d~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]{8,20}$/,
-									message:
-										"Password must contain at least 8 characters, 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol",
-								},
-							}}
-							render={({ field }) => (
-								<TextField
-									type={showPassword ? "text" : "password"}
-									margin="normal"
-									required
-									fullWidth
-									id="password"
-									label={
-										errors.password
-											? "Invalid password format"
-											: "Password"
-									}
-									helperText={
-										errors.password &&
-										errors.password.message
-									}
-									autoComplete="current-password"
-									InputProps={{
-										endAdornment: (
-											<InputAdornment position="end">
-												<IconButton
-													aria-label="toggle password visibility"
-													edge="end"
-													onClick={() =>
-														setShowPassword(
-															!showPassword
-														)
-													}
-													onMouseDown={(
-														e: React.MouseEvent<HTMLButtonElement>
-													) => e.preventDefault()}
-												>
-													{showPassword ? (
-														<VisibilityOff />
-													) : (
-														<Visibility />
-													)}
-												</IconButton>
-											</InputAdornment>
-										),
-									}}
-									{...field}
-									error={errors.password ? true : false}
-								/>
-							)}
-						/>
-						<Button
-							type="submit"
-							variant="contained"
-							fullWidth
-							sx={{ mt: 3, mb: 2 }}
-						>
-							{showCircularProgress === true ? (
-								<CircularProgress color="inherit" size={25} />
-							) : (
-								<>Reset Password</>
-							)}
-						</Button>
-					</Box>
-				</Paper>
-			</Container>
-		</Box>
-	);
+  const sendResetEmail = async (formData: FormData) => {
+    try {
+      setShowCircularProgress(true);
+      const response = await axios.post<ApiResponse>(
+        "YOUR_API_ENDPOINT_HERE",
+        formData
+      );
+      setShowCircularProgress(false);
+      setApiMessage(response.data.message); // Assuming API returns a message
+      setOpenAlert(true);
+      reset(); // Reset form fields after successful submission
+    } catch (error: any) {
+      setShowCircularProgress(false);
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        if (axiosError.response) {
+          setApiMessage(axiosError.response.data.message || "Failed to send email.");
+        } else {
+          setApiMessage(axiosError.message || "Failed to send email.");
+        }
+      } else {
+        setApiMessage("Failed to send email.");
+      }
+      setOpenAlert(true);
+    }
+  };
+
+  const handlerOnSubmit = async () => {
+    const formData = {
+      email: getValues("email"),
+    };
+    await sendResetEmail(formData);
+  };
+
+  return (
+    <Box bgcolor="#ECEFF1" height="100vh" pt={16}>
+      <Container component="main" maxWidth="xs">
+        {openAlert && (
+          <CustomAlert
+            open={openAlert}
+            onClose={() => setOpenAlert(false)}
+            severity={apiMessage.includes("Success") ? "success" : "error"}
+            message={apiMessage}
+          />
+        )}
+        <Paper
+          elevation={0}
+          square
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            padding: 4,
+          }}
+        >
+          <Typography component="h1" variant="h4" sx={{ marginTop: 2 }}>
+            Reset Password
+          </Typography>
+          <Box
+            component="form"
+            onSubmit={handleSubmit(handlerOnSubmit)}
+            sx={{ mt: 1 }}
+          >
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Invalid email format",
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label={errors.email ? errors.email.message : "Email"}
+                  autoComplete="email"
+                  autoFocus
+                  {...field}
+                  error={!!errors.email}
+                />
+              )}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 3, mb: 2 }}
+              disabled={showCircularProgress}
+            >
+              {showCircularProgress ? (
+                <CircularProgress color="inherit" size={25} />
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
+  );
 };
 
-export default ForgotPasswordform;
+export default ForgotPasswordForm;
