@@ -309,15 +309,10 @@ class UserService {
    * @throws {ErrorHandler} If the user is not found, the old password is incorrect, or if there is an error during password change.
    */
   public async changePassword(
-    userId: string,
+    user: IUser,
     oldPassword: string,
     newPassword: string
   ): Promise<void> {
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
-    }
-
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       throw new ErrorHandler(HTTP_STATUS.UNAUTHORIZED, "Invalid old password");
