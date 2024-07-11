@@ -83,7 +83,15 @@ const ChangePasswordForm = () => {
                 }}
             >
                 <Typography component="h1" variant="h6">
-                    Password: <Checkbox checked={isChangePasswordChecked} onChange={handleCheckboxChange} size="small" /> Change Password
+                    <Box component="span" fontWeight="fontWeightBold">
+                        Password:
+                    </Box>
+                    <Checkbox
+                        checked={isChangePasswordChecked}
+                        onChange={handleCheckboxChange}
+                        size="small"
+                    />
+                    Change Password
                 </Typography>
                 {isChangePasswordChecked && (
                     <Box
