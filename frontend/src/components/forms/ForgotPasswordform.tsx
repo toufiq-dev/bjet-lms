@@ -74,7 +74,6 @@ const ForgotPasswordForm = () => {
     const formData = {
       email: getValues("email"),
     };
-
     await sendResetEmail(formData);
   };
 
