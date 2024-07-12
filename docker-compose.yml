@@ -10,6 +10,7 @@ services:
     depends_on:
       - mongo
       - redis
+      - rabbitmq
 
   frontend:
     build:
@@ -32,6 +33,15 @@ services:
     volumes:
       - redis-data:/data
 
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
 volumes:
   mongo-data:
   redis-data:
+  rabbitmq-data:

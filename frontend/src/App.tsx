@@ -18,24 +18,21 @@ const App = () => {
         <Routes>
           <Route element={<NonUserAuth />}>
             <Route path="/sign-in" element={<SignInPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Route>
 
           <Route element={<UserAuth />}>
             <Route path="/" element={<UserDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
-
-					<Route element={<AdminAuth />}>
-						<Route path="/admin" element={<AdminDashboard />} />
-					</Route>
-
-					<Route element={<NonUserAuth />}>
-						<Route path="/forgot-password" element={<ForgotPasswordPage></ForgotPasswordPage>} />
-					</Route>
-				</Routes>
-			</Router>
-		</>
-	);
+          
+          <Route element={<AdminAuth />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </>
+  );
 };
 
 export default App;

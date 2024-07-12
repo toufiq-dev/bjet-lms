@@ -80,17 +80,17 @@ const userSchema: Schema = new Schema<IUser>(
     },
     studentRef: {
       type: Schema.Types.ObjectId,
-      ref: "StudentProfile",
+      ref: "Student",
       default: null,
     },
     teacherRef: {
       type: Schema.Types.ObjectId,
-      ref: "TeacherProfile",
+      ref: "Teacher",
       default: null,
     },
     adminRef: {
       type: Schema.Types.ObjectId,
-      ref: "AdminProfile",
+      ref: "Admin",
       default: null,
     },
   },
