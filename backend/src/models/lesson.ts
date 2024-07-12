@@ -2,7 +2,11 @@ import { Schema, model, Document } from "mongoose";
 
 export interface ILesson extends Document {
   title: string;
-  content: string;
+  content: {
+    type: "text" | "file";
+    data: string;
+  };
+  order: number;
   moduleRef: Schema.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -17,10 +21,21 @@ const lessonSchema: Schema = new Schema<ILesson>(
       index: true,
     },
     content: {
-      type: String,
-      required: [true, "Lesson content is required"],
-      trim: true,
+      type: {
+        type: String,
+        enum: ["text", "file"],
+        required: true,
+      },
+      data: {
+        type: String,
+        required: true,
+      },
     },
+    order: {
+      type: Number,
+      required: true,
+    },
+
     moduleRef: {
       type: Schema.Types.ObjectId,
       ref: "Module",
