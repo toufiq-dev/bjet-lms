@@ -42,7 +42,7 @@ const ImagePreviewStyled = styled('img')`
   max-height: 300px;
 `;
 
-const ProfilePage = () => {
+const ProfilePicPage = () => {
   console.log("ProfilePage component rendered");
   const [open, setOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState('');
@@ -107,4 +107,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfilePicPage;

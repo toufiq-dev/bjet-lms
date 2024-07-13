@@ -309,7 +309,7 @@ class UserService {
    * @throws {ErrorHandler} If the user is not found, the old password is incorrect, or if there is an error during password change.
    */
   public async changePassword(
-    userId: string,
+    userId: IUser,
     oldPassword: string,
     newPassword: string
   ): Promise<void> {
