@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { TextField, Chip, Box } from "@mui/material";
+import { TextField, Chip, Box, Typography } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 
@@ -49,7 +49,8 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 borderRadius: 4,
                 padding: 1,
                 mb: 3,
-                width: 800
+                width: 800,
+                position: 'relative'
             }}
         >
             {emails.map((email, index) => (
@@ -99,11 +100,23 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                                 '.MuiOutlinedInput-notchedOutline': { border: 'none' },
                             }}
                             error={!!errors.email}
-                            helperText={errors.email ? String(errors.email.message) : ""}
                         />
                     )}
                 />
             </form>
+            {errors.email && (
+                <Typography
+                    color="error"
+                    variant="body2"
+                    sx={{
+                        position: 'absolute',
+                        bottom: -24, // Adjust this value as needed
+                        left: 16, // Adjust this value as needed
+                    }}
+                >
+                    {errors.email.message}
+                </Typography>
+            )}
         </Box>
     );
 };
