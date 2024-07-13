@@ -57,7 +57,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 )),
                 style: { display: "flex", flexWrap: "wrap", gap: 6 },
                 inputProps: {
-                    style: { minWidth: 50 }, // Adjust minimum width to prevent wrapping
+                    style: { minWidth: 800 },
                 },
             }}
             InputLabelProps={{

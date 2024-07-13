@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SignOutButton from "../components/buttons/SignOutButton";
 import UserCreationModal from "../components/modals/UserCreationModal";
 

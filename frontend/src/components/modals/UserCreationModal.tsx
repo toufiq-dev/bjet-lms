@@ -9,15 +9,15 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  maxWidth: "90%",  // Adjusted to allow responsive resizing
-  width: 800,
-  maxHeight: "90vh",  // Limit modal height to 90% of viewport height
+  maxWidth: "90%",
+  width: 1000,
+  maxHeight: "90vh",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
   borderRadius: 2,
   outline: "none",
-  overflow: "auto",  // Enable scrolling within modal if content exceeds height
+  overflow: "auto",
 };
 
 const headerStyle = {
@@ -30,7 +30,7 @@ const headerStyle = {
 interface UserCreationModalProps {
   open: boolean;
   onClose: () => void;
-  userType: "student" | "teacher"; // Determines which form to render
+  userType: "student" | "teacher";
 }
 
 const UserCreationModal: React.FC<UserCreationModalProps> = ({ open, onClose, userType }) => {
@@ -56,7 +56,7 @@ const UserCreationModal: React.FC<UserCreationModalProps> = ({ open, onClose, us
             <CloseIcon />
           </IconButton>
         </Box>
-        <Box sx={{ maxHeight: "calc(90vh - 100px)", overflowY: "auto" }}> {/* Adjusted maxHeight */}
+        <Box sx={{ maxHeight: "calc(90vh - 100px)", overflowY: "auto" }}>
           <FormComponent />
         </Box>
       </Box>
