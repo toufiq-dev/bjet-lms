@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { TextField, Chip } from "@mui/material";
+import React, { useState, useRef } from "react";
+import { TextField, Chip, Box } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 
 interface BulkUserInputProps {
@@ -9,6 +9,7 @@ interface BulkUserInputProps {
 
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleAddEmail = () => {
         if (emailInput.trim() !== "" && !emails.includes(emailInput)) {
@@ -21,52 +22,64 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
         setEmails(emails.filter((email) => email !== emailToDelete));
     };
 
-    const handleKeyPress = (event: React.KeyboardEvent) => {
-        if (event.key === "Enter" || event.key === ",") {
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter" || event.key === "," || event.key === " ") {
             event.preventDefault();
             handleAddEmail();
-        } else if (event.key === " ") {
-            event.preventDefault();
-            handleAddEmail();
-            setEmailInput(""); // Clear input after adding email
+            if (inputRef.current) {
+                setTimeout(() => {
+                    inputRef.current?.focus();
+                    inputRef.current?.setSelectionRange(emailInput.length, emailInput.length);
+                }, 0);
+            }
         }
     };
 
-    const handleBlur = () => {
-        handleAddEmail();
-    };
-
     return (
-        <TextField
-            label="Add email"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            onBlur={handleBlur}
-            onKeyPress={handleKeyPress}
-            fullWidth
-            variant="outlined"
-            InputProps={{
-                startAdornment: emails.map((email, index) => (
-                    <Chip
-                        key={index}
-                        label={email}
-                        onDelete={() => handleDeleteEmail(email)}
-                        deleteIcon={<Cancel />}
-                        sx={{ m: 0.5 }}
-                    />
-                )),
-                style: { display: "flex", flexWrap: "wrap", gap: 6 },
-                inputProps: {
-                    style: { minWidth: 800 },
-                },
-            }}
-            InputLabelProps={{
-                shrink: true,
-            }}
+        <Box
             sx={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                border: '1px solid #ccc',
+                borderRadius: 4,
+                padding: 1,
                 mb: 3,
+                width: 800
             }}
-        />
+        >
+            {emails.map((email, index) => (
+                <Chip
+                    key={index}
+                    label={email}
+                    onDelete={() => handleDeleteEmail(email)}
+                    deleteIcon={<Cancel />}
+                    sx={{ m: 0.5 }}
+                />
+            ))}
+            <TextField
+                label="Add email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                variant="outlined"
+                inputRef={inputRef}
+                InputProps={{
+                    style: {
+                        flex: 1, // Take up remaining space
+                        minWidth: 0, // Allow shrinking
+                        border: 'none',
+                        padding: 0,
+                    },
+                }}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                sx={{
+                    '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                }}
+            />
+        </Box>
     );
 };
 
