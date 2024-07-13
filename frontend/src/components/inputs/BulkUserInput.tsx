@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { TextField, Chip, Box } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
+import { useForm } from "react-hook-form";
 
 interface BulkUserInputProps {
     emails: string[];
@@ -10,6 +11,7 @@ interface BulkUserInputProps {
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     const handleAddEmail = () => {
         if (emailInput.trim() !== "" && !emails.includes(emailInput)) {
@@ -35,6 +37,10 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
         }
     };
 
+    const onSubmit = () => {
+        handleAddEmail();
+    };
+
     return (
         <Box
             sx={{
@@ -57,28 +63,39 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                     sx={{ m: 0.5 }}
                 />
             ))}
-            <TextField
-                label="Add email"
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                variant="outlined"
-                inputRef={inputRef}
-                InputProps={{
-                    style: {
-                        flex: 1, // Take up remaining space
-                        minWidth: 0, // Allow shrinking
-                        border: 'none',
-                        padding: 0,
-                    },
-                }}
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                sx={{
-                    '.MuiOutlinedInput-notchedOutline': { border: 'none' },
-                }}
-            />
+            <form onSubmit={handleSubmit(onSubmit)} style={{ flex: 1 }}>
+                <TextField
+                    // label="Add email"
+                    {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                            value: /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/,
+                            message: "Invalid email format",
+                        },
+                    })}
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    variant="outlined"
+                    inputRef={inputRef}
+                    InputProps={{
+                        style: {
+                            flex: 1, // Take up remaining space
+                            minWidth: 0, // Allow shrinking
+                            border: 'none',
+                            padding: 0,
+                        },
+                    }}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    sx={{
+                        '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                    }}
+                    error={!!errors.email}
+                    helperText={errors.email ? errors.email.message?.toString() : ""}
+                />
+            </form>
         </Box>
     );
 };
