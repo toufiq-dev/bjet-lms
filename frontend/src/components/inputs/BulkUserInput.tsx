@@ -11,7 +11,11 @@ interface BulkUserInputProps {
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
-    const { control, handleSubmit, formState: { errors }, reset } = useForm();
+    interface FormData {
+        email: string;
+    }
+
+    const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
 
     const handleAddEmail = (data: { email: string }) => {
         const newEmail = data.email.trim();
