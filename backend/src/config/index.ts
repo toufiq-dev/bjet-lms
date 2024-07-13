@@ -23,7 +23,7 @@ class Config {
     this.jwtSecret = process.env.JWT_SECRET || "";
     this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "";
     this.redisUrl = process.env.REDIS_URL || "redis://redis:6379";
-    this.refreshTokenExpiration = 7 * 24 * 60 * 60;
+    this.refreshTokenExpiration = 7 * 24 * 60 * 60 * 1000;
     this.accessTokenExpiration = 15 * 60 * 1000;
     this.maxInvalidLoginAttempts = 5;
     this.lockDuration = 60 * 60 * 1000;
