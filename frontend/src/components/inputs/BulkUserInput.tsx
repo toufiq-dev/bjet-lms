@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { TextField, Chip, Box } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
 interface BulkUserInputProps {
     emails: string[];
@@ -11,12 +11,14 @@ interface BulkUserInputProps {
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { control, handleSubmit, formState: { errors }, reset } = useForm();
 
-    const handleAddEmail = () => {
-        if (emailInput.trim() !== "" && !emails.includes(emailInput)) {
-            setEmails([...emails, emailInput.trim()]);
+    const handleAddEmail = (data: { email: string }) => {
+        const newEmail = data.email.trim();
+        if (newEmail !== "" && !emails.includes(newEmail)) {
+            setEmails([...emails, newEmail]);
             setEmailInput("");
+            reset(); // Reset the form
         }
     };
 
@@ -27,7 +29,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === "Enter" || event.key === "," || event.key === " ") {
             event.preventDefault();
-            handleAddEmail();
+            handleSubmit(handleAddEmail)(); // Trigger form submission
             if (inputRef.current) {
                 setTimeout(() => {
                     inputRef.current?.focus();
@@ -35,10 +37,6 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 }, 0);
             }
         }
-    };
-
-    const onSubmit = () => {
-        handleAddEmail();
     };
 
     return (
@@ -63,37 +61,47 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                     sx={{ m: 0.5 }}
                 />
             ))}
-            <form onSubmit={handleSubmit(onSubmit)} style={{ flex: 1 }}>
-                <TextField
-                    // label="Add email"
-                    {...register("email", {
+            <form onSubmit={handleSubmit(handleAddEmail)} style={{ flex: 1 }}>
+                <Controller
+                    name="email"
+                    control={control}
+                    defaultValue={emailInput}
+                    rules={{
                         required: "Email is required",
                         pattern: {
                             value: /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/,
                             message: "Invalid email format",
                         },
-                    })}
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    variant="outlined"
-                    inputRef={inputRef}
-                    InputProps={{
-                        style: {
-                            flex: 1, // Take up remaining space
-                            minWidth: 0, // Allow shrinking
-                            border: 'none',
-                            padding: 0,
-                        },
                     }}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    sx={{
-                        '.MuiOutlinedInput-notchedOutline': { border: 'none' },
-                    }}
-                    error={!!errors.email}
-                    helperText={errors.email ? errors.email.message?.toString() : ""}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            value={emailInput}
+                            onChange={(e) => {
+                                setEmailInput(e.target.value);
+                                field.onChange(e);
+                            }}
+                            onKeyDown={handleKeyDown}
+                            variant="outlined"
+                            inputRef={inputRef}
+                            InputProps={{
+                                style: {
+                                    flex: 1, // Take up remaining space
+                                    minWidth: 0, // Allow shrinking
+                                    border: 'none',
+                                    padding: 0,
+                                },
+                            }}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            sx={{
+                                '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                            }}
+                            error={!!errors.email}
+                            helperText={errors.email ? String(errors.email.message) : ""}
+                        />
+                    )}
                 />
             </form>
         </Box>
