@@ -54,8 +54,10 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 padding: 1,
                 mb: 3,
                 width: 800,
-                position: 'relative'
+                position: 'relative',
+                cursor: 'text' // Ensures the cursor changes to text input cursor when hovering
             }}
+            onClick={() => inputRef.current?.focus()} // Focus the input when clicking anywhere in the box
         >
             {emails.map((email, index) => (
                 <Chip
@@ -114,8 +116,8 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                     variant="body2"
                     sx={{
                         position: 'absolute',
-                        bottom: -24, // Adjust this value as needed
-                        left: 16, // Adjust this value as needed
+                        bottom: -24,
+                        left: 16,
                     }}
                 >
                     {errors.email.message}
