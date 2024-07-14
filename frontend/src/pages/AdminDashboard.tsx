@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
-import UserCreationModal from "../components/modals/UserCreationModal";
 import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
 import Toolbar from "@mui/material/Toolbar";
+import CreateStudentButton from "../components/buttons/CreateStudentButton";
+import CreateTeacherButton from "../components/buttons/CreateTeacherButton";
 
 const drawerWidth = 150;
 
@@ -18,7 +19,8 @@ const AdminDashboard = () => {
         }}
       >
         <Toolbar />
-        <UserCreationModal />
+        <CreateStudentButton />
+        <CreateTeacherButton />
       </Box>
     </Box>
   );

@@ -39,7 +39,20 @@ const useUser = () => {
     }
   };
 
-  return { signIn, signOut, changePassword };
+  const createStudents = async (emails: string[]) => {
+    try {
+      const response = await userInstance.post("/register-students", emails, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { signIn, signOut, changePassword, createStudents };
 };
 
 export default useUser;
