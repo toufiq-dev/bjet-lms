@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import CustomAlert from "../alerts/CustomAlert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
+import useCourse from "../../hooks/useCourse";
+import { useSelector } from "react-redux";
+import IState from "../../interfaces/stateInterface";
 
 const CourseCreationForm = () => {
   const [showCircularProgress, setShowCircularProgress] = useState(false);
@@ -18,6 +21,8 @@ const CourseCreationForm = () => {
   });
 
   const navigate = useNavigate();
+  const { createCourse } = useCourse();
+  const id = useSelector((state: IState) => state.user.id);
 
   const {
     handleSubmit,
@@ -35,17 +40,19 @@ const CourseCreationForm = () => {
   const handlerOnSubmit = async () => {
     setShowCircularProgress(true);
     const formData = {
-      email: getValues("title"),
-      password: getValues("description"),
+      teacherRef: id,
+      title: getValues("title"),
+      description: getValues("description"),
     };
 
-    const result = await signIn(formData);
+    const result = await createCourse(formData);
     setShowCircularProgress(false);
     if (result.error) {
       setData(result.error.response.data);
       setOpenAlert(true);
     } else {
-      navigate(`/courses/${result.data.id}`);
+      console.log(result.data._id);
+      navigate(`/courses/${result.data._id}`);
     }
   };
 

@@ -54,7 +54,7 @@ class UserController {
   public signin = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const { accessToken, refreshToken, name, role } =
+      const { accessToken, refreshToken, id, name, role } =
         await this.userService.signin(email, password);
 
       res.cookie("accessToken", accessToken, {
@@ -71,6 +71,7 @@ class UserController {
       });
 
       ResponseUtil.sendSuccess(res, HTTP_STATUS.OK, "Signin successful", {
+        id,
         name,
         role,
       });

@@ -26,6 +26,13 @@ class CourseRoutes {
       authGuard(["Teacher"]),
       CourseController.createCourse
     );
+
+    this.router.get(
+      "/view-course-by-reference/:id",
+      authGuard(["Teacher", "Student"]),
+      ValidationMiddleware.validate(CourseValidator.validateGetCourseById),
+      CourseController.getCourseById
+    );
   }
 }
 

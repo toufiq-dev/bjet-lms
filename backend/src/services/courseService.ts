@@ -49,17 +49,18 @@ class CourseService {
         pdfFiles,
         videoFiles
       );
-      const createdModules = await this.createModulesAndLessons(
-        modules,
-        course._id,
-        uploadedFiles,
-        session
-      );
+      // const createdModules = await this.createModulesAndLessons(
+      //   modules,
+      //   course._id,
+      //   uploadedFiles,
+      //   session
+      // );
 
       await session.commitTransaction();
       session.endSession();
 
-      return this.constructExtendedCourse(course, createdModules);
+      // return this.constructExtendedCourse(course, createdModules);
+      return this.constructExtendedCourse(course);
     } catch (error) {
       await session.abortTransaction();
       session.endSession();
@@ -180,11 +181,26 @@ class CourseService {
     return fileData;
   }
 
-  private constructExtendedCourse(
-    course: ICourse,
-    modules: Array<IModule & { lessons: ILesson[] }>
-  ): any {
-    return { ...course.toObject(), modules };
+  // private constructExtendedCourse(
+  //   course: ICourse,
+  //   modules: Array<IModule & { lessons: ILesson[] }>
+  // ): any {
+  //   return { ...course.toObject(), modules };
+  // }
+
+  private constructExtendedCourse(course: ICourse): any {
+    return { ...course.toObject() };
+  }
+
+  public async getCourseById(id: string): Promise<object> {
+    const course = await Course.findById(id).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!course) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return course;
   }
 }
 

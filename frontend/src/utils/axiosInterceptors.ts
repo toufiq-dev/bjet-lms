@@ -1,6 +1,7 @@
 import { AxiosInstance } from "axios";
 import { store } from "../redux/store";
 import { removeSignIn } from "../redux/slices/userSlice";
+import userInstance from "./userInstance";
 
 const responseInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.response.use(
@@ -19,7 +20,7 @@ const responseInterceptor = (instance: AxiosInstance) => {
       ) {
         originalRequest._retry = true;
         try {
-          await instance.post("/refresh-token");
+          await userInstance.post("/refresh-token");
           return instance(originalRequest);
         } catch (refreshError) {
           return Promise.reject(refreshError);
