@@ -64,14 +64,20 @@ const BulkStudentCreationForm = () => {
                     <Box
                         component="form"
                         onSubmit={handlerOnSubmit}
-                        sx={{ mt: 1 }}
+                        sx={{
+                            mt: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                        }}
                     >
                         <BulkUserInput emails={emails} setEmails={setEmails} />
                         <Button
                             type="submit"
                             variant="contained"
-                            fullWidth
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ mt: 8, mb: 2, width: 'fit-content' }} // Adjust mt to position the button
                         >
                             {showCircularProgress ? (
                                 <CircularProgress color="inherit" size={25} />

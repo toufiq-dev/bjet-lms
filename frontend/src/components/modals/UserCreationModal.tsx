@@ -29,6 +29,14 @@ const headerStyle = {
   paddingBottom: 2,
 };
 
+const instructionsStyle = {
+  marginBottom: -10,
+  padding: '8px 0',
+  backgroundColor: '#f5f5f5',
+  borderRadius: 2,
+  textAlign: 'center',
+};
+
 interface UserCreationModalProps {
   open: boolean;
   onClose: () => void;
@@ -57,6 +65,14 @@ const UserCreationModal: React.FC<UserCreationModalProps> = ({ open, onClose, us
           <IconButton onClick={onClose}>
             <CloseIcon />
           </IconButton>
+        </Box>
+        <Box sx={instructionsStyle}>
+          <Typography variant="body1">
+            Add user(s) by Email Address
+          </Typography>
+          <Typography variant="body2">
+            When adding multiple users, use a comma, space, or Enter key to separate users.
+          </Typography>
         </Box>
         <Box sx={{ maxHeight: "calc(90vh - 100px)", overflowY: "auto" }}>
           <FormComponent />
