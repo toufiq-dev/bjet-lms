@@ -66,14 +66,6 @@ const UserCreationModal: React.FC<UserCreationModalProps> = ({ open, onClose, us
             <CloseIcon />
           </IconButton>
         </Box>
-        <Box sx={instructionsStyle}>
-          <Typography variant="body1">
-            Add user(s) by Email Address
-          </Typography>
-          <Typography variant="body2">
-            When adding multiple users, use a comma, space, or Enter key to separate users.
-          </Typography>
-        </Box>
         <Box sx={{ maxHeight: "calc(90vh - 100px)", overflowY: "auto" }}>
           <FormComponent />
         </Box>

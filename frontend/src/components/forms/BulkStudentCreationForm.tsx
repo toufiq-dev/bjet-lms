@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
     Button,
     Box,
@@ -54,7 +54,7 @@ const BulkStudentCreationForm = () => {
                 }}
             >
                 <Typography component="h1" variant="h4" align="center">
-                    Bulk Student Registration
+                    Student Registration
                 </Typography>
                 <Paper
                     elevation={0}
@@ -69,23 +69,27 @@ const BulkStudentCreationForm = () => {
                     }}
                 >
                     <Box
-                        component="form"
-                        onSubmit={handlerOnSubmit}
                         sx={{
                             mt: 1,
                             display: "flex",
                             flexDirection: "column",
-                            justifyContent: "center",
                             alignItems: "center",
                             width: "100%",
                         }}
                     >
+                        <Typography variant="body1" sx={{ textAlign: "center", marginBottom: 1 }}>
+                            Add user(s) by Email Address
+                        </Typography>
+                        <Typography variant="body2" sx={{ textAlign: "center", marginBottom: 2 }}>
+                            When adding multiple users, use a Comma, Space, or Enter key to separate users.
+                        </Typography>
                         <BulkUserInput emails={emails} setEmails={setEmails} />
                         <Button
                             type="submit"
                             variant="contained"
                             fullWidth={!isMobile}
-                            sx={{ mt: 8, mb: 2 }}
+                            sx={{ mt: 4, mb: 2 }}
+                            onClick={handlerOnSubmit}
                         >
                             {showCircularProgress ? (
                                 <CircularProgress color="inherit" size={25} />
