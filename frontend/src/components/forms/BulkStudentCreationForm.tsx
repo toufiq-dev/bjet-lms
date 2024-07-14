@@ -32,9 +32,24 @@ const BulkStudentCreationForm = () => {
             if (response.error) {
                 throw new Error(response.error);
             }
+
+            let alertMessage = "Bulk registration completed.\n";
+            const { success, failures } = response;
+
+            if (success.length > 0) {
+                alertMessage += `Successfully registered: ${success.join(", ")}.\n`;
+            }
+
+            if (failures.length > 0) {
+                alertMessage += "Failures:\n";
+                failures.forEach((failure: { email: string, reason: string }) => {
+                    alertMessage += `Email: ${failure.email}, Reason: ${failure.reason}\n`;
+                });
+            }
+
             setAlertData({
-                success: true,
-                message: "Students created successfully",
+                success: failures.length === 0, // If there are no failures, success is true
+                message: alertMessage,
             });
         } catch (error) {
             console.error("Failed to create students:", error);
