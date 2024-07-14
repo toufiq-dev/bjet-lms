@@ -6,6 +6,8 @@ import {
     Container,
     CircularProgress,
     Paper,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import CustomAlert from "../alerts/CustomAlert";
 import BulkUserInput from "../inputs/BulkUserInput";
@@ -29,6 +31,9 @@ const BulkStudentCreationForm = () => {
         }, 2000);
     };
 
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
     return (
         <Container component="main" maxWidth="xs">
             {openAlert && (
@@ -41,13 +46,14 @@ const BulkStudentCreationForm = () => {
             )}
             <Box
                 sx={{
-                    marginTop: 16,
+                    marginTop: 8,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    padding: isMobile ? 2 : 0,
                 }}
             >
-                <Typography component="h1" variant="h4">
+                <Typography component="h1" variant="h4" align="center">
                     Bulk Student Registration
                 </Typography>
                 <Paper
@@ -57,8 +63,9 @@ const BulkStudentCreationForm = () => {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        padding: 4,
+                        padding: isMobile ? 2 : 4,
                         marginTop: 2,
+                        width: "100%",
                     }}
                 >
                     <Box
@@ -70,14 +77,15 @@ const BulkStudentCreationForm = () => {
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            height: "100%",
+                            width: "100%",
                         }}
                     >
                         <BulkUserInput emails={emails} setEmails={setEmails} />
                         <Button
                             type="submit"
                             variant="contained"
-                            sx={{ mt: 8, mb: 2, width: 'fit-content' }} // Adjust mt to position the button
+                            fullWidth={!isMobile}
+                            sx={{ mt: 8, mb: 2 }}
                         >
                             {showCircularProgress ? (
                                 <CircularProgress color="inherit" size={25} />
