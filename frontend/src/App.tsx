@@ -9,6 +9,8 @@ import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAuth from "./middleware/AdminAuth";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import TeacherAuth from "./middleware/TeacherAuth";
+import CreateCoursePage from "./pages/CreateCoursePage";
 
 const App = () => {
   return (
@@ -25,9 +27,13 @@ const App = () => {
             <Route path="/" element={<UserDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
-          
+
           <Route element={<AdminAuth />}>
             <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+
+          <Route element={<TeacherAuth />}>
+            <Route path="/create-course" element={<CreateCoursePage />} />
           </Route>
         </Routes>
       </Router>
