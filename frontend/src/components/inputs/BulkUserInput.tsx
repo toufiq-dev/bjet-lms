@@ -11,11 +11,10 @@ interface BulkUserInputProps {
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
-    interface FormData {
-        email: string;
-    }
 
-    const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
+    const { control, handleSubmit, formState: { errors }, reset } = useForm({
+        defaultValues: { email: "" },
+    });
 
     const handleAddEmail = (data: { email: string }) => {
         const newEmail = data.email.trim();
@@ -33,7 +32,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === "Enter" || event.key === "," || event.key === " ") {
             event.preventDefault();
-            handleSubmit(handleAddEmail)(); // Trigger form submission
+            handleSubmit(handleAddEmail)();
             if (inputRef.current) {
                 setTimeout(() => {
                     inputRef.current?.focus();
@@ -50,14 +49,19 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 border: '1px solid #ccc',
-                borderRadius: 3,
+                borderRadius: 2,
                 padding: 1,
                 mb: 3,
-                width: 600,
+                width: '100%', // Take full width on all screens
+                minWidth: 200,
+                maxWidth: 600, // Maximum width for smaller screens
+                '@media (min-width: 960px)': { // Adjust for larger screens
+                    minWidth: 600 // Set minimum width for larger screens
+                },
                 position: 'relative',
-                cursor: 'text' // Ensures the cursor changes to text input cursor when hovering
+                cursor: 'text',
             }}
-            onClick={() => inputRef.current?.focus()} // Focus the input when clicking anywhere in the box
+            onClick={() => inputRef.current?.focus()}
         >
             {emails.map((email, index) => (
                 <Chip
@@ -93,8 +97,8 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                             inputRef={inputRef}
                             InputProps={{
                                 style: {
-                                    flex: 1, // Take up remaining space
-                                    minWidth: 0, // Allow shrinking
+                                    flex: 1,
+                                    minWidth: 0,
                                     border: 'none',
                                     padding: 0,
                                 },
