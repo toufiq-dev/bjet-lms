@@ -11,6 +11,7 @@ import AdminAuth from "./middleware/AdminAuth";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import TeacherAuth from "./middleware/TeacherAuth";
 import CreateCoursePage from "./pages/CreateCoursePage";
+import CourseDetailsPage from "./pages/CourseDetailsPage";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <Route element={<UserAuth />}>
             <Route path="/" element={<UserDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/courses/:id" element={<CourseDetailsPage />} />
           </Route>
 
           <Route element={<AdminAuth />}>

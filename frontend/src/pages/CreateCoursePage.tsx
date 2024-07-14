@@ -1,5 +1,27 @@
+import Box from "@mui/material/Box";
+import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
+import Toolbar from "@mui/material/Toolbar";
+import CourseCreationForm from "../components/forms/CourseCreationForm";
+
+const drawerWidth = 150;
+
 const CreateCoursePage = () => {
-  return <div>CreateCoursePage</div>;
+  return (
+    <Box display="flex">
+      <ResponsiveDrawer title="Create a course" drawerWidth={drawerWidth} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />
+        <CourseCreationForm />
+      </Box>
+    </Box>
+  );
 };
 
 export default CreateCoursePage;
