@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Modal, IconButton } from "@mui/material";
+import { Box, Typography, Modal, IconButton, Divider } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import StudentCreationForm from "../forms/BulkStudentCreationForm";
 import TeacherCreationForm from "../forms/BulkTeacherCreationForm";
@@ -10,7 +10,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   maxWidth: "90%",
-  width: 1000,
+  width: 800,
   maxHeight: "90vh",
   bgcolor: "background.paper",
   boxShadow: 24,
@@ -25,6 +25,8 @@ const headerStyle = {
   justifyContent: "space-between",
   alignItems: "center",
   mb: 2,
+  borderBottom: '1px solid #e0e0e0',
+  paddingBottom: 2,
 };
 
 interface UserCreationModalProps {

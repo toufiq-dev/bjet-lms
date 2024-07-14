@@ -50,10 +50,10 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 border: '1px solid #ccc',
-                borderRadius: 4,
+                borderRadius: 3,
                 padding: 1,
                 mb: 3,
-                width: 800,
+                width: 600,
                 position: 'relative',
                 cursor: 'text' // Ensures the cursor changes to text input cursor when hovering
             }}
