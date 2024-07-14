@@ -16,7 +16,7 @@ class CourseController {
       const videoFiles = files["video"] || [];
 
       // Call the service to create a course
-      const course = await this.courseService.createCourse(
+      const extendedCourse = await this.courseService.createCourse(
         title,
         description,
         teacherRef,
@@ -25,11 +25,12 @@ class CourseController {
         videoFiles
       );
 
+      // Spread the properties of extendedCourse directly into the response data
       ResponseUtil.sendSuccess(
         res,
         HTTP_STATUS.CREATED,
         "Course created successfully",
-        { course }
+        { ...extendedCourse }
       );
     } catch (error) {
       ResponseUtil.sendError(res, error);

@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import path from "path";
 
 class Config {
   public readonly port: number;
@@ -15,6 +16,9 @@ class Config {
   public readonly emailPort: string;
   public readonly emailUser: string;
   public readonly emailPass: string;
+  public readonly uploadDir: string;
+  public readonly pdfDir: string;
+  public readonly videoDir: string;
 
   constructor() {
     dotenv.config();
@@ -32,6 +36,9 @@ class Config {
     this.emailPort = process.env.EMAIL_PORT || "";
     this.emailUser = process.env.EMAIL_USER || "";
     this.emailPass = process.env.EMAIL_PASS || "";
+    this.uploadDir = path.join(__dirname, "../../uploads");
+    this.pdfDir = path.join(this.uploadDir, "pdf");
+    this.videoDir = path.join(this.uploadDir, "video");
 
     this.validateConfig();
   }
@@ -42,7 +49,8 @@ class Config {
       !this.mongoUri ||
       !this.jwtSecret ||
       !this.refreshTokenSecret ||
-      !this.redisUrl
+      !this.redisUrl ||
+      !this.uploadDir
     ) {
       throw new Error("Missing required environment variables");
     }
