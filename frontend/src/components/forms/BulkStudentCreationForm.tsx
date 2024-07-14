@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CustomAlert from "../alerts/CustomAlert";
 import BulkUserInput from "../inputs/BulkUserInput";
+import useUser from "../../hooks/useUser";
 
 const BulkStudentCreationForm = () => {
     const [showCircularProgress, setShowCircularProgress] = useState(false);
@@ -21,14 +22,26 @@ const BulkStudentCreationForm = () => {
     });
     const [emails, setEmails] = useState<string[]>([]);
 
+    const { createStudents } = useUser(); // Destructure createStudents from useUser
+
     const handlerOnSubmit = async () => {
         setShowCircularProgress(true);
 
-        setTimeout(() => {
+        try {
+            const response = await createStudents(emails);
+            setAlertData({
+                success: true,
+                message: "Students created successfully",
+            });
+        } catch (error) {
+            setAlertData({
+                success: false,
+                message: "Failed to create students",
+            });
+        } finally {
             setShowCircularProgress(false);
-            setAlertData({ success: true, message: "Students created successfully" });
             setOpenAlert(true);
-        }, 2000);
+        }
     };
 
     const theme = useTheme();
