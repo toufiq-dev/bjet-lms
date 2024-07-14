@@ -29,14 +29,18 @@ const BulkStudentCreationForm = () => {
 
         try {
             const response = await createStudents(emails);
+            if (response.error) {
+                throw new Error(response.error);
+            }
             setAlertData({
                 success: true,
                 message: "Students created successfully",
             });
         } catch (error) {
+            console.error("Failed to create students:", error);
             setAlertData({
                 success: false,
-                message: "Failed to create students",
+                message: (error as any).response?.data?.message || "Failed to create students",
             });
         } finally {
             setShowCircularProgress(false);
