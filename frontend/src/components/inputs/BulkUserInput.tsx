@@ -60,6 +60,12 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
         return /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/.test(email);
     };
 
+    const handleBlur = () => {
+        if (emailInput.trim() !== "") {
+            handleSubmit(handleAddEmail)();
+        }
+    };
+
     return (
         <Box
             sx={{
@@ -115,6 +121,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                                 field.onChange(e);
                             }}
                             onKeyDown={handleKeyDown}
+                            onBlur={handleBlur} // Added onBlur handler to handle last email
                             variant="outlined"
                             inputRef={inputRef}
                             InputProps={{
