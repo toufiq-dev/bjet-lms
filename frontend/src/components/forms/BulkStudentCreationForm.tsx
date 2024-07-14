@@ -78,10 +78,10 @@ const BulkStudentCreationForm = () => {
                         }}
                     >
                         <Typography variant="body1" sx={{ textAlign: "center", marginBottom: 1 }}>
-                            Add user(s) by Email Address
+                            Add student(s) by Email Address
                         </Typography>
                         <Typography variant="body2" sx={{ textAlign: "center", marginBottom: 2 }}>
-                            When adding multiple users, use a Comma, Space, or Enter key to separate users.
+                            When adding multiple students, use a Comma, Space, or Enter key to separate emails.
                         </Typography>
                         <BulkUserInput emails={emails} setEmails={setEmails} />
                         <Button
