@@ -10,6 +10,7 @@ interface BulkUserInputProps {
 
 const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
     const [emailInput, setEmailInput] = useState("");
+    const [emailError, setEmailError] = useState<string | null>(null); // Track email errors
     const inputRef = useRef<HTMLInputElement>(null);
 
     const { control, handleSubmit, formState: { errors }, reset } = useForm({
@@ -18,11 +19,24 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
 
     const handleAddEmail = (data: { email: string }) => {
         const newEmail = data.email.trim();
-        if (newEmail !== "" && !emails.includes(newEmail)) {
-            setEmails([...emails, newEmail]);
-            setEmailInput("");
-            reset(); // Reset the form
+        if (newEmail === "") {
+            return; // Exit early if email is empty
         }
+
+        if (!validateEmail(newEmail)) {
+            setEmailError("Invalid email format");
+            return;
+        }
+
+        if (emails.includes(newEmail)) {
+            setEmailError("Email already added");
+            return;
+        }
+
+        setEmails([...emails, newEmail]);
+        setEmailInput("");
+        setEmailError(null); // Reset error state
+        reset(); // Reset the form
     };
 
     const handleDeleteEmail = (emailToDelete: string) => {
@@ -40,6 +54,10 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                 }, 0);
             }
         }
+    };
+
+    const validateEmail = (email: string): boolean => {
+        return /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/.test(email);
     };
 
     return (
@@ -78,7 +96,10 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                     control={control}
                     defaultValue={emailInput}
                     rules={{
-                        required: "Email is required",
+                        // required: {
+                        //     value: true,
+                        //     message: "Email is required",
+                        // },
                         pattern: {
                             value: /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,4}$/,
                             message: "Invalid email format",
@@ -90,6 +111,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                             value={emailInput}
                             onChange={(e) => {
                                 setEmailInput(e.target.value);
+                                setEmailError(null); // Reset error on input change
                                 field.onChange(e);
                             }}
                             onKeyDown={handleKeyDown}
@@ -109,7 +131,7 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                             sx={{
                                 '.MuiOutlinedInput-notchedOutline': { border: 'none' },
                             }}
-                            error={!!errors.email}
+                            error={!!errors.email || !!emailError} // Update error prop
                         />
                     )}
                 />
@@ -125,6 +147,19 @@ const BulkUserInput: React.FC<BulkUserInputProps> = ({ emails, setEmails }) => {
                     }}
                 >
                     {errors.email.message}
+                </Typography>
+            )}
+            {emailError && (
+                <Typography
+                    color="error"
+                    variant="body2"
+                    sx={{
+                        position: 'absolute',
+                        bottom: -24,
+                        left: 16,
+                    }}
+                >
+                    {emailError}
                 </Typography>
             )}
         </Box>
