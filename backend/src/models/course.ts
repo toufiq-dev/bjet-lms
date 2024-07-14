@@ -17,6 +17,7 @@ const courseSchema: Schema = new Schema<ICourse>(
       type: String,
       required: [true, "Course title is required"],
       trim: true,
+      unique: true,
       index: true,
     },
     description: {
