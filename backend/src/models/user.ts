@@ -14,7 +14,7 @@ export interface IUser extends Document {
   passwordResetReq: number | null;
   lockResetPassword: Date | null;
   resetPassToken: string | null;
-  resetPassExperies: Date | null;
+  resetPassExpires: Date | null;
   studentRef?: Schema.Types.ObjectId | null;
   teacherRef?: Schema.Types.ObjectId | null;
   adminRef?: Schema.Types.ObjectId | null;
@@ -74,7 +74,7 @@ const userSchema: Schema = new Schema<IUser>(
       type: String,
       default: null,
     },
-    resetPassExperies: {
+    resetPassExpires: {
       type: Date,
       default: null,
     },

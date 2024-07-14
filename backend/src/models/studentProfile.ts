@@ -6,7 +6,6 @@ export interface IStudentProfile extends Document {
   image: string;
   email: string;
   phone: string;
-  courseRefs: Schema.Types.ObjectId[] | null;
 }
 
 const studentProfileSchema: Schema = new Schema<IStudentProfile>(
@@ -19,11 +18,6 @@ const studentProfileSchema: Schema = new Schema<IStudentProfile>(
     },
     image: {
       type: String,
-      //   validate: {
-      //     validator: (v: string) =>
-      //       /^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(v),
-      //     message: "Image must be a valid URL to an image file",
-      //   },
     },
     email: {
       type: String,
@@ -40,12 +34,6 @@ const studentProfileSchema: Schema = new Schema<IStudentProfile>(
     phone: {
       type: String,
     },
-    courseRefs: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Course",
-      },
-    ],
   },
   {
     timestamps: true,

@@ -20,11 +20,6 @@ const teacherProfileSchema: Schema = new Schema<ITeacherProfile>(
     },
     image: {
       type: String,
-      //   validate: {
-      //     validator: (v: string) =>
-      //       /^https?:\/\/.+\.(jpg|jpeg|png|gif)$/i.test(v),
-      //     message: "Image must be a valid URL to an image file",
-      //   },
     },
     email: {
       type: String,
