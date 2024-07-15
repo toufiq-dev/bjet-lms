@@ -1,4 +1,3 @@
-// courseService.ts
 import { Schema, startSession } from "mongoose";
 import Course, { ICourse } from "../models/course";
 import Module, { IModule } from "../models/module";
@@ -33,43 +32,48 @@ class CourseService {
     pdfFiles: Express.Multer.File[],
     videoFiles: Express.Multer.File[]
   ): Promise<any> {
-    const session = await startSession();
-    session.startTransaction();
-
     try {
       await this.checkExistingCourse(title);
 
       const course: any = await this.createCourseDocument(
         title,
         description,
-        teacherRef,
-        session
+        teacherRef
       );
       const uploadedFiles = await this.processUploadedFiles(
         pdfFiles,
         videoFiles
       );
-      // const createdModules = await this.createModulesAndLessons(
-      //   modules,
-      //   course._id,
-      //   uploadedFiles,
-      //   session
-      // );
 
-      await session.commitTransaction();
-      session.endSession();
+      let createdModules;
+      if (modules) {
+        createdModules = await this.createModulesAndLessons(
+          modules,
+          course._id,
+          uploadedFiles
+        );
+      }
 
       // return this.constructExtendedCourse(course, createdModules);
       return this.constructExtendedCourse(course);
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
       console.error(error);
       throw new ErrorHandler(
         HTTP_STATUS.INTERNAL_SERVER_ERROR,
         "Course creation failed"
       );
     }
+  }
+
+  public async getCourseById(id: string): Promise<object> {
+    const course = await Course.findById(id).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!course) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return course;
   }
 
   private async checkExistingCourse(title: string): Promise<void> {
@@ -85,11 +89,10 @@ class CourseService {
   private async createCourseDocument(
     title: string,
     description: string,
-    teacherRef: string,
-    session: any
+    teacherRef: string
   ): Promise<ICourse> {
     const course = new Course({ title, description, teacherRef });
-    await course.save({ session });
+    await course.save();
     return course;
   }
 
@@ -108,36 +111,46 @@ class CourseService {
   private async createModulesAndLessons(
     modules: IModuleInput[],
     courseId: Schema.Types.ObjectId,
-    uploadedFiles: { [key: string]: string },
-    session: any
-  ): Promise<Array<IModule & { lessons: ILesson[] }>> {
-    const createdModules: Array<IModule & { lessons: ILesson[] }> = [];
+    uploadedFiles: { [key: string]: string }
+  ): Promise<any> {
+    const session = await startSession();
+    session.startTransaction();
 
-    for (const moduleInput of modules) {
-      const newModule: any = new Module({
-        title: moduleInput.title,
-        description: moduleInput.description,
-        order: moduleInput.order,
-        courseRef: courseId,
-      });
+    try {
+      const createdModules: Array<IModule & { lessons: ILesson[] }> = [];
 
-      const createdLessons = await this.createLessons(
-        moduleInput.lessons,
-        newModule._id,
-        uploadedFiles,
-        session
-      );
+      for (const moduleInput of modules) {
+        const newModule: any = new Module({
+          title: moduleInput.title,
+          description: moduleInput.description,
+          order: moduleInput.order,
+          courseRef: courseId,
+        });
 
-      newModule.lessonRefs = createdLessons.map((lesson) => lesson._id);
-      await newModule.save({ session });
+        const createdLessons = await this.createLessons(
+          moduleInput.lessons,
+          newModule._id,
+          uploadedFiles,
+          session
+        );
 
-      createdModules.push({
-        ...newModule.toObject(),
-        lessons: createdLessons.map((lesson) => lesson.toObject()),
-      });
+        newModule.lessonRefs = createdLessons.map((lesson) => lesson._id);
+        await newModule.save({ session });
+
+        createdModules.push({
+          ...newModule.toObject(),
+          lessons: createdLessons.map((lesson) => lesson.toObject()),
+        });
+      }
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return createdModules;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
     }
-
-    return createdModules;
   }
 
   private async createLessons(
