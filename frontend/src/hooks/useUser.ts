@@ -19,7 +19,6 @@ const useUser = () => {
       const response = await userInstance.post("/signout");
       return response.data;
     } catch (error) {
-      console.log(error);
       return { error: error };
     }
   };

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -16,7 +15,7 @@ import Paper from "@mui/material/Paper";
 import CustomAlert from "../alerts/CustomAlert";
 import { useDispatch } from "react-redux";
 import { saveSignIn } from "../../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const SignInForm = () => {
   const [showCircularProgress, setShowCircularProgress] = useState(false);
@@ -188,7 +187,10 @@ const SignInForm = () => {
                 <>Sign In</>
               )}
             </Button>
-            <Link href="/forgot-password" variant="body2" underline="none">
+            <Link
+              to="/forgot-password"
+              style={{ color: "#1565C0", textDecoration: "none" }}
+            >
               Forgot password?
             </Link>
           </Box>

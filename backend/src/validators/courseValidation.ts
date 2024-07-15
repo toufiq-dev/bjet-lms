@@ -1,4 +1,4 @@
-import { body, ValidationChain } from "express-validator";
+import { body, param, ValidationChain } from "express-validator";
 
 class LessonValidator {
   public static validateLesson(lesson: any): boolean {
@@ -64,5 +64,9 @@ export class CourseValidator {
       .optional()
       .isString()
       .withMessage("Lesson file data must be a string when provided"),
+  ];
+
+  public static validateGetCourseById: ValidationChain[] = [
+    param("id").isMongoId().withMessage("Course reference is required"),
   ];
 }

@@ -172,6 +172,7 @@ class UserService {
   ): Promise<{
     accessToken: string;
     refreshToken: string;
+    id: string;
     name: string;
     role: string;
   }> {
@@ -252,6 +253,7 @@ class UserService {
     return {
       accessToken,
       refreshToken,
+      id: user.id,
       name: profile.name,
       role: user.role,
     };

@@ -1,18 +1,14 @@
 import Box from "@mui/material/Box";
 import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
 import Toolbar from "@mui/material/Toolbar";
-import CreateCourseButton from "../components/buttons/CreateCourseButton";
-import { useSelector } from "react-redux";
-import IState from "../interfaces/stateInterface";
+import CourseCreationForm from "../components/forms/CourseCreationForm";
 
 const drawerWidth = 150;
 
-const UserDashboard = () => {
-  const role = useSelector((state: IState) => state.user.role);
-
+const CreateCoursePage = () => {
   return (
     <Box display="flex">
-      <ResponsiveDrawer title="Dashboard" drawerWidth={drawerWidth} />
+      <ResponsiveDrawer title="Create a course" drawerWidth={drawerWidth} />
       <Box
         component="main"
         sx={{
@@ -22,10 +18,10 @@ const UserDashboard = () => {
         }}
       >
         <Toolbar />
-        {role === "Teacher" && <CreateCourseButton />}
+        <CourseCreationForm />
       </Box>
     </Box>
   );
 };
 
-export default UserDashboard;
+export default CreateCoursePage;
