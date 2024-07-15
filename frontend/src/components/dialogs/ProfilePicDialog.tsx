@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Avatar, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Container, Avatar, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import styled from '@emotion/styled';
 
 const ProfileContainer = styled(Container)`
@@ -24,25 +24,6 @@ const ProfileAvatar = styled(Avatar)`
   margin-bottom: 16px;
 `;
 
-
-/*
-const ProfileDetails = styled('div')`
-  width: 100%;
-  max-width: 600px;
-  text-align: left;
-  padding: 16px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-`;
-*/
-/*
-const EditButton = styled(Button)`
-  align-self: flex-end;
-  margin-top: -48px;
-`;
-*/
-
 const DialogStyled = styled(Dialog)`
   padding: 16px;
 `;
@@ -57,30 +38,11 @@ const DialogActionsStyled = styled(DialogActions)`
   justify-content: center;
 `;
 
-const ProfilePage: React.FC = () => {
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
+const ProfileComponent: React.FC = () => {
+
   const [profilePictureOpen, setProfilePictureOpen] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string>('');
-  const [contact, setContact] = useState<string>('No registered services, you can add some on the settings page.');
-  const [biography, setBiography] = useState<string>('Rafi Hasan hasn\'t added a bio');
-  const [links, setLinks] = useState<string>('Rafi Hasan hasn\'t added any links');
-  const [editableContact, setEditableContact] = useState<string>(contact);
-  const [editableBiography, setEditableBiography] = useState<string>(biography);
-  const [editableLinks, setEditableLinks] = useState<string>(links);
   const [editableProfilePicture, setEditableProfilePicture] = useState<string>(profilePicture);
-
-  
-
-  const handleCloseEditProfile = () => {
-    setEditProfileOpen(false);
-  };
-
-  const handleSaveEditProfile = () => {
-    setContact(editableContact);
-    setBiography(editableBiography);
-    setLinks(editableLinks);
-    setEditProfileOpen(false);
-  };
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -113,44 +75,6 @@ const ProfilePage: React.FC = () => {
         <ProfileAvatar src={profilePicture} alt="Profile Picture" onClick={handleClickOpenProfilePicture} />
         <Typography variant="h4">Rafi Hasan</Typography>
       </ProfileHeader>
-      
-  
-      <DialogStyled open={editProfileOpen} onClose={handleCloseEditProfile}>
-        <DialogTitle>Edit Profile</DialogTitle>
-        <DialogContentStyled>
-          <TextField
-            margin="dense"
-            label="Contact"
-            fullWidth
-            value={editableContact}
-            onChange={(e) => setEditableContact(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Biography"
-            fullWidth
-            multiline
-            rows={4}
-            value={editableBiography}
-            onChange={(e) => setEditableBiography(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Links"
-            fullWidth
-            value={editableLinks}
-            onChange={(e) => setEditableLinks(e.target.value)}
-          />
-        </DialogContentStyled>
-        <DialogActionsStyled>
-          <Button onClick={handleCloseEditProfile} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSaveEditProfile} color="primary">
-            Save
-          </Button>
-        </DialogActionsStyled>
-      </DialogStyled>
 
       <DialogStyled open={profilePictureOpen} onClose={handleCloseProfilePicture}>
         <DialogTitle>Change Profile Picture</DialogTitle>
@@ -182,4 +106,4 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfileComponent;
