@@ -205,17 +205,6 @@ class CourseService {
     return { ...course.toObject() };
   }
 
-  public async getCourseById(id: string): Promise<object> {
-    const course = await Course.findById(id).select(
-      "-createdAt -updatedAt -__v"
-    );
-    if (!course) {
-      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
-    }
-
-    return course;
-  }
-
   public async getAllByTeacherReference(id: string): Promise<object> {
     const courses = await Course.find({ teacherRef: id }).select(
       "-createdAt -updatedAt -__v"
