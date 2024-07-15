@@ -204,6 +204,17 @@ class CourseService {
   private constructExtendedCourse(course: ICourse): any {
     return { ...course.toObject() };
   }
+
+  public async getAllByTeacherReference(id: string): Promise<object> {
+    const courses = await Course.find({ teacherRef: id }).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!courses) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return courses;
+  }
 }
 
 export default CourseService;

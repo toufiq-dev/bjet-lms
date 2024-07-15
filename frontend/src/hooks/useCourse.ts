@@ -34,7 +34,23 @@ const useCourse = () => {
     }
   };
 
-  return { createCourse, getCourseById };
+  const getAllByTeacherReference = async (id: string | null) => {
+    try {
+      const response = await courseInstance.get(
+        `/get-all-by-teacher-reference/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createCourse, getCourseById, getAllByTeacherReference };
 };
 
 export default useCourse;

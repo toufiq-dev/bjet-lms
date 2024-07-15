@@ -69,4 +69,8 @@ export class CourseValidator {
   public static validateGetCourseById: ValidationChain[] = [
     param("id").isMongoId().withMessage("Course reference is required"),
   ];
+
+  public static validateGetAllByTeacherReference: ValidationChain[] = [
+    param("id").isMongoId().withMessage("Teacher reference is required"),
+  ];
 }
