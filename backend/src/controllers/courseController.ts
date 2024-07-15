@@ -40,7 +40,6 @@ class CourseController {
   public getCourseById = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      console.log(id);
 
       const course = await this.courseService.getCourseById(id);
 
@@ -49,6 +48,26 @@ class CourseController {
         HTTP_STATUS.OK,
         "Course information received successfully",
         course
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public getAllByTeacherReference = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+
+      const courses = await this.courseService.getAllByTeacherReference(id);
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "All courses received successfully",
+        courses
       );
     } catch (error) {
       ResponseUtil.sendError(res, error);

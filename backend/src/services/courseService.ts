@@ -202,6 +202,17 @@ class CourseService {
 
     return course;
   }
+
+  public async getAllByTeacherReference(id: string): Promise<object> {
+    const courses = await Course.find({ teacherRef: id }).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!courses) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return courses;
+  }
 }
 
 export default CourseService;

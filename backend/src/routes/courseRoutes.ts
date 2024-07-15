@@ -33,6 +33,15 @@ class CourseRoutes {
       ValidationMiddleware.validate(CourseValidator.validateGetCourseById),
       CourseController.getCourseById
     );
+
+    this.router.get(
+      "/get-all-by-teacher-reference/:id",
+      authGuard(["Teacher"]),
+      ValidationMiddleware.validate(
+        CourseValidator.validateGetAllByTeacherReference
+      ),
+      CourseController.getAllByTeacherReference
+    );
   }
 }
 
