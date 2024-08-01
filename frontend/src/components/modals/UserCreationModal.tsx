@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Modal, IconButton, Divider } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import StudentCreationForm from "../forms/BulkStudentCreationForm";
-import TeacherCreationForm from "../forms/BulkTeacherCreationForm";
+import TeacherCreationForm from "../forms/UserCreationForm";
 
 const style = {
   position: "absolute" as "absolute",

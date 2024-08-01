@@ -13,6 +13,14 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import CustomAlert from "../alerts/CustomAlert";
+import useUser from "../../hooks/useUser";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
 
 const UserCreationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,16 +31,19 @@ const UserCreationForm = () => {
     message: "",
   });
 
+  const { createTeachers } = useUser();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      role: "Teacher"
     },
   });
 
@@ -43,14 +54,26 @@ const UserCreationForm = () => {
     event.preventDefault();
   };
 
-  const handlerOnSubmit = async () => {
+  const handlerOnSubmit = async (data: FormData) => {
     setShowCircularProgress(true);
 
-    setTimeout(() => {
+    try {
+      const response = await createTeachers({
+        email: data.email,
+        password: data.password,
+        role: data.role,
+      });
+      if (response.error) {
+        throw new Error(response.error.message || response.error);
+      }
+
+      setAlertData({ success: true, message: "Teacher registered successfully" });
+    } catch (error) {
+      setAlertData({ success: false, message: (error as any).message });
+    } finally {
       setShowCircularProgress(false);
-      setAlertData({ success: true, message: "User created successfully" });
       setOpenAlert(true);
-    }, 2000);
+    }
   };
 
   return (
@@ -72,7 +95,7 @@ const UserCreationForm = () => {
         }}
       >
         <Typography component="h1" variant="h4">
-          User Information
+          Teacher Registration
         </Typography>
         <Paper
           elevation={0}
@@ -200,7 +223,7 @@ const UserCreationForm = () => {
               {showCircularProgress ? (
                 <CircularProgress color="inherit" size={25} />
               ) : (
-                "Create User"
+                "Register"
               )}
             </Button>
           </Box>

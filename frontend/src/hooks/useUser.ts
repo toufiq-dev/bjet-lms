@@ -53,7 +53,20 @@ const useUser = () => {
     }
   };
 
-  return { signIn, signOut, changePassword, createStudents };
+  const createTeachers = async (teacherData: { email: string; password: string; role: string }) => {
+    try {
+      const response = await userInstance.post("/register", teacherData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: (error as any).response ? (error as any).response.data : (error as any).message };
+    }
+  };
+
+  return { signIn, signOut, changePassword, createStudents, createTeachers };
 };
 
 export default useUser;
