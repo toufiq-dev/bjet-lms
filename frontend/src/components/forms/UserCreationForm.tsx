@@ -1,18 +1,28 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  TextField,
-  InputAdornment,
-  IconButton,
   Box,
   Typography,
   Container,
   CircularProgress,
   Paper,
+  useMediaQuery,
+  useTheme,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import CustomAlert from "../alerts/CustomAlert";
+import useUser from "../../hooks/useUser";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
 
 const UserCreationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,35 +33,51 @@ const UserCreationForm = () => {
     message: "",
   });
 
+  const { createTeachers } = useUser();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      role: "Teacher",
     },
   });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
-  const handlerOnSubmit = async () => {
+  const handlerOnSubmit = async (data: FormData) => {
     setShowCircularProgress(true);
 
-    setTimeout(() => {
+    try {
+      const response = await createTeachers({
+        email: data.email,
+        password: data.password,
+        role: data.role,
+      });
+      if (response.error) {
+        throw new Error(response.error.message || response.error);
+      }
+
+      setAlertData({ success: true, message: "Teacher registered successfully" });
+    } catch (error) {
+      setAlertData({ success: false, message: (error as any).message });
+    } finally {
       setShowCircularProgress(false);
-      setAlertData({ success: true, message: "User created successfully" });
       setOpenAlert(true);
-    }, 2000);
+    }
   };
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <Container component="main" maxWidth="xs">
@@ -65,14 +91,15 @@ const UserCreationForm = () => {
       )}
       <Box
         sx={{
-          marginTop: 16,
+          marginTop: 8,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          padding: isMobile ? 2 : 0,
         }}
       >
-        <Typography component="h1" variant="h4">
-          User Information
+        <Typography component="h1" variant="h4" align="center">
+          Teacher Registration
         </Typography>
         <Paper
           elevation={0}
@@ -81,8 +108,9 @@ const UserCreationForm = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: 4,
+            padding: isMobile ? 2 : 4,
             marginTop: 2,
+            width: "100%",
           }}
         >
           <Box
@@ -195,12 +223,12 @@ const UserCreationForm = () => {
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 4, mb: 2 }}
             >
               {showCircularProgress ? (
                 <CircularProgress color="inherit" size={25} />
               ) : (
-                "Create User"
+                "Register"
               )}
             </Button>
           </Box>
