@@ -1,14 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  TextField,
-  InputAdornment,
-  IconButton,
   Box,
   Typography,
   Container,
   CircularProgress,
   Paper,
+  useMediaQuery,
+  useTheme,
+  TextField,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
@@ -43,14 +45,12 @@ const UserCreationForm = () => {
       name: "",
       email: "",
       password: "",
-      role: "Teacher"
+      role: "Teacher",
     },
   });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
@@ -76,6 +76,9 @@ const UserCreationForm = () => {
     }
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <Container component="main" maxWidth="xs">
       {openAlert && (
@@ -88,13 +91,14 @@ const UserCreationForm = () => {
       )}
       <Box
         sx={{
-          marginTop: 16,
+          marginTop: 8,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          padding: isMobile ? 2 : 0,
         }}
       >
-        <Typography component="h1" variant="h4">
+        <Typography component="h1" variant="h4" align="center">
           Teacher Registration
         </Typography>
         <Paper
@@ -104,8 +108,9 @@ const UserCreationForm = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: 4,
+            padding: isMobile ? 2 : 4,
             marginTop: 2,
+            width: "100%",
           }}
         >
           <Box
@@ -218,7 +223,7 @@ const UserCreationForm = () => {
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 4, mb: 2 }}
             >
               {showCircularProgress ? (
                 <CircularProgress color="inherit" size={25} />
