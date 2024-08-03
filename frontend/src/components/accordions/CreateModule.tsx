@@ -39,16 +39,20 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
             ? 'rgba(255, 255, 255, .05)'
             : 'rgba(0, 0, 0, .03)',
     flexDirection: 'row-reverse',
+    alignItems: 'center', // Center items vertically
     '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
         transform: 'rotate(90deg)',
     },
     '& .MuiAccordionSummary-content': {
         marginLeft: theme.spacing(1),
+        alignItems: 'center', // Center content vertically
+        display: 'flex',
     },
     '& .module-actions': {
         marginLeft: 'auto',
         display: 'flex',
         gap: theme.spacing(1),
+        alignItems: 'center', // Center actions vertically
     },
 }));
 
