@@ -5,11 +5,15 @@ import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Container,
     Box,
     useMediaQuery,
     useTheme,
+    IconButton,
 } from '@mui/material';
 
 const Accordion = styled((props: AccordionProps) => (
@@ -40,6 +44,11 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     },
     '& .MuiAccordionSummary-content': {
         marginLeft: theme.spacing(1),
+    },
+    '& .module-actions': {
+        marginLeft: 'auto',
+        display: 'flex',
+        gap: theme.spacing(1),
     },
 }));
 
@@ -78,10 +87,21 @@ const CreateModule = () => {
                     <Accordion expanded={expanded === 'module1'} onChange={handleChange('module1')}>
                         <AccordionSummary aria-controls="module1d-content" id="module1d-header">
                             <Typography>Module 1</Typography>
+                            <Box className="module-actions">
+                                <IconButton aria-label="add lesson">
+                                    <AddIcon />
+                                </IconButton>
+                                <IconButton aria-label="edit module">
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton aria-label="delete module">
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography>Lesson 1.1</Typography>
-                            <Typography>Lesson 1.2</Typography>
+                            <Typography>Lesson 1</Typography>
+                            <Typography>Lesson 2</Typography>
                         </AccordionDetails>
                     </Accordion>
 
@@ -89,10 +109,20 @@ const CreateModule = () => {
                     <Accordion expanded={expanded === 'module2'} onChange={handleChange('module2')}>
                         <AccordionSummary aria-controls="module2d-content" id="module2d-header">
                             <Typography>Module 2</Typography>
+                            <Box className="module-actions">
+                                <IconButton aria-label="add lesson">
+                                    <AddIcon />
+                                </IconButton>
+                                <IconButton aria-label="edit module">
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton aria-label="delete module">
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography>Lesson 2.1</Typography>
-                            <Typography>Lesson 2.2</Typography>
+                            <Typography>Lesson 1</Typography>
                         </AccordionDetails>
                     </Accordion>
                 </Box>
