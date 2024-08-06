@@ -8,13 +8,8 @@ import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {
-    Container,
-    Box,
-    useMediaQuery,
-    useTheme,
-    IconButton,
-} from '@mui/material';
+import { Container, Box, useMediaQuery, useTheme, IconButton } from '@mui/material';
+import LessonCreationModal from '../modals/LessonCreationModal';
 
 const Accordion = styled((props: AccordionProps) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -63,6 +58,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const CreateModule = () => {
     const [expanded, setExpanded] = useState<string | false>('panel1');
+    const [modalOpen, setModalOpen] = useState(false);
 
     const handleChange =
         (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
@@ -71,6 +67,9 @@ const CreateModule = () => {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => setModalOpen(false);
 
     return (
         <Container component="main" maxWidth="md">
@@ -92,7 +91,7 @@ const CreateModule = () => {
                         <AccordionSummary aria-controls="module1d-content" id="module1d-header">
                             <Typography>Module 1</Typography>
                             <Box className="module-actions">
-                                <IconButton aria-label="add lesson">
+                                <IconButton aria-label="add lesson" onClick={handleModalOpen}>
                                     <AddIcon />
                                 </IconButton>
                                 <IconButton aria-label="edit module">
@@ -114,7 +113,7 @@ const CreateModule = () => {
                         <AccordionSummary aria-controls="module2d-content" id="module2d-header">
                             <Typography>Module 2</Typography>
                             <Box className="module-actions">
-                                <IconButton aria-label="add lesson">
+                                <IconButton aria-label="add lesson" onClick={handleModalOpen}>
                                     <AddIcon />
                                 </IconButton>
                                 <IconButton aria-label="edit module">
@@ -131,6 +130,7 @@ const CreateModule = () => {
                     </Accordion>
                 </Box>
             </Box>
+            <LessonCreationModal open={modalOpen} onClose={handleModalClose} />
         </Container>
     );
 };
