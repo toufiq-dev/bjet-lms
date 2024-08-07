@@ -7,7 +7,9 @@ import IState from "../interfaces/stateInterface";
 import CourseCard from "../components/cards/CourseCard";
 import { useEffect, useState } from "react";
 import useCourse from "../hooks/useCourse";
-
+{/* Mehedi */ }
+import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
+{/* Mehedi */ }
 const drawerWidth = 150;
 
 const UserDashboard = () => {
@@ -52,6 +54,9 @@ const UserDashboard = () => {
         <Toolbar />
         <Box sx={{ float: "right", mr: 10 }}>
           {role === "Teacher" && <CreateCourseButton />}
+          {/* Mehedi */}
+          {role === "Teacher" && <LessonModuleTestButton />}
+          {/* Mehedi */}
         </Box>
         <Box mt={10} display="flex" gap={5}>
           {response.data.map((course, index) => (
