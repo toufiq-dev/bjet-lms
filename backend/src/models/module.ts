@@ -18,11 +18,6 @@ const moduleSchema: Schema = new Schema<IModule>(
       trim: true,
       index: true,
     },
-    description: {
-      type: String,
-      required: [true, "Module description is required"],
-      trim: true,
-    },
     order: {
       type: Number,
       required: [true, "Module order is required"],
