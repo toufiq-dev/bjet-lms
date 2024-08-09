@@ -253,7 +253,7 @@ class UserService {
     return {
       accessToken,
       refreshToken,
-      id: user.id,
+      id: profile.id,
       name: profile.name,
       role: user.role,
     };

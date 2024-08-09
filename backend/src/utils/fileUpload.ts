@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import config from "../config";
+import { uploadToS3 } from "./aws";
 
 // Define the upload directory and subdirectories
 const uploadDirectory = config.uploadDir;
@@ -62,4 +63,18 @@ export const saveMultipleFiles = async (
 
   const uploadedFiles = await Promise.all(uploadPromises);
   return Object.fromEntries(uploadedFiles);
+};
+
+export const uploadToAWS = async (
+  file: Express.Multer.File | undefined
+): Promise<string> => {
+  const uniqueFileName = generateUniqueFilename(file!.originalname);
+  const params = {
+    Bucket: "bjet-lms",
+    Key: `${file?.mimetype}/${uniqueFileName}`,
+    Body: file?.buffer,
+  };
+
+  const url = await uploadToS3(params);
+  return url;
 };

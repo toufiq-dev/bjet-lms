@@ -12,6 +12,7 @@ import config from "./config";
 import { connectRedis } from "./utils/redis";
 import { startEmailService } from "./utils/sendEmail";
 import courseRoutes from "./routes/courseRoutes";
+import lessonRoutes from "./routes/lessonRoutes";
 
 class App {
   private express: express.Application;
@@ -39,6 +40,7 @@ class App {
     this.express.use("/api/users", userRoutes);
     this.express.use("/api/user-profiles", userProfileRoutes);
     this.express.use("/api/courses", courseRoutes);
+    this.express.use("/api/lessons", lessonRoutes);
   }
 
   private initializeErrorHandling(): void {

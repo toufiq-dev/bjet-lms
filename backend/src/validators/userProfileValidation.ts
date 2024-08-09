@@ -11,4 +11,8 @@ export class UserProfileValidator {
       .isLength({ max: 100 })
       .withMessage("Name must be within 100 characters"),
   ];
+
+  public static validateProfilePicUpdate: ValidationChain[] = [
+    body("id").isMongoId().withMessage("Id must be a valid mongo id"),
+  ];
 }
