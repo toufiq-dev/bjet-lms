@@ -12,6 +12,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import TeacherAuth from "./middleware/TeacherAuth";
 import CreateCoursePage from "./pages/CreateCoursePage";
 import CourseDetailsPage from "./pages/CourseDetailsPage";
+import CreateModule from "./components/accordions/CreateModule";
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
 
           <Route element={<TeacherAuth />}>
             <Route path="/create-course" element={<CreateCoursePage />} />
+            <Route path="/courses" element={<CreateModule />} />
           </Route>
         </Routes>
       </Router>
