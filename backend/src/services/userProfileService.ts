@@ -69,6 +69,7 @@ class UserProfileService {
         break;
       case "Admin":
         profile = await Admin.findById(id);
+        break;
       default:
         throw new ErrorHandler(HTTP_STATUS.BAD_REQUEST, "Invalid role");
     }
