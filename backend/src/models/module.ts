@@ -2,12 +2,14 @@ import { Schema, model, Document } from "mongoose";
 
 export interface IModule extends Document {
   title: string;
-  description: string;
   order: number;
   courseRef: Schema.Types.ObjectId;
+  isPublished: boolean;
+  lockUntil: Date;
   lessonRefs: Schema.Types.ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  __v?: number;
 }
 
 const moduleSchema: Schema = new Schema<IModule>(
@@ -26,6 +28,14 @@ const moduleSchema: Schema = new Schema<IModule>(
       type: Schema.Types.ObjectId,
       ref: "Course",
       required: [true, "Course reference is required"],
+    },
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+    lockUntil: {
+      type: Date,
+      default: null,
     },
     lessonRefs: [
       {
