@@ -28,10 +28,9 @@ class CourseRoutes {
     );
 
     this.router.get(
-      "/view-course-by-reference/:id",
+      "/all",
       authGuard(["Teacher", "Student"]),
-      ValidationMiddleware.validate(CourseValidator.validateGetCourseById),
-      CourseController.getCourseById
+      CourseController.getAll
     );
 
     this.router.get(

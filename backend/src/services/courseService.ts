@@ -65,15 +65,15 @@ class CourseService {
     }
   }
 
-  public async getCourseById(id: string): Promise<object> {
-    const course = await Course.findById(id).select(
+  public async getAll(): Promise<ICourse[]> {
+    const courses = await Course.find({}).select(
       "-createdAt -updatedAt -__v"
     );
-    if (!course) {
-      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    if (courses.length === 0) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "No course found");
     }
 
-    return course;
+    return courses;
   }
 
   private async checkExistingCourse(title: string): Promise<void> {
