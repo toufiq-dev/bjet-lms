@@ -66,10 +66,6 @@ export class CourseValidator {
       .withMessage("Lesson file data must be a string when provided"),
   ];
 
-  public static validateGetCourseById: ValidationChain[] = [
-    param("id").isMongoId().withMessage("Course reference is required"),
-  ];
-
   public static validateGetAllByTeacherReference: ValidationChain[] = [
     param("id").isMongoId().withMessage("Teacher reference is required"),
   ];

@@ -37,17 +37,15 @@ class CourseController {
     }
   };
 
-  public getCourseById = async (req: Request, res: Response): Promise<void> => {
+  public getAll = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-
-      const course = await this.courseService.getCourseById(id);
+      const courses = await this.courseService.getAll();
 
       ResponseUtil.sendSuccess(
         res,
         HTTP_STATUS.OK,
-        "Course information received successfully",
-        course
+        "All courses received successfully",
+        courses
       );
     } catch (error) {
       ResponseUtil.sendError(res, error);
