@@ -23,7 +23,6 @@ class ModuleController {
         module
       );
     } catch (error) {
-      console.log(error);
       ResponseUtil.sendError(res, error);
     }
   };
