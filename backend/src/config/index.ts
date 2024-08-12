@@ -19,6 +19,8 @@ class Config {
   public readonly uploadDir: string;
   public readonly pdfDir: string;
   public readonly videoDir: string;
+  public readonly forgotPassLinkExpiration: number;
+  public readonly frontendUrl: string;
 
   constructor() {
     dotenv.config();
@@ -39,6 +41,8 @@ class Config {
     this.uploadDir = path.join(__dirname, "../../uploads");
     this.pdfDir = path.join(this.uploadDir, "pdf");
     this.videoDir = path.join(this.uploadDir, "video");
+    this.forgotPassLinkExpiration = 15 * 60;
+    this.frontendUrl = "http://localhost:5173";
 
     this.validateConfig();
   }

@@ -13,8 +13,6 @@ export interface IUser extends Document {
   lockLogin: Date | null;
   passwordResetReq: number | null;
   lockResetPassword: Date | null;
-  resetPassToken: string | null;
-  resetPassExpires: Date | null;
   studentRef?: Schema.Types.ObjectId | null;
   teacherRef?: Schema.Types.ObjectId | null;
   adminRef?: Schema.Types.ObjectId | null;
@@ -67,14 +65,6 @@ const userSchema: Schema = new Schema<IUser>(
       default: 0,
     },
     lockResetPassword: {
-      type: Date,
-      default: null,
-    },
-    resetPassToken: {
-      type: String,
-      default: null,
-    },
-    resetPassExpires: {
       type: Date,
       default: null,
     },

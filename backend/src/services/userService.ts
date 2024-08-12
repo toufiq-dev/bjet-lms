@@ -1,4 +1,4 @@
-import { Schema, startSession } from "mongoose";
+import mongoose, { Schema, startSession } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
@@ -345,6 +345,93 @@ class UserService {
     }
 
     await redisClient.del(`refresh_token:${userId}`);
+  }
+
+  /**
+   * Initiates the forgot password process for a user.
+   * @param email - The email of the user requesting a password reset.
+   */
+  public async forgotPassword(email: string): Promise<void> {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
+    }
+
+    const randNum = Math.floor(Math.random() * 90000) + 10000;
+
+    // Store the hashed token in Redis with an expiration time (15 minutes)
+    await redisClient.set(`reset_${randNum}`, user.id, {
+      EX: config.forgotPassLinkExpiration,
+    });
+
+    // Create reset URL
+    const resetUrl = `${config.frontendUrl}/reset-password`;
+
+    // Prepare email message
+    const message = {
+      from: '"BJET LMS" <from@mailtrap.io>',
+      to: user.email,
+      subject: "Password Reset Request",
+      text: `You requested a password reset. Your OTP is ${randNum}
+      Please go to this link to reset your password: ${resetUrl}
+      This OTP expire in 15 minutes.`,
+    };
+
+    try {
+      // Send email using RabbitMQ
+      await rabbitMQClient.connect();
+      await rabbitMQClient.publish("emailQueue", message);
+    } catch (error) {
+      // If email sending fails, delete the reset token from Redis
+      await redisClient.del(`reset_${randNum}`);
+      throw new ErrorHandler(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Failed to send reset email"
+      );
+    } finally {
+      await rabbitMQClient.close();
+    }
+  }
+
+  /**
+   * Resets the user's password using the provided token.
+   * @param token - The reset token sent to the user's email.
+   * @param newPassword - The new password to set.
+   */
+  public async resetPassword(
+    token: string,
+    newPassword: string
+  ): Promise<void> {
+    try {
+      console.log(token, newPassword);
+      // Get user id from Redis using the hashed token
+      const userId = await redisClient.get(`reset_${token}`);
+
+      if (!userId) {
+        throw new ErrorHandler(
+          HTTP_STATUS.BAD_REQUEST,
+          "Invalid or expired reset token"
+        );
+      }
+
+      const user = await User.findById(new mongoose.Types.ObjectId(userId));
+      if (!user) {
+        throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "User not found");
+      }
+
+      // Update password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      // Delete the reset token from Redis
+      await redisClient.del(`reset_${token}`);
+
+      // Optionally, you can invalidate all existing sessions for this user
+      await redisClient.del(`refresh_token:${user.id}`);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   /**

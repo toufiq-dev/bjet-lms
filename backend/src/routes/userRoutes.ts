@@ -22,7 +22,7 @@ class UserRoutes {
     this.router.post(
       "/register-students",
       ValidationMiddleware.validate(UserValidator.validateBulkRegister),
-      // authGuard(["Admin"]),
+      authGuard(["Admin"]),
       UserController.bulkRegisterStudents
     );
     this.router.post(
@@ -38,6 +38,8 @@ class UserRoutes {
       UserController.changePassword
     );
     this.router.post("/signout", authGuard(), UserController.signout);
+    this.router.patch("/forgot-password", UserController.forgotPassword);
+    this.router.patch("/reset-password", UserController.resetPassword);
   }
 }
 

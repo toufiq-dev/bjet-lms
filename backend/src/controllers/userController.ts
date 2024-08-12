@@ -146,6 +146,42 @@ class UserController {
       ResponseUtil.sendError(res, error);
     }
   };
+
+  public forgotPassword = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { email } = req.body;
+
+      await this.userService.forgotPassword(email);
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.ACCEPTED,
+        "Forgot password request sent successfully."
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token, newPassword } = req.body;
+      console.log(token, newPassword);
+
+      await this.userService.resetPassword(token, newPassword);
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.ACCEPTED,
+        "Reset password was successfull."
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
 }
 
 export default new UserController(new UserService());
