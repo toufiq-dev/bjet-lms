@@ -7,15 +7,18 @@ import IState from "../interfaces/stateInterface";
 import CourseCard from "../components/cards/CourseCard";
 import { useEffect, useState } from "react";
 import useCourse from "../hooks/useCourse";
-{/* Mehedi */ }
+{
+  /* Mehedi */
+}
 import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
-{/* Mehedi */ }
+{
+  /* Mehedi */
+}
 const drawerWidth = 150;
 
 const UserDashboard = () => {
   const role = useSelector((state: IState) => state.user.role);
-  const id = useSelector((state: IState) => state.user.id);
-  const { getAllByTeacherReference } = useCourse();
+  const { getAll } = useCourse();
   const [response, setResponse] = useState({
     success: true,
     message: "",
@@ -27,16 +30,16 @@ const UserDashboard = () => {
   });
 
   useEffect(() => {
-    const getAllByTeacherReferencefromAPI = async () => {
+    const getAllfromAPI = async () => {
       try {
-        const result = await getAllByTeacherReference(id);
+        const result = await getAll();
         setResponse(result);
       } catch (error) {
         console.error("Error setting data:", error);
       }
     };
 
-    getAllByTeacherReferencefromAPI();
+    getAllfromAPI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
