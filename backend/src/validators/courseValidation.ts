@@ -67,6 +67,6 @@ export class CourseValidator {
   ];
 
   public static validateGetAllByTeacherReference: ValidationChain[] = [
-    param("id").isMongoId().withMessage("Teacher reference is required"),
+    param("id").isMongoId().withMessage("Invalid mongoDB id"),
   ];
 }

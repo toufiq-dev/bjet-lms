@@ -31,6 +31,22 @@ const useCourse = () => {
     }
   };
 
+  const getAllByTeacherReference = async (id: string | null) => {
+    try {
+      const response = await courseInstance.get(
+        `/get-all-by-teacher-reference/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
   const getCourseById = async (id: string | undefined) => {
     try {
       const response = await courseInstance.get(
@@ -47,7 +63,7 @@ const useCourse = () => {
     }
   };
 
-  return { createCourse, getAll, getCourseById };
+  return { createCourse, getAll, getCourseById, getAllByTeacherReference };
 };
 
 export default useCourse;

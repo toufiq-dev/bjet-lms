@@ -4,44 +4,13 @@ import Toolbar from "@mui/material/Toolbar";
 import CreateCourseButton from "../components/buttons/CreateCourseButton";
 import { useSelector } from "react-redux";
 import IState from "../interfaces/stateInterface";
-import CourseCard from "../components/cards/CourseCard";
-import { useEffect, useState } from "react";
-import useCourse from "../hooks/useCourse";
-{
-  /* Mehedi */
-}
 import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
-{
-  /* Mehedi */
-}
+import CourseList from "../components/cards/CourseList";
+
 const drawerWidth = 150;
 
 const UserDashboard = () => {
   const role = useSelector((state: IState) => state.user.role);
-  const { getAll } = useCourse();
-  const [response, setResponse] = useState({
-    success: true,
-    message: "",
-    data: [
-      {
-        title: "",
-      },
-    ],
-  });
-
-  useEffect(() => {
-    const getAllfromAPI = async () => {
-      try {
-        const result = await getAll();
-        setResponse(result);
-      } catch (error) {
-        console.error("Error setting data:", error);
-      }
-    };
-
-    getAllfromAPI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Box display="flex">
@@ -49,7 +18,6 @@ const UserDashboard = () => {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
@@ -57,15 +25,9 @@ const UserDashboard = () => {
         <Toolbar />
         <Box sx={{ float: "right", mr: 10 }}>
           {role === "Teacher" && <CreateCourseButton />}
-          {/* Mehedi */}
           {role === "Teacher" && <LessonModuleTestButton />}
-          {/* Mehedi */}
         </Box>
-        <Box mt={10} display="flex" gap={5}>
-          {response.data.map((course, index) => (
-            <CourseCard key={index} title={course.title} />
-          ))}
-        </Box>
+        <CourseList />
       </Box>
     </Box>
   );
