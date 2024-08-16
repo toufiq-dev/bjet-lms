@@ -219,6 +219,17 @@ class CourseService {
 
     return courses;
   }
+
+  public async getCourseById(id: string): Promise<ICourse> {
+    const course = await Course.findById(id).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!course) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return course;
+  }
 }
 
 export default CourseService;

@@ -71,6 +71,23 @@ class CourseController {
       ResponseUtil.sendError(res, error);
     }
   };
+
+  public getCourseById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+
+      const course = await this.courseService.getCourseById(id);
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Course information received successfully",
+        course
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
 }
 
 export default new CourseController(new CourseService());
