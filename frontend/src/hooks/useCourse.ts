@@ -49,14 +49,11 @@ const useCourse = () => {
 
   const getCourseById = async (id: string | undefined) => {
     try {
-      const response = await courseInstance.get(
-        `/view-course-by-reference/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await courseInstance.get(`/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error) {
       return { error: error };

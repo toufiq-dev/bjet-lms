@@ -4,7 +4,6 @@ import Toolbar from "@mui/material/Toolbar";
 import CreateCourseButton from "../components/buttons/CreateCourseButton";
 import { useSelector } from "react-redux";
 import IState from "../interfaces/stateInterface";
-import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
 import CourseList from "../components/cards/CourseList";
 
 const drawerWidth = 150;
@@ -14,7 +13,7 @@ const UserDashboard = () => {
 
   return (
     <Box display="flex">
-      <ResponsiveDrawer title="Dashboard" drawerWidth={drawerWidth} />
+      <ResponsiveDrawer />
       <Box
         component="main"
         sx={{
@@ -23,9 +22,8 @@ const UserDashboard = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ float: "right", mr: 10 }}>
+        <Box sx={{ float: "right" }}>
           {role === "Teacher" && <CreateCourseButton />}
-          {role === "Teacher" && <LessonModuleTestButton />}
         </Box>
         <CourseList />
       </Box>

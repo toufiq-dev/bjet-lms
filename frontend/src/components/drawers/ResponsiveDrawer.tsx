@@ -19,13 +19,19 @@ import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import { Link as RouterLink } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 type Props = {
-  title: string;
-  drawerWidth: number;
+  breadcrumbs?: {
+    name: string;
+    link: string;
+  }[];
 };
 
 const ResponsiveDrawer = (props: Props) => {
+  const drawerWidth = 150;
   const role = useSelector((state: IState) => state.user.role);
   const items = ["Account", "Dashboard", "Courses", "Inbox"];
   const filteredItems = role === "Admin" ? ["Account", "Dashboard"] : items;
@@ -105,8 +111,8 @@ const ResponsiveDrawer = (props: Props) => {
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${props.drawerWidth}px)` },
-          ml: { sm: `${props.drawerWidth}px` },
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
         }}
       >
         <Toolbar>
@@ -119,15 +125,36 @@ const ResponsiveDrawer = (props: Props) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h4" noWrap component="h1">
-            {props.title}
-          </Typography>
+          {!props.breadcrumbs ? (
+            <Typography variant="h4" noWrap component="h1">
+              Dashboard
+            </Typography>
+          ) : (
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              {props.breadcrumbs?.map((breadcrumb, index) =>
+                props.breadcrumbs && index === props.breadcrumbs.length - 1 ? (
+                  <Typography key={index} variant="h6">
+                    {breadcrumb.name}
+                  </Typography>
+                ) : (
+                  <Link key={index} underline="hover" color="inherit">
+                    <RouterLink
+                      to={breadcrumb.link}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <Typography variant="h6">{breadcrumb.name}</Typography>
+                    </RouterLink>
+                  </Link>
+                )
+              )}
+            </Breadcrumbs>
+          )}
         </Toolbar>
       </AppBar>
 
       <Box
         component="nav"
-        sx={{ width: { sm: props.drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="Navigation drawer"
       >
         <Drawer
@@ -142,7 +169,7 @@ const ResponsiveDrawer = (props: Props) => {
             display: { xs: "block", sm: "none" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: props.drawerWidth,
+              width: drawerWidth,
             },
           }}
         >
@@ -154,7 +181,7 @@ const ResponsiveDrawer = (props: Props) => {
             display: { xs: "none", sm: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: props.drawerWidth,
+              width: drawerWidth,
             },
           }}
           open
