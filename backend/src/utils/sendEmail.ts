@@ -3,9 +3,32 @@ import amqp from "amqplib";
 import config from "../config";
 import { logger } from "./logger";
 
-export async function startEmailService() {
+const MAX_RETRIES = 5;
+const RETRY_INTERVAL = 5000;
+
+async function connectWithRetry(retries = MAX_RETRIES) {
   try {
     const connection = await amqp.connect(config.rabbitMQUrl);
+    logger.info("Successfully connected to RabbitMQ");
+    return connection;
+  } catch (error) {
+    if (retries === 0) {
+      logger.error("Max retries reached. Unable to connect to RabbitMQ");
+      throw error;
+    }
+    logger.warn(
+      `Failed to connect to RabbitMQ. Retrying in ${
+        RETRY_INTERVAL / 1000
+      } seconds...`
+    );
+    await new Promise((resolve) => setTimeout(resolve, RETRY_INTERVAL));
+    return connectWithRetry(retries - 1);
+  }
+}
+
+export async function startEmailService() {
+  try {
+    const connection = await connectWithRetry();
 
     const channel = await connection.createChannel();
 

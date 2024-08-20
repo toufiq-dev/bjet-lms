@@ -8,7 +8,7 @@ const drawerWidth = 150;
 const CreateCoursePage = () => {
   return (
     <Box display="flex">
-      <ResponsiveDrawer title="Create a course" drawerWidth={drawerWidth} />
+      <ResponsiveDrawer />
       <Box
         component="main"
         sx={{
