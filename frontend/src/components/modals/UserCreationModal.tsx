@@ -1,11 +1,11 @@
 import React from "react";
-import { Box, Typography, Modal, IconButton, Divider } from "@mui/material";
+import { Box, Typography, Modal, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import StudentCreationForm from "../forms/BulkStudentCreationForm";
 import TeacherCreationForm from "../forms/UserCreationForm";
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -25,16 +25,8 @@ const headerStyle = {
   justifyContent: "space-between",
   alignItems: "center",
   mb: 2,
-  borderBottom: '1px solid #e0e0e0',
+  borderBottom: "1px solid #e0e0e0",
   paddingBottom: 2,
-};
-
-const instructionsStyle = {
-  marginBottom: -10,
-  padding: '8px 0',
-  backgroundColor: '#f5f5f5',
-  borderRadius: 2,
-  textAlign: 'center',
 };
 
 interface UserCreationModalProps {
@@ -43,9 +35,15 @@ interface UserCreationModalProps {
   userType: "student" | "teacher";
 }
 
-const UserCreationModal: React.FC<UserCreationModalProps> = ({ open, onClose, userType }) => {
-  const FormComponent = userType === "student" ? StudentCreationForm : TeacherCreationForm;
-  const modalTitle = userType === "student" ? "Create Student" : "Create Teacher";
+const UserCreationModal: React.FC<UserCreationModalProps> = ({
+  open,
+  onClose,
+  userType,
+}) => {
+  const FormComponent =
+    userType === "student" ? StudentCreationForm : TeacherCreationForm;
+  const modalTitle =
+    userType === "student" ? "Create Student" : "Create Teacher";
 
   return (
     <Modal

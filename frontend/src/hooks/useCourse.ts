@@ -18,16 +18,13 @@ const useCourse = () => {
     }
   };
 
-  const getCourseById = async (id: string | undefined) => {
+  const getAll = async () => {
     try {
-      const response = await courseInstance.get(
-        `/view-course-by-reference/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await courseInstance.get("/all", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       return response.data;
     } catch (error) {
       return { error: error };
@@ -50,7 +47,20 @@ const useCourse = () => {
     }
   };
 
-  return { createCourse, getCourseById, getAllByTeacherReference };
+  const getCourseById = async (id: string | undefined) => {
+    try {
+      const response = await courseInstance.get(`/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createCourse, getAll, getCourseById, getAllByTeacherReference };
 };
 
 export default useCourse;

@@ -3,20 +3,12 @@ import Teacher, { ITeacherProfile } from "../models/teacherProfile";
 import Admin, { IAdminProfile } from "../models/adminProfile";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
-import { Mongoose, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import { uploadToAWS } from "../utils/fileUpload";
 
 type ProfileModel = IStudentProfile | ITeacherProfile | IAdminProfile | null;
 
 class UserProfileService {
-  /**
-   * Updated a user profile with given values.
-   * @param id - The id of the user profile.
-   * @param role - The role of the user, which can be "Student", "Teacher", or "Admin".
-   * @param name - The name of the user.
-   * @returns An object containing the updated name of the user.
-   * @throws {ErrorHandler} If there is an error during the update.
-   */
   public async updateProfile(
     id: Schema.Types.ObjectId,
     role: "Student" | "Teacher" | "Admin",

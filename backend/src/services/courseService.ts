@@ -6,6 +6,7 @@ import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
 import { saveMultipleFiles } from "../utils/fileUpload";
 import config from "../config";
+import Teacher from "../models/teacherProfile";
 
 interface IModuleInput {
   title: string;
@@ -66,9 +67,7 @@ class CourseService {
   }
 
   public async getAll(): Promise<ICourse[]> {
-    const courses = await Course.find({}).select(
-      "-createdAt -updatedAt -__v"
-    );
+    const courses = await Course.find({}).select("-createdAt -updatedAt -__v");
     if (courses.length === 0) {
       throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "No course found");
     }
@@ -206,6 +205,11 @@ class CourseService {
   }
 
   public async getAllByTeacherReference(id: string): Promise<object> {
+    const teacher = await Teacher.findById(id);
+    if (!teacher) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Teacher not found");
+    }
+
     const courses = await Course.find({ teacherRef: id }).select(
       "-createdAt -updatedAt -__v"
     );
@@ -214,6 +218,17 @@ class CourseService {
     }
 
     return courses;
+  }
+
+  public async getCourseById(id: string): Promise<ICourse> {
+    const course = await Course.findById(id).select(
+      "-createdAt -updatedAt -__v"
+    );
+    if (!course) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Course not found");
+    }
+
+    return course;
   }
 }
 

@@ -27,19 +27,20 @@ class CourseRoutes {
       CourseController.createCourse
     );
 
-    this.router.get(
-      "/all",
-      authGuard(["Teacher", "Student"]),
-      CourseController.getAll
-    );
+    this.router.get("/all", authGuard(["Student"]), CourseController.getAll);
 
     this.router.get(
       "/get-all-by-teacher-reference/:id",
       authGuard(["Teacher"]),
-      ValidationMiddleware.validate(
-        CourseValidator.validateGetAllByTeacherReference
-      ),
+      ValidationMiddleware.validate(CourseValidator.validateId),
       CourseController.getAllByTeacherReference
+    );
+
+    this.router.get(
+      "/:id",
+      authGuard(["Teacher", "Student"]),
+      ValidationMiddleware.validate(CourseValidator.validateId),
+      CourseController.getCourseById
     );
   }
 }

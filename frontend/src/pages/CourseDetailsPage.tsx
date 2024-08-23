@@ -4,6 +4,9 @@ import Toolbar from "@mui/material/Toolbar";
 import { useParams } from "react-router-dom";
 import useCourse from "../hooks/useCourse";
 import { useEffect, useState } from "react";
+import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
+import { useSelector } from "react-redux";
+import IState from "../interfaces/stateInterface";
 
 const drawerWidth = 150;
 
@@ -15,9 +18,10 @@ const CourseDetailsPage = () => {
     message: "",
     data: {
       title: "",
-      description: "",
     },
   });
+
+  const role = useSelector((state: IState) => state.user.role);
 
   useEffect(() => {
     const getCourseDetailsFromApi = async () => {
@@ -34,7 +38,12 @@ const CourseDetailsPage = () => {
   }, []);
   return (
     <Box display="flex">
-      <ResponsiveDrawer title={response.data.title} drawerWidth={drawerWidth} />
+      <ResponsiveDrawer
+        breadcrumbs={[
+          { name: response.data.title, link: `/courses/${id}` },
+          { name: "Modules", link: "" },
+        ]}
+      />
       <Box
         component="main"
         sx={{
@@ -44,7 +53,9 @@ const CourseDetailsPage = () => {
         }}
       >
         <Toolbar />
-        {response.data.description}
+        <Box sx={{ float: "right" }}>
+          {role === "Teacher" && <LessonModuleTestButton />}
+        </Box>
       </Box>
     </Box>
   );

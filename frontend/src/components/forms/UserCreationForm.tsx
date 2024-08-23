@@ -50,7 +50,9 @@ const UserCreationForm = () => {
   });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
@@ -67,9 +69,12 @@ const UserCreationForm = () => {
         throw new Error(response.error.message || response.error);
       }
 
-      setAlertData({ success: true, message: "Teacher registered successfully" });
+      setAlertData({
+        success: true,
+        message: "Teacher registered successfully",
+      });
     } catch (error) {
-      setAlertData({ success: false, message: (error as any).message });
+      setAlertData({ success: false, message: (error as Error).message });
     } finally {
       setShowCircularProgress(false);
       setOpenAlert(true);
