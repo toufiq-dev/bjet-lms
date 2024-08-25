@@ -11,7 +11,7 @@ import AdminAuth from "./middleware/AdminAuth";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import TeacherAuth from "./middleware/TeacherAuth";
 import CreateCoursePage from "./pages/CreateCoursePage";
-import CourseDetailsPage from "./pages/CourseDetailsPage";
+import CourseHomePage from "./pages/CourseHomePage";
 import CreateModule from "./components/accordions/CreateModule";
 
 const App = () => {
@@ -28,7 +28,7 @@ const App = () => {
           <Route element={<UserAuth />}>
             <Route path="/" element={<UserDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/courses/:id" element={<CourseDetailsPage />} />
+            <Route path="/courses/:id" element={<CourseHomePage />} />
           </Route>
 
           <Route element={<AdminAuth />}>
