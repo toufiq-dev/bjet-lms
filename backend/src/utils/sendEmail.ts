@@ -9,7 +9,7 @@ const RETRY_INTERVAL = 5000;
 async function connectWithRetry(retries = MAX_RETRIES) {
   try {
     const connection = await amqp.connect(config.rabbitMQUrl);
-    logger.info("Successfully connected to RabbitMQ");
+
     return connection;
   } catch (error) {
     if (retries === 0) {
@@ -29,9 +29,7 @@ async function connectWithRetry(retries = MAX_RETRIES) {
 export async function startEmailService() {
   try {
     const connection = await connectWithRetry();
-
     const channel = await connection.createChannel();
-
     await channel.assertQueue("emailQueue", { durable: true });
 
     const transporter = nodemailer.createTransport({
