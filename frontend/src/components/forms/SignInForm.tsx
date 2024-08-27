@@ -84,7 +84,7 @@ const SignInForm = () => {
           }}
         >
           <img
-            src="https://bjet-lms.s3.ap-south-1.amazonaws.com/images/bjet-logo.webp"
+            src="https://bjet-lms.s3.ap-south-1.amazonaws.com/decoration/bjet-logo.webp"
             alt="B-JET Logo"
             width={80}
           />

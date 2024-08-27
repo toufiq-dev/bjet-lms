@@ -19,7 +19,6 @@ interface FormData {
 
 interface ApiResponse {
   message: string;
- 
 }
 
 const ForgotPasswordForm = () => {
@@ -54,12 +53,14 @@ const ForgotPasswordForm = () => {
       setApiMessage(response.data.message); // Assuming API returns a message
       setOpenAlert(true);
       reset(); // Reset form fields after successful submission
-    } catch (error: any) {
+    } catch (error) {
       setShowCircularProgress(false);
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ApiResponse>;
         if (axiosError.response) {
-          setApiMessage(axiosError.response.data.message || "Failed to send email.");
+          setApiMessage(
+            axiosError.response.data.message || "Failed to send email."
+          );
         } else {
           setApiMessage(axiosError.message || "Failed to send email.");
         }

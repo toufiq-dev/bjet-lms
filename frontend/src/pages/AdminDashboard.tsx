@@ -9,7 +9,7 @@ const drawerWidth = 150;
 const AdminDashboard = () => {
   return (
     <Box display="flex">
-      <ResponsiveDrawer />
+      <ResponsiveDrawer drawerItemIndex={1} />
       <Box
         component="main"
         sx={{

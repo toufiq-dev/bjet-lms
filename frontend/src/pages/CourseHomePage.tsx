@@ -7,21 +7,21 @@ import { useEffect, useState } from "react";
 import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
 import { useSelector } from "react-redux";
 import IState from "../interfaces/stateInterface";
+import CourseNavigations from "../components/navigations/CourseNavigations";
 
 const drawerWidth = 150;
 
-const CourseDetailsPage = () => {
+const CourseHomePage = () => {
   const { id } = useParams();
   const { getCourseById } = useCourse();
+  const role = useSelector((state: IState) => state.user.role);
   const [response, setResponse] = useState({
-    success: true,
+    success: false,
     message: "",
     data: {
       title: "",
     },
   });
-
-  const role = useSelector((state: IState) => state.user.role);
 
   useEffect(() => {
     const getCourseDetailsFromApi = async () => {
@@ -39,10 +39,16 @@ const CourseDetailsPage = () => {
   return (
     <Box display="flex">
       <ResponsiveDrawer
-        breadcrumbs={[
-          { name: response.data.title, link: `/courses/${id}` },
-          { name: "Modules", link: "" },
-        ]}
+        breadcrumbs={
+          response.success
+            ? [
+                { name: response.data.title, link: `/courses/${id}` },
+                { name: "Modules", link: "" },
+              ]
+            : []
+        }
+        drawerItemIndex={2}
+        menuItemIndex={0}
       />
       <Box
         component="main"
@@ -53,12 +59,13 @@ const CourseDetailsPage = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ float: "right" }}>
-          {role === "Teacher" && <LessonModuleTestButton />}
+        <Box display="flex" justifyContent="space-between">
+          <CourseNavigations menuItemIndex={0} />
+          <Box>{role === "Teacher" && <LessonModuleTestButton />}</Box>
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default CourseDetailsPage;
+export default CourseHomePage;

@@ -22,12 +22,17 @@ import AppBar from "@mui/material/AppBar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CloseIcon from "@mui/icons-material/Close";
+import BasicMenu from "../menus/BasicMenu";
 
 type Props = {
   breadcrumbs?: {
     name: string;
     link: string;
   }[];
+  drawerItemIndex: number;
+  menuItemIndex?: number;
 };
 
 const ResponsiveDrawer = (props: Props) => {
@@ -35,23 +40,36 @@ const ResponsiveDrawer = (props: Props) => {
   const role = useSelector((state: IState) => state.user.role);
   const items = ["Account", "Dashboard", "Courses", "Inbox"];
   const filteredItems = role === "Admin" ? ["Account", "Dashboard"] : items;
+  const links = ["", "/", "", ""];
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const [isDrawerClosing, setIsDrawerClosing] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleDrawerClose = () => {
-    setIsClosing(true);
+    setIsDrawerClosing(true);
     setMobileOpen(false);
   };
 
   const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
+    setIsDrawerClosing(false);
   };
 
   const handleDrawerToggle = () => {
-    if (!isClosing) {
+    if (!isDrawerClosing) {
       setMobileOpen(!mobileOpen);
     }
+  };
+
+  const handleMenuToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const drawer = (
@@ -70,32 +88,75 @@ const ResponsiveDrawer = (props: Props) => {
       >
         <List>
           {filteredItems.map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <ListItemIcon
+            <RouterLink
+              key={index}
+              to={links[index]}
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItem disablePadding>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
-                  {index === 0 ? (
-                    <AccountCircleIcon fontSize="large" />
-                  ) : index === 1 ? (
-                    <DashboardIcon fontSize="large" />
-                  ) : index == 2 ? (
-                    <MenuBookIcon fontSize="large" />
-                  ) : (
-                    <InboxIcon fontSize="large" />
-                  )}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                    }}
+                  >
+                    {index === 0 ? (
+                      <AccountCircleIcon
+                        fontSize="large"
+                        color={
+                          props.drawerItemIndex === index
+                            ? "primary"
+                            : "inherit"
+                        }
+                      />
+                    ) : index === 1 ? (
+                      <DashboardIcon
+                        fontSize="large"
+                        color={
+                          props.drawerItemIndex === index
+                            ? "primary"
+                            : "inherit"
+                        }
+                      />
+                    ) : index == 2 ? (
+                      <MenuBookIcon
+                        fontSize="large"
+                        color={
+                          props.drawerItemIndex === index
+                            ? "primary"
+                            : "inherit"
+                        }
+                      />
+                    ) : (
+                      <InboxIcon
+                        fontSize="large"
+                        color={
+                          props.drawerItemIndex === index
+                            ? "primary"
+                            : "inherit"
+                        }
+                      />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={text}
+                    sx={{
+                      color:
+                        props.drawerItemIndex === index ? "#1876D2" : "inherit",
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </RouterLink>
           ))}
         </List>
         <Box>
@@ -115,7 +176,12 @@ const ResponsiveDrawer = (props: Props) => {
           ml: { sm: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: { xs: "space-between", sm: "start" },
+          }}
+        >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -126,28 +192,73 @@ const ResponsiveDrawer = (props: Props) => {
             <MenuIcon />
           </IconButton>
           {!props.breadcrumbs ? (
-            <Typography variant="h4" noWrap component="h1">
+            <Typography
+              noWrap
+              component="h1"
+              sx={{
+                pl: { xs: "25%", sm: "0%" },
+                fontSize: { xs: "1rem", sm: "2.5rem" },
+                width: "100%",
+              }}
+            >
               Dashboard
             </Typography>
           ) : (
-            <Breadcrumbs separator="›" aria-label="breadcrumb">
-              {props.breadcrumbs?.map((breadcrumb, index) =>
-                props.breadcrumbs && index === props.breadcrumbs.length - 1 ? (
-                  <Typography key={index} variant="h6">
-                    {breadcrumb.name}
+            props.breadcrumbs.length !== 0 && (
+              <>
+                <Breadcrumbs
+                  separator="›"
+                  aria-label="breadcrumb"
+                  sx={{ display: { xs: "none", sm: "block" }, color: "white" }}
+                >
+                  {props.breadcrumbs?.map((breadcrumb, index) =>
+                    props.breadcrumbs &&
+                    index === props.breadcrumbs.length - 1 ? (
+                      <Typography key={index} variant="h6" color="white">
+                        {breadcrumb.name}
+                      </Typography>
+                    ) : (
+                      <Link key={index} underline="hover">
+                        <RouterLink
+                          to={breadcrumb.link}
+                          style={{ textDecoration: "none", color: "white" }}
+                        >
+                          <Typography variant="h6">
+                            {breadcrumb.name}
+                          </Typography>
+                        </RouterLink>
+                      </Link>
+                    )
+                  )}
+                </Breadcrumbs>
+                <Box
+                  textAlign="center"
+                  sx={{ display: { xs: "block", sm: "none" } }}
+                >
+                  <Typography>{props.breadcrumbs?.[0].name}</Typography>
+                  <Typography>
+                    {props.breadcrumbs?.[props.breadcrumbs.length - 1].name}
                   </Typography>
+                </Box>
+                {!isMenuOpen ? (
+                  <IconButton color="inherit" onClick={handleMenuToggle}>
+                    <KeyboardArrowDownIcon
+                      sx={{ display: { xs: "block", sm: "none" } }}
+                    />
+                  </IconButton>
                 ) : (
-                  <Link key={index} underline="hover" color="inherit">
-                    <RouterLink
-                      to={breadcrumb.link}
-                      style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                      <Typography variant="h6">{breadcrumb.name}</Typography>
-                    </RouterLink>
-                  </Link>
-                )
-              )}
-            </Breadcrumbs>
+                  <IconButton color="inherit" onClick={handleMenuToggle}>
+                    <CloseIcon sx={{ display: { xs: "block", sm: "none" } }} />
+                    <BasicMenu
+                      anchorEl={anchorEl}
+                      open={open}
+                      menuItemIndex={props.menuItemIndex}
+                      handleClose={handleClose}
+                    />
+                  </IconButton>
+                )}
+              </>
+            )
           )}
         </Toolbar>
       </AppBar>

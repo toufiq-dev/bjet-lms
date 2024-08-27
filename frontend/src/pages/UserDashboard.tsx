@@ -13,7 +13,7 @@ const UserDashboard = () => {
 
   return (
     <Box display="flex">
-      <ResponsiveDrawer />
+      <ResponsiveDrawer drawerItemIndex={1} />
       <Box
         component="main"
         sx={{
