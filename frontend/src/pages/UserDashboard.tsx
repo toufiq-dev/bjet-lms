@@ -1,10 +1,11 @@
 import Box from "@mui/material/Box";
 import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
 import Toolbar from "@mui/material/Toolbar";
-import CreateCourseButton from "../components/buttons/CreateCourseButton";
 import { useSelector } from "react-redux";
 import IState from "../interfaces/stateInterface";
 import CourseList from "../components/cards/CourseList";
+import { Link } from "react-router-dom";
+import Button from "@mui/material/Button";
 
 const drawerWidth = 150;
 
@@ -23,7 +24,11 @@ const UserDashboard = () => {
       >
         <Toolbar />
         <Box sx={{ float: "right" }}>
-          {role === "Teacher" && <CreateCourseButton />}
+          {role === "Teacher" && (
+            <Link to="/create-course">
+              <Button variant="contained">Create a Course</Button>
+            </Link>
+          )}
         </Box>
         <CourseList />
       </Box>

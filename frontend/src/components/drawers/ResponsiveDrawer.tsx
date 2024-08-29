@@ -20,8 +20,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@mui/material/Link";
+import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
 import BasicMenu from "../menus/BasicMenu";
@@ -88,7 +87,7 @@ const ResponsiveDrawer = (props: Props) => {
       >
         <List>
           {filteredItems.map((text, index) => (
-            <RouterLink
+            <Link
               key={index}
               to={links[index]}
               style={{
@@ -156,7 +155,7 @@ const ResponsiveDrawer = (props: Props) => {
                   />
                 </ListItemButton>
               </ListItem>
-            </RouterLink>
+            </Link>
           ))}
         </List>
         <Box>
@@ -218,15 +217,22 @@ const ResponsiveDrawer = (props: Props) => {
                         {breadcrumb.name}
                       </Typography>
                     ) : (
-                      <Link key={index} underline="hover">
-                        <RouterLink
-                          to={breadcrumb.link}
-                          style={{ textDecoration: "none", color: "white" }}
+                      <Link
+                        key={index}
+                        to={breadcrumb.link}
+                        style={{ textDecoration: "none", color: "white" }}
+                      >
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            ":hover": {
+                              textDecoration: "underline",
+                              textDecorationThickness: "1px",
+                            },
+                          }}
                         >
-                          <Typography variant="h6">
-                            {breadcrumb.name}
-                          </Typography>
-                        </RouterLink>
+                          {breadcrumb.name}
+                        </Typography>
                       </Link>
                     )
                   )}
