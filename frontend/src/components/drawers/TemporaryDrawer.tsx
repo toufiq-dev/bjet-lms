@@ -1,7 +1,7 @@
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
@@ -19,9 +19,7 @@ import CustomAlert from "../alerts/CustomAlert";
 
 type Props = {
   open: boolean;
-  toggleDrawer: (
-    newOpen: boolean
-  ) => MouseEventHandler<HTMLButtonElement> | undefined;
+  toggleDrawer: () => void;
   title: string;
 };
 const TemporaryDrawer = (props: Props) => {
@@ -50,6 +48,17 @@ const TemporaryDrawer = (props: Props) => {
   const { createModule } = useModule();
   const { id } = useParams();
 
+  const handleClose = (
+    _event?: object,
+    reason?: "backdropClick" | "escapeKeyDown"
+  ) => {
+    if (reason === "backdropClick" || reason === "escapeKeyDown") {
+      props.toggleDrawer();
+    } else {
+      props.toggleDrawer();
+    }
+  };
+
   const handlerOnSubmit = async () => {
     setShowCircularProgress(true);
     const formData = {
@@ -64,8 +73,7 @@ const TemporaryDrawer = (props: Props) => {
       setData(result.error.response.data);
       setOpenAlert(true);
     } else {
-      setData(result);
-      setOpenAlert(true);
+      handleClose();
     }
   };
 
@@ -74,16 +82,12 @@ const TemporaryDrawer = (props: Props) => {
   };
 
   return (
-    <Drawer
-      open={props.open}
-      anchor="right"
-      onClose={props.toggleDrawer(false)}
-    >
+    <Drawer open={props.open} anchor="right" onClose={handleClose}>
       {openAlert && (
         <CustomAlert
           open={openAlert}
           onClose={() => setOpenAlert(false)}
-          severity={data.success ? "success" : "error"}
+          severity="error"
           message={data.message}
         />
       )}
@@ -106,7 +110,7 @@ const TemporaryDrawer = (props: Props) => {
               </Typography>
             </Box>
             <Box>
-              <IconButton onClick={props.toggleDrawer(false)}>
+              <IconButton onClick={handleClose}>
                 <CloseIcon fontSize="small" />
               </IconButton>
             </Box>
@@ -167,7 +171,7 @@ const TemporaryDrawer = (props: Props) => {
           bgcolor="#f5f5f5"
           border="1px solid #c7cdd1"
         >
-          <Button variant="outlined" onClick={props.toggleDrawer(false)}>
+          <Button variant="outlined" onClick={handleClose}>
             Cancel
           </Button>
           <Button variant="contained" type="submit">

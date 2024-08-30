@@ -37,7 +37,7 @@ type Props = {
 const ResponsiveDrawer = (props: Props) => {
   const drawerWidth = 150;
   const role = useSelector((state: IState) => state.user.role);
-  const items = ["Account", "Dashboard", "Courses", "Inbox"];
+  const items = ["Account", "Dashboard", "Courses"];
   const filteredItems = role === "Admin" ? ["Account", "Dashboard"] : items;
   const links = ["", "/", "", ""];
 

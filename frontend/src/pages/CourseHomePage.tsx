@@ -77,7 +77,7 @@ const CourseHomePage = () => {
             )}
             <TemporaryDrawer
               open={open}
-              toggleDrawer={toggleDrawer}
+              toggleDrawer={() => setOpen(false)}
               title="Add Module"
             />
           </Box>
