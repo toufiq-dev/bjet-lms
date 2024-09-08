@@ -1,9 +1,4 @@
 [
   { "name": "Home", "link": "/courses/:id" },
-  { "name": "Assignments", "link": "" },
-  { "name": "Quizzes", "link": "" },
-  { "name": "Discussions", "link": "" },
-  { "name": "Grades", "link": "" },
-  { "name": "Files", "link": "" },
   { "name": "Settings", "link": "" }
 ]

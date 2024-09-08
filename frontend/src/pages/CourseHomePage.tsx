@@ -4,10 +4,12 @@ import Toolbar from "@mui/material/Toolbar";
 import { useParams } from "react-router-dom";
 import useCourse from "../hooks/useCourse";
 import { useEffect, useState } from "react";
-import LessonModuleTestButton from "../components/buttons/LessonModuleTestButton";
 import { useSelector } from "react-redux";
 import IState from "../interfaces/stateInterface";
 import CourseNavigations from "../components/navigations/CourseNavigations";
+import AddIcon from "@mui/icons-material/Add";
+import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
+import Button from "@mui/material/Button";
 
 const drawerWidth = 150;
 
@@ -15,6 +17,7 @@ const CourseHomePage = () => {
   const { id } = useParams();
   const { getCourseById } = useCourse();
   const role = useSelector((state: IState) => state.user.role);
+  const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({
     success: false,
     message: "",
@@ -36,6 +39,10 @@ const CourseHomePage = () => {
     getCourseDetailsFromApi();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setOpen(newOpen);
+  };
   return (
     <Box display="flex">
       <ResponsiveDrawer
@@ -61,7 +68,19 @@ const CourseHomePage = () => {
         <Toolbar />
         <Box display="flex" justifyContent="space-between">
           <CourseNavigations menuItemIndex={0} />
-          <Box>{role === "Teacher" && <LessonModuleTestButton />}</Box>
+          <Box mr={3}>
+            {role === "Teacher" && (
+              <Button variant="contained" onClick={toggleDrawer(true)}>
+                <AddIcon fontSize="small" sx={{ mr: 0.5 }} />
+                Module
+              </Button>
+            )}
+            <TemporaryDrawer
+              open={open}
+              toggleDrawer={() => setOpen(false)}
+              title="Add Module"
+            />
+          </Box>
         </Box>
       </Box>
     </Box>
