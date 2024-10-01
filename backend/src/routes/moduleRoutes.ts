@@ -20,6 +20,12 @@ class ModuleRoutes {
       ValidationMiddleware.validate(ModuleValidator.validateCreateModule),
       ModuleController.createModule
     );
+    this.router.get(
+      "/course/:courseId",
+      authGuard(["Teacher", "Student"]),
+      ValidationMiddleware.validate(ModuleValidator.validateGetAllByCourseId),
+      ModuleController.getAllByCourseId
+    );
   }
 }
 

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import HTTP_STATUS from "../constants/statusCodes";
 import ModuleService from "../services/moduleService";
 import { ResponseUtil } from "../utils/responseUtil";
@@ -21,6 +22,25 @@ class ModuleController {
         HTTP_STATUS.OK,
         "Module is created successfully",
         module
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  getAllByCourseId = async (req: Request, res: Response) => {
+    try {
+      const { courseId } = req.params;
+
+      const modules = await this.moduleService.getAllByCourseId(
+        new mongoose.Types.ObjectId(courseId)
+      );
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Modules retrieved successfully",
+        modules
       );
     } catch (error) {
       ResponseUtil.sendError(res, error);

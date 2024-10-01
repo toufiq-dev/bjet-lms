@@ -2,6 +2,7 @@ import Module, { IModule } from "../models/module";
 import Course from "../models/course";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
+import mongoose from "mongoose";
 
 class ModuleService {
   public async createModule(
@@ -28,6 +29,18 @@ class ModuleService {
     delete module.createdAt, module.updatedAt, module.__v;
 
     return module;
+  }
+
+  async getAllByCourseId(
+    courseId: mongoose.Types.ObjectId
+  ): Promise<IModule[]> {
+    const modules = await Module.find({ courseRef: courseId })
+      .sort({
+        order: 1,
+      })
+      .select("-createdAt -updatedAt -__v");
+
+    return modules;
   }
 }
 
