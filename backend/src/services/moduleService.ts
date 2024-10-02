@@ -42,6 +42,23 @@ class ModuleService {
 
     return modules;
   }
+
+  async updateOneById(
+    id: mongoose.Types.ObjectId,
+    title: string,
+    lockUntil: Date
+  ): Promise<IModule> {
+    const module = await Module.findByIdAndUpdate(
+      id,
+      { title, lockUntil },
+      { new: true }
+    ).select("-createdAt -updatedAt -__v");
+    if (!module) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Module not found");
+    }
+
+    return module;
+  }
 }
 
 export default ModuleService;
