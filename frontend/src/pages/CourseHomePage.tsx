@@ -98,7 +98,7 @@ const CourseHomePage = () => {
               open={open}
               toggleDrawer={() => setOpen(false)}
               title="Add Module"
-              onModuleCreate={handleModuleCreate} // Pass handler here
+              onModuleCreate={handleModuleCreate}
             />
           </Box>
         </Box>

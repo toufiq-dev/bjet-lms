@@ -9,7 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, IconButton } from "@mui/material";
-import { Module } from "../../interfaces/moduleInterface"; // Adjust the path as necessary
+import { Module } from "../../interfaces/moduleInterface";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -34,20 +34,20 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
       ? "rgba(255, 255, 255, .05)"
       : "rgba(0, 0, 0, .03)",
   flexDirection: "row-reverse",
-  alignItems: "center", // Center items vertically
+  alignItems: "center",
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
   },
   "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(1),
-    alignItems: "center", // Center content vertically
+    alignItems: "center",
     display: "flex",
   },
   "& .module-actions": {
     marginLeft: "auto",
     display: "flex",
     gap: theme.spacing(1),
-    alignItems: "center", // Center actions vertically
+    alignItems: "center",
   },
 }));
 
@@ -95,7 +95,6 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Placeholder for lessons */}
             <Typography>Order: {module.order}</Typography>
             <Typography>Lock Until: {new Date(module.lockUntil).toLocaleString()}</Typography>
             <Typography>Published: {module.isPublished ? "Yes" : "No"}</Typography>
