@@ -2,22 +2,14 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
-import MuiAccordionSummary, {
-  AccordionSummaryProps,
-} from "@mui/material/AccordionSummary";
+import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  Container,
-  Box,
-  useMediaQuery,
-  useTheme,
-  IconButton,
-} from "@mui/material";
-import LessonCreationModal from "../modals/LessonCreationModal";
+import { Box, IconButton } from "@mui/material";
+import { Module } from "../../interfaces/moduleInterface"; // Adjust the path as necessary
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -64,94 +56,53 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: "1px solid rgba(0, 0, 0, .125)",
 }));
 
-const CreateModule = () => {
-  const [expanded, setExpanded] = useState<string | false>("panel1");
-  const [modalOpen, setModalOpen] = useState(false);
+// Reusable component for displaying modules as accordions
+interface CreateModuleProps {
+  modules: Module[]; // Pass modules as a prop
+}
+
+const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
+  const [expanded, setExpanded] = useState<string | false>("");
 
   const handleChange =
     (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const handleModalOpen = () => setModalOpen(true);
-  const handleModalClose = () => setModalOpen(false);
-
   return (
-    <Container component="main" maxWidth="md">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: isMobile ? 2 : 0,
-        }}
-      >
-        <Typography component="h1" variant="h4" align="center">
-          Module and Lesson Structure
-        </Typography>
-        <Box sx={{ width: "100%" }}>
-          {/* Module 1 */}
-          <Accordion
-            expanded={expanded === "module1"}
-            onChange={handleChange("module1")}
+    <Box sx={{ width: "100%" }}>
+      {modules.map((module, index) => (
+        <Accordion
+          key={module._id}
+          expanded={expanded === `module${index}`}
+          onChange={handleChange(`module${index}`)}
+        >
+          <AccordionSummary
+            aria-controls={`module${index}d-content`}
+            id={`module${index}d-header`}
           >
-            <AccordionSummary
-              aria-controls="module1d-content"
-              id="module1d-header"
-            >
-              <Typography>Module 1</Typography>
-              <Box className="module-actions">
-                <IconButton aria-label="add lesson" onClick={handleModalOpen}>
-                  <AddIcon />
-                </IconButton>
-                <IconButton aria-label="edit module">
-                  <EditIcon />
-                </IconButton>
-                <IconButton aria-label="delete module">
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>Lesson 1</Typography>
-              <Typography>Lesson 2</Typography>
-            </AccordionDetails>
-          </Accordion>
-
-          {/* Module 2 */}
-          <Accordion
-            expanded={expanded === "module2"}
-            onChange={handleChange("module2")}
-          >
-            <AccordionSummary
-              aria-controls="module2d-content"
-              id="module2d-header"
-            >
-              <Typography>Module 2</Typography>
-              <Box className="module-actions">
-                <IconButton aria-label="add lesson" onClick={handleModalOpen}>
-                  <AddIcon />
-                </IconButton>
-                <IconButton aria-label="edit module">
-                  <EditIcon />
-                </IconButton>
-                <IconButton aria-label="delete module">
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>Lesson 1</Typography>
-            </AccordionDetails>
-          </Accordion>
-        </Box>
-      </Box>
-      <LessonCreationModal open={modalOpen} onClose={handleModalClose} />
-    </Container>
+            <Typography>{module.title}</Typography>
+            <Box className="module-actions">
+              <IconButton aria-label="add lesson">
+                <AddIcon />
+              </IconButton>
+              <IconButton aria-label="edit module">
+                <EditIcon />
+              </IconButton>
+              <IconButton aria-label="delete module">
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          </AccordionSummary>
+          <AccordionDetails>
+            {/* Placeholder for lessons */}
+            <Typography>Order: {module.order}</Typography>
+            <Typography>Lock Until: {new Date(module.lockUntil).toLocaleString()}</Typography>
+            <Typography>Published: {module.isPublished ? "Yes" : "No"}</Typography>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </Box>
   );
 };
 
