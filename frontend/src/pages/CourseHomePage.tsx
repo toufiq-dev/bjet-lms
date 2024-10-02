@@ -10,22 +10,25 @@ import CourseNavigations from "../components/navigations/CourseNavigations";
 import AddIcon from "@mui/icons-material/Add";
 import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
+import useModule from "../hooks/useModule"; // import the custom hook for modules
+import { Module } from "../interfaces/moduleInterface"; // import the module interface
 
 const drawerWidth = 150;
 
 const CourseHomePage = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Course ID
   const { getCourseById } = useCourse();
+  const { getModulesByCourseId } = useModule(); // get modules by course
   const role = useSelector((state: IState) => state.user.role);
   const [open, setOpen] = useState(false);
   const [response, setResponse] = useState({
     success: false,
     message: "",
-    data: {
-      title: "",
-    },
+    data: { title: "" },
   });
+  const [modules, setModules] = useState<Module[]>([]); // Annotate modules with the Module type
 
+  // Fetch course details and modules
   useEffect(() => {
     const getCourseDetailsFromApi = async () => {
       try {
@@ -36,22 +39,34 @@ const CourseHomePage = () => {
       }
     };
 
+    const getModulesFromApi = async () => {
+      try {
+        const result = await getModulesByCourseId(id as string);
+        if (result.success) {
+          setModules(result.data); // store modules in state
+        }
+      } catch (error) {
+        console.error("Error fetching modules:", error);
+      }
+    };
+
     getCourseDetailsFromApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getModulesFromApi(); // Fetch modules for the course
+  }, [id, getCourseById, getModulesByCourseId]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
+
   return (
     <Box display="flex">
       <ResponsiveDrawer
         breadcrumbs={
           response.success
             ? [
-                { name: response.data.title, link: `/courses/${id}` },
-                { name: "Modules", link: "" },
-              ]
+              { name: response.data.title, link: `/courses/${id}` },
+              { name: "Modules", link: "" },
+            ]
             : []
         }
         drawerItemIndex={2}
@@ -81,6 +96,27 @@ const CourseHomePage = () => {
               title="Add Module"
             />
           </Box>
+        </Box>
+        {/* Display modules */}
+        <Box mt={4}>
+          {modules.length > 0 ? (
+            modules.map((module) => (
+              <Box
+                key={module._id}
+                p={2}
+                mb={2}
+                border="1px solid #ccc"
+                borderRadius={4}
+              >
+                <h3>{module.title}</h3>
+                <p>Order: {module.order}</p>
+                <p>Lock Until: {new Date(module.lockUntil).toLocaleString()}</p>
+                <p>Published: {module.isPublished ? "Yes" : "No"}</p>
+              </Box>
+            ))
+          ) : (
+            <p>No modules available</p>
+          )}
         </Box>
       </Box>
     </Box>
