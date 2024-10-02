@@ -12,6 +12,15 @@ import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
 import useModule from "../hooks/useModule"; // import the custom hook for modules
 import { Module } from "../interfaces/moduleInterface"; // import the module interface
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import IconButton from "@mui/material/IconButton";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+// import AddIcon from "@mui/icons-material/Add";
 
 const drawerWidth = 150;
 
@@ -27,6 +36,7 @@ const CourseHomePage = () => {
     data: { title: "" },
   });
   const [modules, setModules] = useState<Module[]>([]); // Annotate modules with the Module type
+  const [expanded, setExpanded] = useState<string | false>(false);
 
   // Fetch course details and modules
   useEffect(() => {
@@ -57,6 +67,11 @@ const CourseHomePage = () => {
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
+
+  const handleChange =
+    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
 
   return (
     <Box display="flex">
@@ -97,25 +112,44 @@ const CourseHomePage = () => {
             />
           </Box>
         </Box>
-        {/* Display modules */}
+
+        {/* Display modules in Accordion */}
         <Box mt={4}>
           {modules.length > 0 ? (
-            modules.map((module) => (
-              <Box
+            modules.map((module, index) => (
+              <Accordion
                 key={module._id}
-                p={2}
-                mb={2}
-                border="1px solid #ccc"
-                borderRadius={4}
+                expanded={expanded === `module${index}`}
+                onChange={handleChange(`module${index}`)}
               >
-                <h3>{module.title}</h3>
-                <p>Order: {module.order}</p>
-                <p>Lock Until: {new Date(module.lockUntil).toLocaleString()}</p>
-                <p>Published: {module.isPublished ? "Yes" : "No"}</p>
-              </Box>
+                <AccordionSummary
+                  expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+                  aria-controls={`module${index}-content`}
+                  id={`module${index}-header`}
+                >
+                  <Typography>{module.title}</Typography>
+                  <Box className="module-actions" ml="auto">
+                    <IconButton aria-label="add lesson">
+                      <AddIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit module">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton aria-label="delete module">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography>Order: {module.order}</Typography>
+                  <Typography>Lock Until: {new Date(module.lockUntil).toLocaleString()}</Typography>
+                  <Typography>Published: {module.isPublished ? "Yes" : "No"}</Typography>
+                  {/* You can add lessons or other details inside this accordion */}
+                </AccordionDetails>
+              </Accordion>
             ))
           ) : (
-            <p>No modules available</p>
+            <Typography>No modules available</Typography>
           )}
         </Box>
       </Box>
