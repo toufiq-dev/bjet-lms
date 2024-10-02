@@ -38,7 +38,11 @@ class UserRoutes {
       UserController.changePassword
     );
     this.router.post("/signout", authGuard(), UserController.signout);
-    this.router.patch("/forgot-password", UserController.forgotPassword);
+    this.router.patch(
+      "/forgot-password",
+      ValidationMiddleware.validate(UserValidator.validateForgotPassword),
+      UserController.forgotPassword
+    );
     this.router.patch("/reset-password", UserController.resetPassword);
   }
 }

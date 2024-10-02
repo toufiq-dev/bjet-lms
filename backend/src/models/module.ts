@@ -18,7 +18,6 @@ const moduleSchema: Schema = new Schema<IModule>(
       type: String,
       required: [true, "Module title is required"],
       trim: true,
-      index: true,
     },
     order: {
       type: Number,
@@ -48,8 +47,6 @@ const moduleSchema: Schema = new Schema<IModule>(
     timestamps: true,
   }
 );
-
-moduleSchema.index({ title: "text", description: "text" });
 
 const Module = model<IModule>("Module", moduleSchema);
 export default Module;

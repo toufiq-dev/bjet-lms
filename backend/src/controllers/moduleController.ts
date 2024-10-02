@@ -46,6 +46,28 @@ class ModuleController {
       ResponseUtil.sendError(res, error);
     }
   };
+
+  updateOneById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { title, lockUntil } = req.body;
+
+      const module = await this.moduleService.updateOneById(
+        new mongoose.Types.ObjectId(id),
+        title,
+        lockUntil
+      );
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Module updated successfully",
+        module
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
 }
 
 export default new ModuleController(new ModuleService());

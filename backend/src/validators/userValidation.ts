@@ -62,4 +62,7 @@ export class UserValidator {
       .isLength({ min: 8, max: 20 })
       .withMessage("New Password is required"),
   ];
+  public static validateForgotPassword: ValidationChain[] = [
+    body("email").isEmail().withMessage("Invalid email format"),
+  ];
 }
