@@ -26,6 +26,12 @@ class ModuleRoutes {
       ValidationMiddleware.validate(ModuleValidator.validateGetAllByCourseId),
       ModuleController.getAllByCourseId
     );
+    this.router.patch(
+      "/:id",
+      authGuard(["Teacher"]),
+      ValidationMiddleware.validate(ModuleValidator.validateUpdateOneById),
+      ModuleController.updateOneById
+    );
   }
 }
 
