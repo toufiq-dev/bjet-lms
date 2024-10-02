@@ -51,8 +51,8 @@ const CourseHomePage = () => {
     };
 
     getCourseDetailsFromApi();
-    getModulesFromApi(); // Fetch modules for the course
-  }, [id, getCourseById, getModulesByCourseId]);
+    getModulesFromApi();
+  }, [id]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
