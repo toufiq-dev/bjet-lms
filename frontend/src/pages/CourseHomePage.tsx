@@ -12,7 +12,7 @@ import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
 import useModule from "../hooks/useModule";
 import { Module } from "../interfaces/moduleInterface";
-import CreateModule from "../components/accordions/CreateModule"; // Adjust the import path
+import CreateModule from "../components/accordions/CreateModule";
 
 const drawerWidth = 150;
 
@@ -29,6 +29,17 @@ const CourseHomePage = () => {
   });
   const [modules, setModules] = useState<Module[]>([]);
 
+  const getModulesFromApi = async () => {
+    try {
+      const result = await getModulesByCourseId(id as string);
+      if (result.success) {
+        setModules(result.data);
+      }
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+    }
+  };
+
   useEffect(() => {
     const getCourseDetailsFromApi = async () => {
       try {
@@ -39,23 +50,16 @@ const CourseHomePage = () => {
       }
     };
 
-    const getModulesFromApi = async () => {
-      try {
-        const result = await getModulesByCourseId(id as string);
-        if (result.success) {
-          setModules(result.data);
-        }
-      } catch (error) {
-        console.error("Error fetching modules:", error);
-      }
-    };
-
     getCourseDetailsFromApi();
     getModulesFromApi();
   }, [id]);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
+  };
+
+  const handleModuleCreate = () => {
+    getModulesFromApi(); // Re-fetch modules after one is created
   };
 
   return (
@@ -94,6 +98,7 @@ const CourseHomePage = () => {
               open={open}
               toggleDrawer={() => setOpen(false)}
               title="Add Module"
+              onModuleCreate={handleModuleCreate} // Pass handler here
             />
           </Box>
         </Box>
@@ -102,7 +107,7 @@ const CourseHomePage = () => {
           {modules.length > 0 ? (
             <CreateModule modules={modules} />
           ) : (
-            <p>No modules available</p>
+            <Box>No modules available yet</Box>
           )}
         </Box>
       </Box>
