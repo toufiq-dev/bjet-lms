@@ -34,8 +34,6 @@ class CourseService {
     videoFiles: Express.Multer.File[]
   ): Promise<any> {
     try {
-      await this.checkExistingCourse(title);
-
       const course: any = await this.createCourseDocument(
         title,
         description,
@@ -73,16 +71,6 @@ class CourseService {
     }
 
     return courses;
-  }
-
-  private async checkExistingCourse(title: string): Promise<void> {
-    const existingCourse = await Course.findOne({ title });
-    if (existingCourse) {
-      throw new ErrorHandler(
-        HTTP_STATUS.CONFLICT,
-        "A course with this title already exists"
-      );
-    }
   }
 
   private async createCourseDocument(
