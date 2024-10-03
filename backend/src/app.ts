@@ -41,8 +41,8 @@ class App {
     this.express.use("/api/users", userRoutes);
     this.express.use("/api/user-profiles", userProfileRoutes);
     this.express.use("/api/courses", courseRoutes);
-    this.express.use("/api/lessons", lessonRoutes);
     this.express.use("/api/modules", moduleRoutes);
+    this.express.use("/api/lessons", lessonRoutes);
   }
 
   private initializeErrorHandling(): void {

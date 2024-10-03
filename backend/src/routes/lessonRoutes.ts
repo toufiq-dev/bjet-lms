@@ -1,10 +1,10 @@
 import { Router } from "express";
 import LessonController from "../controllers/lessonController";
-import { CourseValidator } from "../validators/courseValidation";
 import { ValidationMiddleware } from "../middlewares/validationMiddleware";
 import { authGuard } from "../middlewares/authGuard";
 import { upload } from "../utils/fileUpload";
-import { parseModules } from "../middlewares/parseModules";
+import { uploadSingle } from "../middlewares/fileMiddleware";
+import LessonValidator from "../validators/lessonValidation";
 
 class LessonRoutes {
   public router: Router;
@@ -15,11 +15,14 @@ class LessonRoutes {
   }
 
   private initializeRoutes(): void {
-    // this.router.post(
-    //   "/create",
-    //   uploadProfilePic.single("content"),
-    //   LessonController.createLesson
-    // );
+    this.router.post(
+      "/",
+      authGuard(["Teacher"]),
+      upload.single("content"),
+      uploadSingle(),
+      ValidationMiddleware.validate(LessonValidator.validateCreateLesson),
+      LessonController.create
+    );
   }
 }
 
