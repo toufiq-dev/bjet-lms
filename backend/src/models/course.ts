@@ -17,8 +17,6 @@ const courseSchema: Schema = new Schema<ICourse>(
       type: String,
       required: [true, "Course title is required"],
       trim: true,
-      unique: true,
-      index: true,
     },
     description: {
       type: String,
@@ -41,8 +39,6 @@ const courseSchema: Schema = new Schema<ICourse>(
     timestamps: true,
   }
 );
-
-courseSchema.index({ title: "text", description: "text" });
 
 const Course = model<ICourse>("Course", courseSchema);
 export default Course;
