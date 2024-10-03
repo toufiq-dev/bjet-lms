@@ -8,10 +8,13 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box, IconButton } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 
-// Custom styled components for Accordion, AccordionSummary, and AccordionDetails
+// Custom styled components
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
@@ -54,7 +57,6 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(3),
 }));
 
-// Icon button customization
 const ActionButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.main,
   "&:hover": {
@@ -65,7 +67,7 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
 
 // Reusable component for displaying modules as accordions
 interface CreateModuleProps {
-  modules: Module[]; // Pass modules as a prop
+  modules: Module[];
 }
 
 const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
@@ -102,15 +104,57 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" color="textSecondary">
-              Order: {module.order}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Lock Until: {new Date(module.lockUntil).toLocaleString()}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Published: {module.isPublished ? "Yes" : "No"}
-            </Typography>
+            {/* Module Information in a Grid Layout */}
+            <Grid container spacing={2} alignItems="center">
+              {/* Order Info */}
+              <Grid item xs={4}>
+                <Box display="flex" alignItems="center">
+                  <ViewModuleIcon sx={{ mr: 1 }} color="action" />
+                  <Typography variant="body1" color="textPrimary">
+                    Order:
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body2" color="textSecondary">
+                  {module.order}
+                </Typography>
+              </Grid>
+
+              <Divider flexItem />
+
+              {/* Lock Until Info */}
+              <Grid item xs={4}>
+                <Box display="flex" alignItems="center">
+                  <CalendarTodayIcon sx={{ mr: 1 }} color="action" />
+                  <Typography variant="body1" color="textPrimary">
+                    Lock Until:
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body2" color="textSecondary">
+                  {new Date(module.lockUntil).toLocaleString()}
+                </Typography>
+              </Grid>
+
+              <Divider flexItem />
+
+              {/* Published Info */}
+              <Grid item xs={4}>
+                <Box display="flex" alignItems="center">
+                  <CheckCircleOutlineIcon sx={{ mr: 1 }} color="action" />
+                  <Typography variant="body1" color="textPrimary">
+                    Published:
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography variant="body2" color="textSecondary">
+                  {module.isPublished ? "Yes" : "No"}
+                </Typography>
+              </Grid>
+            </Grid>
           </AccordionDetails>
         </Accordion>
       ))}
