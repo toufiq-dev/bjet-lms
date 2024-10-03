@@ -11,49 +11,56 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, IconButton } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 
+// Custom styled components for Accordion, AccordionSummary, and AccordionDetails
 const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
+  <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
+  borderRadius: "8px",
+  margin: theme.spacing(1, 0),
+  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
   border: `1px solid ${theme.palette.divider}`,
-  "&:not(:last-child)": {
-    borderBottom: 0,
-  },
-  "&::before": {
+  "&:before": {
     display: "none",
   },
 }));
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "1rem", color: "#1976d2" }} />}
     {...props}
   />
 ))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
-  flexDirection: "row-reverse",
-  alignItems: "center",
-  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
-    transform: "rotate(90deg)",
-  },
+  backgroundColor: theme.palette.grey[100],
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(2),
   "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(1),
-    alignItems: "center",
+    marginLeft: theme.spacing(2),
+    fontWeight: 500,
     display: "flex",
+    alignItems: "center",
   },
   "& .module-actions": {
     marginLeft: "auto",
     display: "flex",
     gap: theme.spacing(1),
-    alignItems: "center",
+  },
+  "&:hover": {
+    backgroundColor: theme.palette.grey[200],
   },
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  backgroundColor: "#f9f9f9",
+  padding: theme.spacing(3),
+}));
+
+// Icon button customization
+const ActionButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
+    color: "#fff",
+  },
 }));
 
 // Reusable component for displaying modules as accordions
@@ -83,21 +90,27 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
           >
             <Typography>{module.title}</Typography>
             <Box className="module-actions">
-              <IconButton aria-label="add lesson">
+              <ActionButton aria-label="add lesson">
                 <AddIcon />
-              </IconButton>
-              <IconButton aria-label="edit module">
+              </ActionButton>
+              <ActionButton aria-label="edit module">
                 <EditIcon />
-              </IconButton>
-              <IconButton aria-label="delete module">
+              </ActionButton>
+              <ActionButton aria-label="delete module">
                 <DeleteIcon />
-              </IconButton>
+              </ActionButton>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>Order: {module.order}</Typography>
-            <Typography>Lock Until: {new Date(module.lockUntil).toLocaleString()}</Typography>
-            <Typography>Published: {module.isPublished ? "Yes" : "No"}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Order: {module.order}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Lock Until: {new Date(module.lockUntil).toLocaleString()}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Published: {module.isPublished ? "Yes" : "No"}
+            </Typography>
           </AccordionDetails>
         </Accordion>
       ))}
