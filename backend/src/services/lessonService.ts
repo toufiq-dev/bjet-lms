@@ -1,3 +1,62 @@
-class LessonService {}
+import mongoose, { startSession } from "mongoose";
+import { ILesson } from "../models/lesson";
+import ModuleModel from "../models/module";
+import { ErrorHandler } from "../utils/errorHandler";
+import HTTP_STATUS from "../constants/statusCodes";
+import { uploadToAWS } from "../utils/fileUpload";
+import LessonModel from "../models/lesson";
+
+class LessonService {
+  async create(
+    moduleId: mongoose.Types.ObjectId,
+    title: string,
+    file: Express.Multer.File
+  ): Promise<ILesson> {
+    const module = await ModuleModel.findById(moduleId);
+    if (!module) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Module not found");
+    }
+
+    const lastLesson = await LessonModel.findOne({ moduleRef: moduleId }).sort({
+      order: -1,
+    });
+    const order = !lastLesson ? 0 : lastLesson.order + 1;
+
+    const url = await uploadToAWS(file);
+
+    let lesson;
+    const session = await startSession();
+    session.startTransaction();
+
+    try {
+      lesson = new LessonModel({
+        title,
+        content: url,
+        order,
+        moduleRef: moduleId,
+      });
+
+      await lesson.save({ session });
+
+      await ModuleModel.findByIdAndUpdate(
+        moduleId,
+        { $push: { lessonRefs: lesson._id } },
+        { new: true, session }
+      );
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new ErrorHandler(
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Lesson creation failed"
+      );
+    } finally {
+      session.endSession();
+    }
+
+    return lesson;
+  }
+}
 
 export default LessonService;

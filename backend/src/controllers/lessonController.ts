@@ -7,23 +7,20 @@ import { uploadToS3 } from "../utils/aws";
 class LessonController {
   constructor(private lessonService: LessonService) {}
 
-  public createLesson = async (req: Request, res: Response): Promise<void> => {
+  public create = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { title } = req.body;
-
-      // const params = {
-      //   Bucket: "bjet-lms",
-      //   Key: `${req.file?.mimetype}/${req.file?.originalname}`,
-      //   Body: req.file?.buffer,
-      // };
-
-      // const content = await uploadToS3(params);
+      const { moduleId, title } = req.body;
+      const lesson = await this.lessonService.create(
+        moduleId,
+        title,
+        req.file as Express.Multer.File
+      );
 
       ResponseUtil.sendSuccess(
         res,
         HTTP_STATUS.OK,
-        "File is found",
-        req.file?.originalname
+        "Lesson is created successfully",
+        lesson.content
       );
     } catch (error) {
       console.log(error);

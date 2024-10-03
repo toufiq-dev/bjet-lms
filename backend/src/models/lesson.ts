@@ -1,15 +1,11 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Schema, model, Document } from "mongoose";
 
 export interface ILesson extends Document {
+  _id?: mongoose.Types.ObjectId;
   title: string;
-  content: {
-    type: "text" | "file";
-    data: string;
-  };
+  content: string;
   order: number;
-  moduleRef: Schema.Types.ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  moduleRef: mongoose.Types.ObjectId;
 }
 
 const lessonSchema: Schema = new Schema<ILesson>(
@@ -18,36 +14,26 @@ const lessonSchema: Schema = new Schema<ILesson>(
       type: String,
       required: [true, "Lesson title is required"],
       trim: true,
-      index: true,
     },
     content: {
-      type: {
-        type: String,
-        enum: ["text", "file"],
-        required: true,
-      },
-      data: {
-        type: String,
-        required: true,
-      },
+      type: String,
+      maxlength: [200, "Character limit exceeded"],
     },
     order: {
       type: Number,
       required: true,
     },
-
     moduleRef: {
       type: Schema.Types.ObjectId,
       ref: "Module",
       required: [true, "Module reference is required"],
+      index: true,
     },
   },
   {
     timestamps: true,
   }
 );
-
-lessonSchema.index({ title: "text", content: "text" });
 
 const Lesson = model<ILesson>("Lesson", lessonSchema);
 export default Lesson;
