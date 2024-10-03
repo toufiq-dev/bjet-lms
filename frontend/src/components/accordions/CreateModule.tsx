@@ -14,7 +14,6 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 
-// Custom styled components
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
@@ -28,10 +27,7 @@ const Accordion = styled((props: AccordionProps) => (
 }));
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "1rem", color: "#1976d2" }} />}
-    {...props}
-  />
+  <MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
   backgroundColor: theme.palette.grey[100],
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -65,7 +61,6 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-// Reusable component for displaying modules as accordions
 interface CreateModuleProps {
   modules: Module[];
 }
@@ -90,7 +85,15 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
             aria-controls={`module${index}d-content`}
             id={`module${index}d-header`}
           >
-            <Typography>{module.title}</Typography>
+            <ArrowForwardIosSharpIcon
+              sx={{
+                fontSize: "1rem",
+                color: "#1976d2",
+                transform: expanded === `module${index}` ? "rotate(90deg)" : "rotate(0deg)",
+                transition: "transform 0.3s ease",
+              }}
+            />
+            <Typography sx={{ marginLeft: 1 }}>{module.title}</Typography>
             <Box className="module-actions">
               <ActionButton aria-label="add lesson">
                 <AddIcon />
@@ -104,9 +107,7 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Module Information in a Grid Layout */}
             <Grid container spacing={2} alignItems="center">
-              {/* Order Info */}
               <Grid item xs={4}>
                 <Box display="flex" alignItems="center">
                   <ViewModuleIcon sx={{ mr: 1 }} color="action" />
@@ -123,7 +124,6 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
 
               <Divider flexItem />
 
-              {/* Lock Until Info */}
               <Grid item xs={4}>
                 <Box display="flex" alignItems="center">
                   <CalendarTodayIcon sx={{ mr: 1 }} color="action" />
@@ -140,7 +140,6 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
 
               <Divider flexItem />
 
-              {/* Published Info */}
               <Grid item xs={4}>
                 <Box display="flex" alignItems="center">
                   <CheckCircleOutlineIcon sx={{ mr: 1 }} color="action" />
