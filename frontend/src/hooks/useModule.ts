@@ -19,7 +19,20 @@ const useModule = () => {
     }
   };
 
-  return { createModule };
+  const getModulesByCourseId = async (courseId: string) => {
+    try {
+      const response = await moduleInstance.get(`/course/${courseId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createModule, getModulesByCourseId };
 };
 
 export default useModule;

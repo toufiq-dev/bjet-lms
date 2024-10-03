@@ -21,7 +21,9 @@ type Props = {
   open: boolean;
   toggleDrawer: () => void;
   title: string;
+  onModuleCreate: () => void; // Added prop
 };
+
 const TemporaryDrawer = (props: Props) => {
   const [showCircularProgress, setShowCircularProgress] = useState(false);
   const [isDateTimePickerOpen, setIsDateTimePickerOpen] = useState(false);
@@ -73,6 +75,7 @@ const TemporaryDrawer = (props: Props) => {
       setData(result.error.response.data);
       setOpenAlert(true);
     } else {
+      props.onModuleCreate(); // Trigger refresh of modules after creation
       handleClose();
     }
   };
