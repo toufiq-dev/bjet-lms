@@ -18,7 +18,7 @@ class ModuleService {
     const lastModule = await Module.findOne({ courseRef: courseRef }).sort({
       order: -1,
     });
-    const order = !lastModule ? 0 : lastModule.order + 1;
+    const order = !lastModule ? 1 : lastModule.order + 1;
 
     const module = await Module.create({
       courseRef: courseRef,
