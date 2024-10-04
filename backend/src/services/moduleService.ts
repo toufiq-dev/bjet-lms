@@ -38,7 +38,11 @@ class ModuleService {
       .sort({
         order: 1,
       })
-      .select("-createdAt -updatedAt -__v");
+      .select("-createdAt -updatedAt -__v")
+      .populate({
+        path: "lessonRefs",
+        select: "-createdAt -updatedAt -__v",
+      });
 
     return modules;
   }
