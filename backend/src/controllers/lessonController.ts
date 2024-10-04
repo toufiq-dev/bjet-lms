@@ -20,7 +20,7 @@ class LessonController {
         res,
         HTTP_STATUS.OK,
         "Lesson is created successfully",
-        lesson.content
+        lesson
       );
     } catch (error) {
       console.log(error);

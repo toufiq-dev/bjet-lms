@@ -20,7 +20,7 @@ class LessonService {
     const lastLesson = await LessonModel.findOne({ moduleRef: moduleId }).sort({
       order: -1,
     });
-    const order = !lastLesson ? 0 : lastLesson.order + 1;
+    const order = !lastLesson ? 1 : lastLesson.order + 1;
 
     const url = await uploadToAWS(file);
 
@@ -55,7 +55,9 @@ class LessonService {
       session.endSession();
     }
 
-    return lesson;
+    const { createdAt, updatedAt, __v, ...formattedLesson } = lesson.toObject();
+
+    return formattedLesson as ILesson;
   }
 }
 
