@@ -6,6 +6,9 @@ export interface ILesson extends Document {
   content: string;
   order: number;
   moduleRef: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  __v?: number;
 }
 
 const lessonSchema: Schema = new Schema<ILesson>(
