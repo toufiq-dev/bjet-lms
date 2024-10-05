@@ -73,6 +73,7 @@ export const uploadToAWS = async (
     Bucket: "bjet-lms",
     Key: `${file?.mimetype}/${uniqueFileName}`,
     Body: file?.buffer,
+    ContentType: file?.mimetype,
   };
 
   const url = await uploadToS3(params);
