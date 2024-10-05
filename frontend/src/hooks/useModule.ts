@@ -32,7 +32,23 @@ const useModule = () => {
     }
   };
 
-  return { createModule, getModulesByCourseId };
+  const updateModule = async (
+    id: string,
+    formData: { title: string; lockUntil: dayjs.Dayjs }
+  ) => {
+    try {
+      const response = await moduleInstance.patch(`/${id}`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createModule, getModulesByCourseId, updateModule };
 };
 
 export default useModule;
