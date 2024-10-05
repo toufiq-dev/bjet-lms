@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
-import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
+import MuiAccordionSummary, {
+  AccordionSummaryProps,
+} from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
@@ -13,6 +15,15 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
+import TemporaryDrawer from "../drawers/TemporaryDrawer";
+
+type Props = {
+  modules: Module[];
+  open: boolean;
+  toggleDrawer: () => void;
+  title: string;
+  refetch: () => void;
+};
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
@@ -61,11 +72,7 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-interface CreateModuleProps {
-  modules: Module[];
-}
-
-const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
+const ModuleList = (props: Props) => {
   const [expanded, setExpanded] = useState<string | false>("");
 
   const handleChange =
@@ -73,9 +80,19 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
       setExpanded(newExpanded ? panel : false);
     };
 
+  const handleEditButtonClick = (moduleId: string) => {
+    <TemporaryDrawer
+      open={props.open}
+      toggleDrawer={props.toggleDrawer}
+      title="Edit Module"
+      moduleId={moduleId}
+      refetch={props.refetch}
+    />;
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
-      {modules.map((module, index) => (
+      {props.modules.map((module, index) => (
         <Accordion
           key={module._id}
           expanded={expanded === `module${index}`}
@@ -89,7 +106,10 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
               sx={{
                 fontSize: "1rem",
                 color: "#1976d2",
-                transform: expanded === `module${index}` ? "rotate(90deg)" : "rotate(0deg)",
+                transform:
+                  expanded === `module${index}`
+                    ? "rotate(90deg)"
+                    : "rotate(0deg)",
                 transition: "transform 0.3s ease",
               }}
             />
@@ -98,7 +118,10 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
               <ActionButton aria-label="add lesson">
                 <AddIcon />
               </ActionButton>
-              <ActionButton aria-label="edit module">
+              <ActionButton
+                aria-label="edit module"
+                onClick={() => handleEditButtonClick(module._id)}
+              >
                 <EditIcon />
               </ActionButton>
               <ActionButton aria-label="delete module">
@@ -161,4 +184,4 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
   );
 };
 
-export default CreateModule;
+export default ModuleList;
