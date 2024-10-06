@@ -12,7 +12,7 @@ import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
 import useModule from "../hooks/useModule";
 import { Module } from "../interfaces/moduleInterface";
-import ModuleList from "../components/accordions/ModuleList"; // Resolved conflict here by keeping this import
+import ModuleList from "../components/accordions/ModuleList";
 
 const drawerWidth = 150;
 
@@ -52,7 +52,6 @@ const CourseHomePage = () => {
 
     getCourseDetailsFromApi();
     getModulesFromApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDrawer = (newOpen: boolean) => async () => {
