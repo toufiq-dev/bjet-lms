@@ -12,6 +12,7 @@ import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 import { Lesson } from "../../interfaces/lessonInterface";
 import LessonCreationModal from "../modals/LessonCreationModal";
+import TemporaryDrawer from "../drawers/TemporaryDrawer";
 
 type Props = {
   modules: Module[];
@@ -99,6 +100,8 @@ const ModuleList: React.FC<Props> = (props) => {
   const [expanded, setExpanded] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
+  const [drawerOpen, setDrawerOpen] = useState(false); // Drawer state
+  const [selectedModuleTitle, setSelectedModuleTitle] = useState(""); // To hold the module title
 
   const handleAccordionChange = (panel: string) => {
     setExpanded((prevExpanded) =>
@@ -119,6 +122,17 @@ const ModuleList: React.FC<Props> = (props) => {
 
   const handleLessonCreate = () => {
     props.refetch();
+  };
+
+  // Toggle drawer for editing module
+  const handleOpenDrawer = (moduleId: string, title: string) => {
+    setSelectedModuleId(moduleId); // Set selected module ID
+    setSelectedModuleTitle(title); // Set selected module title
+    setDrawerOpen(true); // Open the drawer
+  };
+
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false); // Close the drawer
   };
 
   return (
@@ -150,7 +164,7 @@ const ModuleList: React.FC<Props> = (props) => {
                 aria-label="edit module"
                 onClick={(event) => {
                   event.stopPropagation();
-                  /* Handle edit */
+                  handleOpenDrawer(module._id, module.title); // Open the drawer on edit
                 }}
               >
                 <EditIcon />
@@ -193,6 +207,15 @@ const ModuleList: React.FC<Props> = (props) => {
         onClose={handleCloseModal}
         onLessonCreate={handleLessonCreate}
         moduleId={selectedModuleId}
+      />
+
+      {/* TemporaryDrawer for editing module */}
+      <TemporaryDrawer
+        open={drawerOpen}
+        toggleDrawer={handleCloseDrawer}
+        title="Edit Module" // Change to 'Edit Module' when editing
+        moduleId={selectedModuleId} // Pass the selected module ID
+        refetch={props.refetch} // Refetch the modules after edit
       />
     </Box>
   );
