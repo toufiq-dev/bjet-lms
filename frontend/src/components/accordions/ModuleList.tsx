@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles"; // Import useTheme
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
@@ -21,35 +21,40 @@ type Props = {
   refetch: () => void;
 };
 
+// Fix: Use the theme in the callback directly
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
   borderRadius: "8px",
-  margin: theme.spacing(1, 0),
-  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+  margin: theme.spacing(2, 0),
+  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
   border: `1px solid ${theme.palette.divider}`,
   "&:before": {
     display: "none",
+  },
+  "&:hover": {
+    boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.15)",
   },
 }));
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "1rem", color: "inherit" }} />}
     {...props}
   />
 ))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
+  backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(240, 240, 240, 0.9)",
+  padding: theme.spacing(2),
   flexDirection: "row-reverse",
   alignItems: "center",
+  "&:hover": {
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(240, 240, 240, 1)",
+  },
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
   },
   "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(2),
     display: "flex",
     alignItems: "center",
   },
@@ -61,8 +66,9 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  backgroundColor: "#f9f9f9",
+  backgroundColor: theme.palette.background.paper,
   padding: theme.spacing(3),
+  borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
 const ActionButton = styled(IconButton)(({ theme }) => ({
@@ -74,6 +80,8 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const ModuleList: React.FC<Props> = (props) => {
+  const theme = useTheme(); // Access theme here if needed
+
   const [expanded, setExpanded] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
@@ -111,7 +119,9 @@ const ModuleList: React.FC<Props> = (props) => {
             aria-controls={`module${index}d-content`}
             id={`module${index}d-header`}
           >
-            <Typography>{module.title}</Typography>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              {module.title}
+            </Typography>
             <Box className="module-actions">
               <ActionButton
                 aria-label="add lesson"
@@ -145,16 +155,16 @@ const ModuleList: React.FC<Props> = (props) => {
           <AccordionDetails>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
-                <Typography variant="h6">Lessons:</Typography>
+                <Typography variant="subtitle1">Lessons:</Typography>
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      {/* Anchor link for lesson */}
                       <Typography variant="body1">
                         <a href={lesson.content} target="_blank" rel="noopener noreferrer">
                           {lesson.title}
                         </a>
                       </Typography>
+                      <Divider sx={{ marginY: 1 }} />
                     </Box>
                   ))
                 ) : (
