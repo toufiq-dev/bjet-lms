@@ -145,14 +145,16 @@ const ModuleList: React.FC<Props> = (props) => {
           <AccordionDetails>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
-                {/* Lesson details */}
                 <Typography variant="h6">Lessons:</Typography>
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      <Typography variant="body1">Title: {lesson.title}</Typography>
-                      <Typography variant="body2">Order: {lesson.order}</Typography>
-                      <img src={lesson.content} alt={lesson.title} width="100%" />
+                      {/* Anchor link for lesson */}
+                      <Typography variant="body1">
+                        <a href={lesson.content} target="_blank" rel="noopener noreferrer">
+                          {lesson.title}
+                        </a>
+                      </Typography>
                     </Box>
                   ))
                 ) : (
