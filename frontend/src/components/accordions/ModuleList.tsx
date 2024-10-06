@@ -112,21 +112,32 @@ const ModuleList: React.FC<Props> = (props) => {
             <Box className="module-actions">
               <ActionButton
                 aria-label="add lesson"
-                onClick={() => handleOpenModal(module._id)}
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent Accordion from toggling
+                  handleOpenModal(module._id);
+                }}
               >
                 <AddIcon />
               </ActionButton>
               <ActionButton
                 aria-label="edit module"
-                onClick={() => {
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent Accordion from toggling
                   /* Handle edit */
                 }}
               >
                 <EditIcon />
               </ActionButton>
-              <ActionButton aria-label="delete module">
+              <ActionButton
+                aria-label="delete module"
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent Accordion from toggling
+                  /* Handle delete */
+                }}
+              >
                 <DeleteIcon />
               </ActionButton>
+
             </Box>
           </AccordionSummary>
           <AccordionDetails>
