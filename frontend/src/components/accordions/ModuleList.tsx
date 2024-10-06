@@ -74,14 +74,17 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const ModuleList: React.FC<Props> = (props) => {
-  const [expanded, setExpanded] = useState<string | false>("");
+  const [expanded, setExpanded] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
 
-  const handleAccordionChange =
-    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
+  const handleAccordionChange = (panel: string) => {
+    setExpanded((prevExpanded) =>
+      prevExpanded.includes(panel)
+        ? prevExpanded.filter((p) => p !== panel) // Close the panel if it was already open
+        : [...prevExpanded, panel] // Open the panel if it was closed
+    );
+  };
 
   const handleOpenModal = (moduleId: string) => {
     setSelectedModuleId(moduleId);
@@ -101,8 +104,8 @@ const ModuleList: React.FC<Props> = (props) => {
       {props.modules.map((module, index) => (
         <Accordion
           key={module._id}
-          expanded={expanded === `module${index}`}
-          onChange={handleAccordionChange(`module${index}`)}
+          expanded={expanded.includes(`module${index}`)}
+          onChange={() => handleAccordionChange(`module${index}`)}
         >
           <AccordionSummary
             aria-controls={`module${index}d-content`}
@@ -137,7 +140,6 @@ const ModuleList: React.FC<Props> = (props) => {
               >
                 <DeleteIcon />
               </ActionButton>
-
             </Box>
           </AccordionSummary>
           <AccordionDetails>
