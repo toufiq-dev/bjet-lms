@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { styled, useTheme } from "@mui/material/styles"; // Import useTheme
+import { styled, useTheme } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
 import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
@@ -21,7 +21,7 @@ type Props = {
   refetch: () => void;
 };
 
-// Fix: Use the theme in the callback directly
+// Accordion styling
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
@@ -37,6 +37,7 @@ const Accordion = styled((props: AccordionProps) => (
   },
 }));
 
+// Accordion summary styling
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
   <MuiAccordionSummary
     expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "1rem", color: "inherit" }} />}
@@ -79,9 +80,22 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const ModuleList: React.FC<Props> = (props) => {
-  const theme = useTheme(); // Access theme here if needed
+// Styled link for lessons
+const StyledLink = styled('a')(({ theme }) => ({
+  color: theme.palette.primary.main,
+  textDecoration: 'none',
+  padding: theme.spacing(1),
+  borderRadius: '4px',
+  transition: 'background-color 0.2s, color 0.2s, box-shadow 0.2s',
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
+    color: "#fff",
+    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.2)",
+  },
+}));
 
+const ModuleList: React.FC<Props> = (props) => {
+  const theme = useTheme();
   const [expanded, setExpanded] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
@@ -89,8 +103,8 @@ const ModuleList: React.FC<Props> = (props) => {
   const handleAccordionChange = (panel: string) => {
     setExpanded((prevExpanded) =>
       prevExpanded.includes(panel)
-        ? prevExpanded.filter((p) => p !== panel) // Close the panel if it was already open
-        : [...prevExpanded, panel] // Open the panel if it was closed
+        ? prevExpanded.filter((p) => p !== panel)
+        : [...prevExpanded, panel]
     );
   };
 
@@ -126,7 +140,7 @@ const ModuleList: React.FC<Props> = (props) => {
               <ActionButton
                 aria-label="add lesson"
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent Accordion from toggling
+                  event.stopPropagation();
                   handleOpenModal(module._id);
                 }}
               >
@@ -135,7 +149,7 @@ const ModuleList: React.FC<Props> = (props) => {
               <ActionButton
                 aria-label="edit module"
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent Accordion from toggling
+                  event.stopPropagation();
                   /* Handle edit */
                 }}
               >
@@ -144,7 +158,7 @@ const ModuleList: React.FC<Props> = (props) => {
               <ActionButton
                 aria-label="delete module"
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent Accordion from toggling
+                  event.stopPropagation();
                   /* Handle delete */
                 }}
               >
@@ -155,15 +169,12 @@ const ModuleList: React.FC<Props> = (props) => {
           <AccordionDetails>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
-                <Typography variant="subtitle1">Lessons:</Typography>
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      <Typography variant="body1">
-                        <a href={lesson.content} target="_blank" rel="noopener noreferrer">
-                          {lesson.title}
-                        </a>
-                      </Typography>
+                      <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
+                        {lesson.title}
+                      </StyledLink>
                       <Divider sx={{ marginY: 1 }} />
                     </Box>
                   ))
