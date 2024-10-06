@@ -16,6 +16,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
+import LessonCreationModal from "../modals/LessonCreationModal";
 
 type Props = {
   modules: Module[];
@@ -38,14 +39,21 @@ const Accordion = styled((props: AccordionProps) => (
 }));
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary {...props} />
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
 ))(({ theme }) => ({
-  backgroundColor: theme.palette.grey[100],
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  padding: theme.spacing(2),
+  backgroundColor: theme.palette.mode === "dark"
+    ? "rgba(255, 255, 255, .05)"
+    : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  alignItems: "center",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
   "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(2),
-    fontWeight: 500,
+    marginLeft: theme.spacing(1),
     display: "flex",
     alignItems: "center",
   },
@@ -53,9 +61,6 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     marginLeft: "auto",
     display: "flex",
     gap: theme.spacing(1),
-  },
-  "&:hover": {
-    backgroundColor: theme.palette.grey[200],
   },
 }));
 
@@ -72,20 +77,34 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const ModuleList = (props: Props) => {
+const ModuleList: React.FC<Props> = (props) => {
   const [expanded, setExpanded] = useState<string | false>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedModuleId, setSelectedModuleId] = useState<string>("");
 
-  const handleChange =
+  const handleAccordionChange =
     (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
+
+  const handleOpenModal = (moduleId: string) => {
+    setSelectedModuleId(moduleId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLessonCreate = () => {
+    props.refetch();
+  };
 
   const handleEditButtonClick = (moduleId: string) => {
     <TemporaryDrawer
       open={props.open}
       toggleDrawer={props.toggleDrawer}
       title="Edit Module"
-      moduleId={moduleId}
       refetch={props.refetch}
     />;
   };
@@ -96,26 +115,18 @@ const ModuleList = (props: Props) => {
         <Accordion
           key={module._id}
           expanded={expanded === `module${index}`}
-          onChange={handleChange(`module${index}`)}
+          onChange={handleAccordionChange(`module${index}`)}
         >
           <AccordionSummary
             aria-controls={`module${index}d-content`}
             id={`module${index}d-header`}
           >
-            <ArrowForwardIosSharpIcon
-              sx={{
-                fontSize: "1rem",
-                color: "#1976d2",
-                transform:
-                  expanded === `module${index}`
-                    ? "rotate(90deg)"
-                    : "rotate(0deg)",
-                transition: "transform 0.3s ease",
-              }}
-            />
-            <Typography sx={{ marginLeft: 1 }}>{module.title}</Typography>
+            <Typography>{module.title}</Typography>
             <Box className="module-actions">
-              <ActionButton aria-label="add lesson">
+              <ActionButton
+                aria-label="add lesson"
+                onClick={() => handleOpenModal(module._id)}
+              >
                 <AddIcon />
               </ActionButton>
               <ActionButton
@@ -180,6 +191,14 @@ const ModuleList = (props: Props) => {
           </AccordionDetails>
         </Accordion>
       ))}
+
+      {/* Lesson creation modal */}
+      <LessonCreationModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        onLessonCreate={handleLessonCreate}
+        moduleId={selectedModuleId}
+      />
     </Box>
   );
 };
