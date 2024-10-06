@@ -59,6 +59,22 @@ class LessonService {
 
     return formattedLesson as ILesson;
   }
+
+  async updateOneById(
+    id: mongoose.Types.ObjectId,
+    title: string
+  ): Promise<ILesson> {
+    const lesson = await LessonModel.findByIdAndUpdate(
+      id,
+      { title },
+      { new: true }
+    ).select("-createdAt -updatedAt -__v");
+    if (!lesson) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Lesson not found");
+    }
+
+    return lesson;
+  }
 }
 
 export default LessonService;
