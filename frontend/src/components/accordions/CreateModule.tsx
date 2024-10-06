@@ -8,58 +8,53 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import { Box, IconButton, Divider, Grid } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
 import LessonCreationModal from "../modals/LessonCreationModal";
 
 const Accordion = styled((props: AccordionProps) => (
-  <MuiAccordion disableGutters elevation={1} square {...props} />
+  <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
-  borderRadius: "8px",
-  margin: theme.spacing(1, 0),
-  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
   border: `1px solid ${theme.palette.divider}`,
-  "&:before": {
+  "&:not(:last-child)": {
+    borderBottom: 0,
+  },
+  "&::before": {
     display: "none",
   },
 }));
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary {...props} />
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
+    {...props}
+  />
 ))(({ theme }) => ({
-  backgroundColor: theme.palette.grey[100],
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  padding: theme.spacing(2),
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, .05)"
+      : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-reverse",
+  alignItems: "center",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
   "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(2),
-    fontWeight: 500,
-    display: "flex",
+    marginLeft: theme.spacing(1),
     alignItems: "center",
+    display: "flex",
   },
   "& .module-actions": {
     marginLeft: "auto",
     display: "flex",
     gap: theme.spacing(1),
-  },
-  "&:hover": {
-    backgroundColor: theme.palette.grey[200],
+    alignItems: "center",
   },
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  backgroundColor: "#f9f9f9",
-  padding: theme.spacing(3),
-}));
-
-const ActionButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.primary.main,
-  "&:hover": {
-    backgroundColor: theme.palette.primary.light,
-    color: "#fff",
-  },
+  padding: theme.spacing(2),
+  borderTop: "1px solid rgba(0, 0, 0, .125)",
 }));
 
 interface CreateModuleProps {
@@ -71,9 +66,10 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
 
-  const handleAccordionChange = (moduleId: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpanded(isExpanded ? moduleId : false);
-  };
+  const handleAccordionChange =
+    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+    };
 
   const handleOpenModal = (moduleId: string) => {
     setSelectedModuleId(moduleId); // Set the selected module ID
@@ -89,30 +85,34 @@ const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
   };
 
   return (
-    <Box>
-      {modules.map((module) => (
-        <Accordion key={module._id} expanded={expanded === module._id} onChange={handleAccordionChange(module._id)}>
+    <Box sx={{ width: "100%" }}>
+      {modules.map((module, index) => (
+        <Accordion
+          key={module._id}
+          expanded={expanded === `module${index}`}
+          onChange={handleAccordionChange(`module${index}`)}
+        >
           <AccordionSummary
-            expandIcon={<ArrowForwardIosSharpIcon />}
-            aria-controls={`${module._id}-content`}
-            id={`${module._id}-header`}
+            aria-controls={`module${index}d-content`}
+            id={`module${index}d-header`}
           >
-            <ViewModuleIcon style={{ marginRight: 8 }} />
-            <Typography variant="subtitle1">{module.title}</Typography>
+            <Typography>{module.title}</Typography>
             <Box className="module-actions">
-              <ActionButton onClick={() => handleOpenModal(module._id)}>
+              <IconButton aria-label="add lesson" onClick={() => handleOpenModal(module._id)}>
                 <AddIcon />
-              </ActionButton>
-              <ActionButton>
+              </IconButton>
+              <IconButton aria-label="edit module">
                 <EditIcon />
-              </ActionButton>
-              <ActionButton>
+              </IconButton>
+              <IconButton aria-label="delete module">
                 <DeleteIcon />
-              </ActionButton>
+              </IconButton>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            {/* Render lessons here */}
+            <Typography>Order: {module.order}</Typography>
+            <Typography>Lock Until: {new Date(module.lockUntil).toLocaleString()}</Typography>
+            <Typography>Published: {module.isPublished ? "Yes" : "No"}</Typography>
           </AccordionDetails>
         </Accordion>
       ))}
