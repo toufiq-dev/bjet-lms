@@ -68,7 +68,7 @@ class LessonService {
       id,
       { title },
       { new: true }
-    );
+    ).select("-createdAt -updatedAt -__v");
     if (!lesson) {
       throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Lesson not found");
     }
