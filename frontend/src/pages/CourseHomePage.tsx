@@ -12,6 +12,7 @@ import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
 import useModule from "../hooks/useModule";
 import { Module } from "../interfaces/moduleInterface";
+import ModuleList from "../components/accordions/ModuleList";
 import CreateModule from "../components/accordions/ModuleList";
 
 const drawerWidth = 150;
@@ -52,13 +53,14 @@ const CourseHomePage = () => {
 
     getCourseDetailsFromApi();
     getModulesFromApi();
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const toggleDrawer = (newOpen: boolean) => () => {
+  const toggleDrawer = (newOpen: boolean) => async () => {
     setOpen(newOpen);
   };
 
-  const handleModuleCreate = () => {
+  const refetch = () => {
     getModulesFromApi(); // Re-fetch modules after one is created
   };
 
@@ -98,14 +100,20 @@ const CourseHomePage = () => {
               open={open}
               toggleDrawer={() => setOpen(false)}
               title="Add Module"
-              onModuleCreate={handleModuleCreate}
+              refetch={refetch}
             />
           </Box>
         </Box>
 
         <Box mt={4}>
           {modules.length > 0 ? (
-            <CreateModule modules={modules} />
+            <ModuleList
+              modules={modules}
+              open={open}
+              toggleDrawer={() => setOpen(false)}
+              title="Edit Module"
+              refetch={refetch}
+            />
           ) : (
             <Box>No modules available yet</Box>
           )}

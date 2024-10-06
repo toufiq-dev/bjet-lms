@@ -21,7 +21,8 @@ type Props = {
   open: boolean;
   toggleDrawer: () => void;
   title: string;
-  onModuleCreate: () => void; // Added prop
+  refetch: () => void; // Added prop
+  moduleId?: string;
 };
 
 const TemporaryDrawer = (props: Props) => {
@@ -47,7 +48,7 @@ const TemporaryDrawer = (props: Props) => {
     },
   });
 
-  const { createModule } = useModule();
+  const { createModule, updateModule } = useModule();
   const { id } = useParams();
 
   const handleClose = (
@@ -63,19 +64,31 @@ const TemporaryDrawer = (props: Props) => {
 
   const handlerOnSubmit = async () => {
     setShowCircularProgress(true);
-    const formData = {
-      courseRef: id as string,
-      title: getValues("title"),
-      lockUntil: getValues("lockUntil"),
-    };
+    let result;
 
-    const result = await createModule(formData);
+    if (props.title === "Add Module") {
+      const formData = {
+        courseRef: id as string,
+        title: getValues("title"),
+        lockUntil: getValues("lockUntil"),
+      };
+
+      result = await createModule(formData);
+    } else if (props.title === "Edit Module" && props.moduleId) {
+      const formData = {
+        title: getValues("title"),
+        lockUntil: getValues("lockUntil"),
+      };
+
+      result = await updateModule(props.moduleId, formData);
+    }
+
     setShowCircularProgress(false);
     if (result.error) {
       setData(result.error.response.data);
       setOpenAlert(true);
     } else {
-      props.onModuleCreate(); // Trigger refresh of modules after creation
+      props.refetch(); // Trigger refresh of modules after creation
       handleClose();
     }
   };
