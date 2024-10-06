@@ -13,6 +13,7 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
+import LessonCreationModal from "../modals/LessonCreationModal";
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
@@ -67,96 +68,62 @@ interface CreateModuleProps {
 
 const CreateModule: React.FC<CreateModuleProps> = ({ modules }) => {
   const [expanded, setExpanded] = useState<string | false>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedModuleId, setSelectedModuleId] = useState<string>("");
 
-  const handleChange =
-    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
+  const handleAccordionChange = (moduleId: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    setExpanded(isExpanded ? moduleId : false);
+  };
+
+  const handleOpenModal = (moduleId: string) => {
+    setSelectedModuleId(moduleId); // Set the selected module ID
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLessonCreate = () => {
+    // Logic to refresh lessons goes here
+  };
 
   return (
-    <Box sx={{ width: "100%" }}>
-      {modules.map((module, index) => (
-        <Accordion
-          key={module._id}
-          expanded={expanded === `module${index}`}
-          onChange={handleChange(`module${index}`)}
-        >
+    <Box>
+      {modules.map((module) => (
+        <Accordion key={module._id} expanded={expanded === module._id} onChange={handleAccordionChange(module._id)}>
           <AccordionSummary
-            aria-controls={`module${index}d-content`}
-            id={`module${index}d-header`}
+            expandIcon={<ArrowForwardIosSharpIcon />}
+            aria-controls={`${module._id}-content`}
+            id={`${module._id}-header`}
           >
-            <ArrowForwardIosSharpIcon
-              sx={{
-                fontSize: "1rem",
-                color: "#1976d2",
-                transform: expanded === `module${index}` ? "rotate(90deg)" : "rotate(0deg)",
-                transition: "transform 0.3s ease",
-              }}
-            />
-            <Typography sx={{ marginLeft: 1 }}>{module.title}</Typography>
+            <ViewModuleIcon style={{ marginRight: 8 }} />
+            <Typography variant="subtitle1">{module.title}</Typography>
             <Box className="module-actions">
-              <ActionButton aria-label="add lesson">
+              <ActionButton onClick={() => handleOpenModal(module._id)}>
                 <AddIcon />
               </ActionButton>
-              <ActionButton aria-label="edit module">
+              <ActionButton>
                 <EditIcon />
               </ActionButton>
-              <ActionButton aria-label="delete module">
+              <ActionButton>
                 <DeleteIcon />
               </ActionButton>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <ViewModuleIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Order:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {module.order}
-                </Typography>
-              </Grid>
-
-              <Divider flexItem />
-
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <CalendarTodayIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Lock Until:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {new Date(module.lockUntil).toLocaleString()}
-                </Typography>
-              </Grid>
-
-              <Divider flexItem />
-
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <CheckCircleOutlineIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Published:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {module.isPublished ? "Yes" : "No"}
-                </Typography>
-              </Grid>
-            </Grid>
+            {/* Render lessons here */}
           </AccordionDetails>
         </Accordion>
       ))}
+
+      {/* Lesson creation modal */}
+      <LessonCreationModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        onLessonCreate={handleLessonCreate}
+        moduleId={selectedModuleId} // Pass the selected module ID
+      />
     </Box>
   );
 };
