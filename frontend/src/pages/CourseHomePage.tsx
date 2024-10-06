@@ -12,7 +12,7 @@ import TemporaryDrawer from "../components/drawers/TemporaryDrawer";
 import Button from "@mui/material/Button";
 import useModule from "../hooks/useModule";
 import { Module } from "../interfaces/moduleInterface";
-import CreateModule from "../components/accordions/CreateModule";
+import CreateModule from "../components/accordions/ModuleList";
 
 const drawerWidth = 150;
 
