@@ -23,6 +23,13 @@ class LessonRoutes {
       ValidationMiddleware.validate(LessonValidator.validateCreateLesson),
       LessonController.create
     );
+
+    this.router.patch(
+      "/:id",
+      authGuard(["Teacher"]),
+      ValidationMiddleware.validate(LessonValidator.validateUpdateOneById),
+      LessonController.updateOneById
+    );
   }
 }
 

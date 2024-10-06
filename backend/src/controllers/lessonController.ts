@@ -3,6 +3,7 @@ import LessonService from "../services/lessonService";
 import HTTP_STATUS from "../constants/statusCodes";
 import { ResponseUtil } from "../utils/responseUtil";
 import { uploadToS3 } from "../utils/aws";
+import mongoose from "mongoose";
 
 class LessonController {
   constructor(private lessonService: LessonService) {}
@@ -20,6 +21,28 @@ class LessonController {
         res,
         HTTP_STATUS.OK,
         "Lesson is created successfully",
+        lesson
+      );
+    } catch (error) {
+      console.log(error);
+      ResponseUtil.sendError(res, error);
+    }
+  };
+
+  public updateOneById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { title } = req.body;
+
+      const lesson = await this.lessonService.updateOneById(
+        new mongoose.Types.ObjectId(id),
+        title
+      );
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Lesson is updated successfully",
         lesson
       );
     } catch (error) {
