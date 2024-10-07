@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion, { AccordionProps } from "@mui/material/Accordion";
-import MuiAccordionSummary, {
-  AccordionSummaryProps,
-} from "@mui/material/AccordionSummary";
+import MuiAccordionSummary, { AccordionSummaryProps } from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { Box, IconButton, Divider, Grid } from "@mui/material";
 import { Module } from "../../interfaces/moduleInterface";
+import { Lesson } from "../../interfaces/lessonInterface";
+import LessonCreationModal from "../modals/LessonCreationModal";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
 
 type Props = {
@@ -25,27 +22,41 @@ type Props = {
   refetch: () => void;
 };
 
+// Accordion styling
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
   borderRadius: "8px",
-  margin: theme.spacing(1, 0),
-  boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+  margin: theme.spacing(2, 0),
+  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
   border: `1px solid ${theme.palette.divider}`,
   "&:before": {
     display: "none",
   },
+  "&:hover": {
+    boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.15)",
+  },
 }));
 
+// Accordion summary styling
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary {...props} />
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "1rem", color: "inherit" }} />}
+    {...props}
+  />
 ))(({ theme }) => ({
-  backgroundColor: theme.palette.grey[100],
-  borderBottom: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(240, 240, 240, 0.9)",
   padding: theme.spacing(2),
+  flexDirection: "row-reverse",
+  alignItems: "center",
+  "&:hover": {
+    backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(240, 240, 240, 1)",
+  },
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+  },
   "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(2),
-    fontWeight: 500,
     display: "flex",
     alignItems: "center",
   },
@@ -54,14 +65,12 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
     display: "flex",
     gap: theme.spacing(1),
   },
-  "&:hover": {
-    backgroundColor: theme.palette.grey[200],
-  },
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  backgroundColor: "#f9f9f9",
+  backgroundColor: theme.palette.background.paper,
   padding: theme.spacing(3),
+  borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
 const ActionButton = styled(IconButton)(({ theme }) => ({
@@ -72,22 +81,58 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const ModuleList = (props: Props) => {
-  const [expanded, setExpanded] = useState<string | false>("");
+// Styled link for lessons
+const StyledLink = styled('a')(({ theme }) => ({
+  color: theme.palette.primary.main,
+  textDecoration: 'none',
+  padding: theme.spacing(1),
+  borderRadius: '4px',
+  transition: 'background-color 0.2s, color 0.2s, box-shadow 0.2s',
+  "&:hover": {
+    backgroundColor: theme.palette.primary.light,
+    color: "#fff",
+    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.2)",
+  },
+}));
 
-  const handleChange =
-    (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-    };
+const ModuleList: React.FC<Props> = (props) => {
+  const theme = useTheme();
+  const [expanded, setExpanded] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedModuleId, setSelectedModuleId] = useState<string>("");
+  const [drawerOpen, setDrawerOpen] = useState(false); // Drawer state
+  const [selectedModuleTitle, setSelectedModuleTitle] = useState(""); // To hold the module title
 
-  const handleEditButtonClick = (moduleId: string) => {
-    <TemporaryDrawer
-      open={props.open}
-      toggleDrawer={props.toggleDrawer}
-      title="Edit Module"
-      moduleId={moduleId}
-      refetch={props.refetch}
-    />;
+  const handleAccordionChange = (panel: string) => {
+    setExpanded((prevExpanded) =>
+      prevExpanded.includes(panel)
+        ? prevExpanded.filter((p) => p !== panel)
+        : [...prevExpanded, panel]
+    );
+  };
+
+  const handleOpenModal = (moduleId: string) => {
+    setSelectedModuleId(moduleId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleLessonCreate = () => {
+    props.refetch();
+  };
+
+  // Toggle drawer for editing module
+  const handleOpenDrawer = (moduleId: string, title: string) => {
+    setSelectedModuleId(moduleId); // Set selected module ID
+    setSelectedModuleTitle(title); // Set selected module title
+    setDrawerOpen(true); // Open the drawer
+  };
+
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false); // Close the drawer
   };
 
   return (
@@ -95,91 +140,83 @@ const ModuleList = (props: Props) => {
       {props.modules.map((module, index) => (
         <Accordion
           key={module._id}
-          expanded={expanded === `module${index}`}
-          onChange={handleChange(`module${index}`)}
+          expanded={expanded.includes(`module${index}`)}
+          onChange={() => handleAccordionChange(`module${index}`)}
         >
           <AccordionSummary
             aria-controls={`module${index}d-content`}
             id={`module${index}d-header`}
           >
-            <ArrowForwardIosSharpIcon
-              sx={{
-                fontSize: "1rem",
-                color: "#1976d2",
-                transform:
-                  expanded === `module${index}`
-                    ? "rotate(90deg)"
-                    : "rotate(0deg)",
-                transition: "transform 0.3s ease",
-              }}
-            />
-            <Typography sx={{ marginLeft: 1 }}>{module.title}</Typography>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              {module.title}
+            </Typography>
             <Box className="module-actions">
-              <ActionButton aria-label="add lesson">
+              <ActionButton
+                aria-label="add lesson"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleOpenModal(module._id);
+                }}
+              >
                 <AddIcon />
               </ActionButton>
               <ActionButton
                 aria-label="edit module"
-                onClick={() => handleEditButtonClick(module._id)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleOpenDrawer(module._id, module.title); // Open the drawer on edit
+                }}
               >
                 <EditIcon />
               </ActionButton>
-              <ActionButton aria-label="delete module">
+              <ActionButton
+                aria-label="delete module"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  /* Handle delete */
+                }}
+              >
                 <DeleteIcon />
               </ActionButton>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <ViewModuleIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Order:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {module.order}
-                </Typography>
-              </Grid>
-
-              <Divider flexItem />
-
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <CalendarTodayIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Lock Until:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {new Date(module.lockUntil).toLocaleString()}
-                </Typography>
-              </Grid>
-
-              <Divider flexItem />
-
-              <Grid item xs={4}>
-                <Box display="flex" alignItems="center">
-                  <CheckCircleOutlineIcon sx={{ mr: 1 }} color="action" />
-                  <Typography variant="body1" color="textPrimary">
-                    Published:
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={8}>
-                <Typography variant="body2" color="textSecondary">
-                  {module.isPublished ? "Yes" : "No"}
-                </Typography>
+              <Grid item xs={12}>
+                {module.lessonRefs && module.lessonRefs.length > 0 ? (
+                  module.lessonRefs.map((lesson: Lesson) => (
+                    <Box key={lesson._id} sx={{ marginBottom: 2 }}>
+                      <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
+                        {lesson.title}
+                      </StyledLink>
+                      <Divider sx={{ marginY: 1 }} />
+                    </Box>
+                  ))
+                ) : (
+                  <Typography>No lessons available</Typography>
+                )}
               </Grid>
             </Grid>
           </AccordionDetails>
         </Accordion>
       ))}
+
+      {/* Lesson creation modal */}
+      <LessonCreationModal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        onLessonCreate={handleLessonCreate}
+        moduleId={selectedModuleId}
+      />
+
+      {/* TemporaryDrawer for editing module */}
+      <TemporaryDrawer
+        open={drawerOpen}
+        toggleDrawer={handleCloseDrawer}
+        title="Edit Module" // Change to 'Edit Module' when editing
+        moduleId={selectedModuleId} // Pass the selected module ID
+        refetch={props.refetch} // Refetch the modules after edit
+      />
     </Box>
   );
 };

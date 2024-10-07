@@ -52,7 +52,6 @@ const CourseHomePage = () => {
 
     getCourseDetailsFromApi();
     getModulesFromApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleDrawer = (newOpen: boolean) => async () => {
@@ -69,9 +68,9 @@ const CourseHomePage = () => {
         breadcrumbs={
           response.success
             ? [
-                { name: response.data.title, link: `/courses/${id}` },
-                { name: "Modules", link: "" },
-              ]
+              { name: response.data.title, link: `/courses/${id}` },
+              { name: "Modules", link: "" },
+            ]
             : []
         }
         drawerItemIndex={2}

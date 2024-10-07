@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, Modal, IconButton, Select, MenuItem, TextField, Button, SelectChangeEvent } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useParams } from 'react-router-dom';
+import useLesson from '../../hooks/useLesson';
 
 const style = {
     position: "absolute" as "absolute",
@@ -30,11 +32,15 @@ const headerStyle = {
 interface LessonCreationModalProps {
     open: boolean;
     onClose: () => void;
+    onLessonCreate: () => void;  // New prop for re-fetching lessons after creation
+    moduleId: string; // Pass the module ID for lesson creation
 }
 
-const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose }) => {
+const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose, onLessonCreate, moduleId }) => {
     const [type, setType] = useState('Lesson');
     const [name, setName] = useState('');
+    const [file, setFile] = useState<File | null>(null);
+    const { createLesson } = useLesson(); // Use lesson creation API
 
     const handleTypeChange = (event: SelectChangeEvent<string>) => {
         setType(event.target.value as string);
@@ -42,6 +48,30 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            setFile(event.target.files[0]);
+        }
+    };
+
+    const handleAddItem = async () => {
+        if (!name || !file) return; // Validate inputs
+
+        const formData = new FormData();
+        formData.append("title", name);
+        formData.append("moduleId", moduleId); // Include moduleId
+        formData.append("content", file);
+
+        const result = await createLesson(formData);
+
+        if (result.success) {
+            onLessonCreate(); // Re-fetch lessons after successful creation
+            onClose(); // Close modal
+        } else {
+            console.error("Lesson creation failed:", result.message);
+        }
     };
 
     return (
@@ -92,10 +122,10 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
                         <Typography variant="body1" gutterBottom>
                             Upload File:
                         </Typography>
-                        <input type="file" />
+                        <input type="file" onChange={handleFileChange} />
                     </Box>
                     <Box mt={2} display="flex" justifyContent="flex-end">
-                        <Button variant="contained" color="primary" onClick={onClose}>
+                        <Button variant="contained" color="primary" onClick={handleAddItem}>
                             Add Item
                         </Button>
                     </Box>
