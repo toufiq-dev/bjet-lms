@@ -12,10 +12,10 @@ type Props = {
 
 const LessonEditModal: React.FC<Props> = ({ open, onClose, lessonId, currentTitle, refetch }) => {
     const [title, setTitle] = useState(currentTitle);
-    // const { updateLessonTitle } = useLesson();
+    const { updateLessonTitle } = useLesson();
 
     const handleSave = async () => {
-        // await updateLessonTitle(lessonId, title);
+        await updateLessonTitle(lessonId, title);
         refetch(); // Refetch the lessons after saving
         onClose();
     };

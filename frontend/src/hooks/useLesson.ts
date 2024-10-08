@@ -14,7 +14,16 @@ const useLesson = () => {
     }
   };
 
-  return { createLesson };
+  const updateLessonTitle = async (lessonId: string, newTitle: string) => {
+    try {
+      const response = await lessonInstance.patch(`/${lessonId}`, { title: newTitle });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createLesson, updateLessonTitle };
 };
 
 export default useLesson;
