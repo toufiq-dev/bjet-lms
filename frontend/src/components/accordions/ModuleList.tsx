@@ -13,7 +13,10 @@ import { Module } from "../../interfaces/moduleInterface";
 import { Lesson } from "../../interfaces/lessonInterface";
 import LessonCreationModal from "../modals/LessonCreationModal";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
-import LessonEditModal from "../modals/LessonEditModal"; // Import the new modal
+import LessonEditModal from "../modals/LessonEditModal";
+import useLesson from "../../hooks/useLesson";
+import useModule from "../../hooks/useModule";
+import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 
 type Props = {
   modules: Module[];
@@ -103,10 +106,23 @@ const ModuleList: React.FC<Props> = (props) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedModuleTitle, setSelectedModuleTitle] = useState("");
 
-  // New state for lesson editing
+  // New state for lesson editing and deleting
   const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [selectedLessonTitle, setSelectedLessonTitle] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string>("");
+  const [deleteType, setDeleteType] = useState<"lesson" | "module">("lesson");
+
+  const { deleteLesson } = useLesson();
+  const { deleteModule } = useModule();
+
+  // Open delete modal with appropriate type
+  const handleOpenDeleteModal = (id: string, type: "lesson" | "module") => {
+    setDeleteTargetId(id);
+    setDeleteType(type);
+    setIsDeleteModalOpen(true);
+  };
 
   const handleAccordionChange = (panel: string) => {
     setExpanded((prevExpanded) =>
@@ -149,6 +165,33 @@ const ModuleList: React.FC<Props> = (props) => {
     setDrawerOpen(false);
   };
 
+  const handleDeleteLesson = (lessonId: string) => {
+    handleOpenDeleteModal(lessonId, "lesson");
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    handleOpenDeleteModal(moduleId, "module");
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleteModalOpen(false);
+    if (deleteType === "lesson") {
+      const response = await deleteLesson(deleteTargetId);
+      if (!response.error) {
+        props.refetch();
+      } else {
+        console.error("Failed to delete lesson", response.error);
+      }
+    } else if (deleteType === "module") {
+      const response = await deleteModule(deleteTargetId);
+      if (!response.error) {
+        props.refetch();
+      } else {
+        console.error("Failed to delete module", response.error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       {props.modules.map((module, index) => (
@@ -187,7 +230,7 @@ const ModuleList: React.FC<Props> = (props) => {
                 aria-label="delete module"
                 onClick={(event) => {
                   event.stopPropagation();
-                  /* Handle delete */
+                  handleDeleteModule(module._id);
                 }}
               >
                 <DeleteIcon />
@@ -200,15 +243,25 @@ const ModuleList: React.FC<Props> = (props) => {
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
-                        {lesson.title}
-                      </StyledLink>
-                      <IconButton
-                        aria-label="edit lesson"
-                        onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
-                      >
-                        <EditIcon />
-                      </IconButton>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
+                          {lesson.title}
+                        </StyledLink>
+                        <Box>
+                          <IconButton
+                            aria-label="edit lesson"
+                            onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            aria-label="delete lesson"
+                            onClick={() => handleDeleteLesson(lesson._id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                      </Box>
                       <Divider sx={{ marginY: 1 }} />
                     </Box>
                   ))
@@ -221,6 +274,7 @@ const ModuleList: React.FC<Props> = (props) => {
         </Accordion>
       ))}
 
+      {/* Modals */}
       <LessonCreationModal
         open={isModalOpen}
         onClose={handleCloseModal}
@@ -242,6 +296,14 @@ const ModuleList: React.FC<Props> = (props) => {
         title="Edit Module"
         moduleId={selectedModuleId}
         refetch={props.refetch}
+      />
+
+      <DeleteConfirmationModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title={deleteType === "lesson" ? "Delete Lesson" : "Delete Module"}
+        message={`Are you sure you want to delete this ${deleteType}? This action cannot be undone.`}
       />
     </Box>
   );

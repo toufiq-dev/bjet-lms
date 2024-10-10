@@ -48,7 +48,20 @@ const useModule = () => {
     }
   };
 
-  return { createModule, getModulesByCourseId, updateModule };
+  const deleteModule = async (moduleId: string) => {
+    try {
+      const response = await moduleInstance.delete(`/${moduleId}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createModule, getModulesByCourseId, updateModule, deleteModule };
 };
 
 export default useModule;
