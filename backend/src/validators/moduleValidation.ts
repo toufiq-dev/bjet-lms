@@ -38,4 +38,8 @@ export class ModuleValidator {
       .withMessage("Title must be within 200 characters"),
     body("lockUntil").isISO8601().withMessage("Invalid lock until date"),
   ];
+
+  public static validateDeleteOneById: ValidationChain[] = [
+    param("id").isMongoId().withMessage("Id must be a valid mongo id"),
+  ];
 }
