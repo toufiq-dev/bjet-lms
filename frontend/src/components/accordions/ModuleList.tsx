@@ -15,6 +15,7 @@ import LessonCreationModal from "../modals/LessonCreationModal";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
 import LessonEditModal from "../modals/LessonEditModal"; // Import the new modal
 import useLesson from "../../hooks/useLesson";
+import useModule from "../../hooks/useModule";
 
 type Props = {
   modules: Module[];
@@ -104,6 +105,7 @@ const ModuleList: React.FC<Props> = (props) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedModuleTitle, setSelectedModuleTitle] = useState("");
   const { deleteLesson } = useLesson();
+  const { deleteModule } = useModule();
 
   // New state for lesson editing
   const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
@@ -162,6 +164,17 @@ const ModuleList: React.FC<Props> = (props) => {
     }
   };
 
+  const handleDeleteModule = async (moduleId: string) => {
+    if (window.confirm("Are you sure you want to delete this module?")) {
+      const response = await deleteModule(moduleId);
+      if (!response.error) {
+        props.refetch();
+      } else {
+        console.error("Failed to delete module", response.error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       {props.modules.map((module, index) => (
@@ -200,6 +213,7 @@ const ModuleList: React.FC<Props> = (props) => {
                 aria-label="delete module"
                 onClick={(event) => {
                   event.stopPropagation();
+                  handleDeleteModule(module._id);
                 }}
               >
                 <DeleteIcon />
