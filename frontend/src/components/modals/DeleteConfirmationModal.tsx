@@ -17,7 +17,14 @@ const DeleteConfirmationModal: React.FC<Props> = ({ open, onClose, onConfirm, ti
                 <Typography mb={2}>{message}</Typography>
                 <Box mt={3} display="flex" justifyContent="flex-end">
                     <Button onClick={onClose} color="secondary">Cancel</Button>
-                    <Button onClick={onConfirm} variant="contained" sx={{ marginLeft: 2 }}>Delete</Button>
+                    <Button
+                        onClick={onConfirm}
+                        variant="contained"
+                        color="error" // Change the color to "error" for a red button
+                        sx={{ marginLeft: 2 }}
+                    >
+                        Delete
+                    </Button>
                 </Box>
             </Box>
         </Modal>
