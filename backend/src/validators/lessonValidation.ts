@@ -30,6 +30,10 @@ class LessonValidator {
       .isLength({ max: 200 })
       .withMessage("Title must be within 200 characters"),
   ];
+
+  public static validateDeleteOneById: ValidationChain[] = [
+    param("id").isMongoId().withMessage("Id must be a valid mongoDB id"),
+  ];
 }
 
 export default LessonValidator;

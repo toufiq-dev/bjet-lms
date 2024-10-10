@@ -50,6 +50,25 @@ class LessonController {
       ResponseUtil.sendError(res, error);
     }
   };
+
+  public deleteOneById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const lesson = await this.lessonService.deleteOneById(
+        new mongoose.Types.ObjectId(id)
+      );
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Lesson is deleted successfully",
+        lesson
+      );
+    } catch (error) {
+      console.log(error);
+      ResponseUtil.sendError(res, error);
+    }
+  };
 }
 
 export default new LessonController(new LessonService());

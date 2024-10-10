@@ -2,7 +2,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import config from "../config";
-import { uploadToS3 } from "./aws";
+import { deleteFromS3, uploadToS3 } from "./aws";
+import { Url } from "url";
 
 // Define the upload directory and subdirectories
 const uploadDirectory = config.uploadDir;
@@ -78,4 +79,14 @@ export const uploadToAWS = async (
 
   const url = await uploadToS3(params);
   return url;
+};
+
+export const deleteFromAWS = async (url: URL) => {
+  const key = url.pathname?.slice(1);
+  const params = {
+    Bucket: "bjet-lms",
+    Key: key,
+  };
+
+  await deleteFromS3(params);
 };

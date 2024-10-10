@@ -30,6 +30,12 @@ class LessonRoutes {
       ValidationMiddleware.validate(LessonValidator.validateUpdateOneById),
       LessonController.updateOneById
     );
+
+    this.router.delete(
+      "/:id",
+      ValidationMiddleware.validate(LessonValidator.validateDeleteOneById),
+      LessonController.deleteOneById
+    );
   }
 }
 
