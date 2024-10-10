@@ -14,6 +14,7 @@ import { Lesson } from "../../interfaces/lessonInterface";
 import LessonCreationModal from "../modals/LessonCreationModal";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
 import LessonEditModal from "../modals/LessonEditModal"; // Import the new modal
+import useLesson from "../../hooks/useLesson";
 
 type Props = {
   modules: Module[];
@@ -102,6 +103,7 @@ const ModuleList: React.FC<Props> = (props) => {
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedModuleTitle, setSelectedModuleTitle] = useState("");
+  const { deleteLesson } = useLesson();
 
   // New state for lesson editing
   const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
@@ -149,6 +151,17 @@ const ModuleList: React.FC<Props> = (props) => {
     setDrawerOpen(false);
   };
 
+  const handleDeleteLesson = async (lessonId: string) => {
+    if (window.confirm("Are you sure you want to delete this lesson?")) {
+      const response = await deleteLesson(lessonId);
+      if (!response.error) {
+        props.refetch();
+      } else {
+        console.error("Failed to delete lesson", response.error);
+      }
+    }
+  };
+
   return (
     <Box sx={{ width: "100%" }}>
       {props.modules.map((module, index) => (
@@ -187,7 +200,6 @@ const ModuleList: React.FC<Props> = (props) => {
                 aria-label="delete module"
                 onClick={(event) => {
                   event.stopPropagation();
-                  /* Handle delete */
                 }}
               >
                 <DeleteIcon />
@@ -208,6 +220,12 @@ const ModuleList: React.FC<Props> = (props) => {
                         onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
                       >
                         <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete lesson"
+                        onClick={() => handleDeleteLesson(lesson._id)}
+                      >
+                        <DeleteIcon />
                       </IconButton>
                       <Divider sx={{ marginY: 1 }} />
                     </Box>

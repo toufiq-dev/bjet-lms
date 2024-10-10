@@ -23,7 +23,16 @@ const useLesson = () => {
     }
   };
 
-  return { createLesson, updateLessonTitle };
+  const deleteLesson = async (lessonId: string) => {
+    try {
+      const response = await lessonInstance.delete(`/${lessonId}`);
+      return response.data;
+    } catch (error) {
+      return { error: error };
+    }
+  };
+
+  return { createLesson, updateLessonTitle, deleteLesson };
 };
 
 export default useLesson;
