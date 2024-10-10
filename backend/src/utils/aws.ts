@@ -2,6 +2,8 @@ import {
   S3Client,
   PutObjectCommand,
   PutObjectCommandInput,
+  DeleteObjectCommandInput,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 
@@ -26,4 +28,12 @@ const uploadToS3 = async (params: PutObjectCommandInput) => {
   }
 };
 
-export { uploadToS3 };
+const deleteFromS3 = async (params: DeleteObjectCommandInput) => {
+  try {
+    await s3Client.send(new DeleteObjectCommand(params));
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { uploadToS3, deleteFromS3 };

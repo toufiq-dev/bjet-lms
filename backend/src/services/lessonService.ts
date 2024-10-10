@@ -3,7 +3,7 @@ import { ILesson } from "../models/lesson";
 import ModuleModel from "../models/module";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
-import { uploadToAWS } from "../utils/fileUpload";
+import { deleteFromAWS, uploadToAWS } from "../utils/fileUpload";
 import LessonModel from "../models/lesson";
 
 class LessonService {
@@ -74,6 +74,21 @@ class LessonService {
     }
 
     return lesson;
+  }
+
+  async deleteOneById(id: mongoose.Types.ObjectId): Promise<ILesson> {
+    const lesson = await LessonModel.findById(id);
+    if (!lesson) {
+      throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Lesson not found");
+    }
+
+    await deleteFromAWS(new URL(lesson.content));
+
+    const deletedLesson = await LessonModel.findByIdAndDelete(id).select(
+      "-createdAt -updatedAt -__v"
+    );
+
+    return deletedLesson as ILesson;
   }
 }
 
