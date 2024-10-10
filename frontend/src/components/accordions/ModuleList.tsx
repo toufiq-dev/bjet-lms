@@ -226,21 +226,25 @@ const ModuleList: React.FC<Props> = (props) => {
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
-                        {lesson.title}
-                      </StyledLink>
-                      <IconButton
-                        aria-label="edit lesson"
-                        onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        aria-label="delete lesson"
-                        onClick={() => handleDeleteLesson(lesson._id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
+                          {lesson.title}
+                        </StyledLink>
+                        <Box>
+                          <IconButton
+                            aria-label="edit lesson"
+                            onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            aria-label="delete lesson"
+                            onClick={() => handleDeleteLesson(lesson._id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                      </Box>
                       <Divider sx={{ marginY: 1 }} />
                     </Box>
                   ))
