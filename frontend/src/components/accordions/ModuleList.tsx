@@ -13,9 +13,10 @@ import { Module } from "../../interfaces/moduleInterface";
 import { Lesson } from "../../interfaces/lessonInterface";
 import LessonCreationModal from "../modals/LessonCreationModal";
 import TemporaryDrawer from "../drawers/TemporaryDrawer";
-import LessonEditModal from "../modals/LessonEditModal"; // Import the new modal
+import LessonEditModal from "../modals/LessonEditModal";
 import useLesson from "../../hooks/useLesson";
 import useModule from "../../hooks/useModule";
+import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 
 type Props = {
   modules: Module[];
@@ -104,13 +105,24 @@ const ModuleList: React.FC<Props> = (props) => {
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedModuleTitle, setSelectedModuleTitle] = useState("");
-  const { deleteLesson } = useLesson();
-  const { deleteModule } = useModule();
 
-  // New state for lesson editing
+  // New state for lesson editing and deleting
   const [isLessonEditModalOpen, setIsLessonEditModalOpen] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState("");
   const [selectedLessonTitle, setSelectedLessonTitle] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string>("");
+  const [deleteType, setDeleteType] = useState<"lesson" | "module">("lesson");
+
+  const { deleteLesson } = useLesson();
+  const { deleteModule } = useModule();
+
+  // Open delete modal with appropriate type
+  const handleOpenDeleteModal = (id: string, type: "lesson" | "module") => {
+    setDeleteTargetId(id);
+    setDeleteType(type);
+    setIsDeleteModalOpen(true);
+  };
 
   const handleAccordionChange = (panel: string) => {
     setExpanded((prevExpanded) =>
@@ -153,20 +165,25 @@ const ModuleList: React.FC<Props> = (props) => {
     setDrawerOpen(false);
   };
 
-  const handleDeleteLesson = async (lessonId: string) => {
-    if (window.confirm("Are you sure you want to delete this lesson?")) {
-      const response = await deleteLesson(lessonId);
+  const handleDeleteLesson = (lessonId: string) => {
+    handleOpenDeleteModal(lessonId, "lesson");
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    handleOpenDeleteModal(moduleId, "module");
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleteModalOpen(false);
+    if (deleteType === "lesson") {
+      const response = await deleteLesson(deleteTargetId);
       if (!response.error) {
         props.refetch();
       } else {
         console.error("Failed to delete lesson", response.error);
       }
-    }
-  };
-
-  const handleDeleteModule = async (moduleId: string) => {
-    if (window.confirm("Are you sure you want to delete this module?")) {
-      const response = await deleteModule(moduleId);
+    } else if (deleteType === "module") {
+      const response = await deleteModule(deleteTargetId);
       if (!response.error) {
         props.refetch();
       } else {
@@ -257,6 +274,7 @@ const ModuleList: React.FC<Props> = (props) => {
         </Accordion>
       ))}
 
+      {/* Modals */}
       <LessonCreationModal
         open={isModalOpen}
         onClose={handleCloseModal}
@@ -278,6 +296,14 @@ const ModuleList: React.FC<Props> = (props) => {
         title="Edit Module"
         moduleId={selectedModuleId}
         refetch={props.refetch}
+      />
+
+      <DeleteConfirmationModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title={deleteType === "lesson" ? "Delete Lesson" : "Delete Module"}
+        message={`Are you sure you want to delete this ${deleteType}? This action cannot be undone.`}
       />
     </Box>
   );
