@@ -83,9 +83,27 @@ class LessonService {
 
     await deleteOneFromAWS(new URL(lesson.content));
 
-    const deletedLesson = await Lesson.findByIdAndDelete(id).select(
-      "-createdAt -updatedAt -__v"
-    );
+    const session = await startSession();
+    session.startTransaction();
+    let deletedLesson;
+
+    try {
+      await Module.findByIdAndUpdate(
+        lesson.moduleRef,
+        { $pull: { lessonRefs: lesson._id } },
+        { new: true, session }
+      );
+
+      deletedLesson = await Lesson.findByIdAndDelete(id)
+        .select("-createdAt -updatedAt -__v")
+        .session(session);
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+    } finally {
+      await session.endSession();
+    }
 
     return deletedLesson as ILesson;
   }
