@@ -20,17 +20,26 @@ class ModuleRoutes {
       ValidationMiddleware.validate(ModuleValidator.validateCreateModule),
       ModuleController.createModule
     );
+
     this.router.get(
       "/course/:courseId",
       authGuard(["Teacher", "Student"]),
       ValidationMiddleware.validate(ModuleValidator.validateGetAllByCourseId),
       ModuleController.getAllByCourseId
     );
+
     this.router.patch(
       "/:id",
       authGuard(["Teacher"]),
       ValidationMiddleware.validate(ModuleValidator.validateUpdateOneById),
       ModuleController.updateOneById
+    );
+
+    this.router.delete(
+      "/:id",
+      authGuard(["Teacher"]),
+      ValidationMiddleware.validate(ModuleValidator.validateDeleteOneById),
+      ModuleController.deleteOneById
     );
   }
 }

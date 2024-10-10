@@ -1,10 +1,9 @@
 import mongoose, { startSession } from "mongoose";
-import { ILesson } from "../models/lesson";
-import ModuleModel from "../models/module";
+import Lesson, { ILesson } from "../models/lesson";
+import Module from "../models/module";
 import { ErrorHandler } from "../utils/errorHandler";
 import HTTP_STATUS from "../constants/statusCodes";
-import { deleteFromAWS, uploadToAWS } from "../utils/fileUpload";
-import LessonModel from "../models/lesson";
+import { deleteOneFromAWS, uploadToAWS } from "../utils/fileUpload";
 
 class LessonService {
   async create(
@@ -12,12 +11,12 @@ class LessonService {
     title: string,
     file: Express.Multer.File
   ): Promise<ILesson> {
-    const module = await ModuleModel.findById(moduleId);
+    const module = await Module.findById(moduleId);
     if (!module) {
       throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Module not found");
     }
 
-    const lastLesson = await LessonModel.findOne({ moduleRef: moduleId }).sort({
+    const lastLesson = await Lesson.findOne({ moduleRef: moduleId }).sort({
       order: -1,
     });
     const order = !lastLesson ? 1 : lastLesson.order + 1;
@@ -29,7 +28,7 @@ class LessonService {
     session.startTransaction();
 
     try {
-      lesson = new LessonModel({
+      lesson = new Lesson({
         title,
         content: url,
         order,
@@ -38,7 +37,7 @@ class LessonService {
 
       await lesson.save({ session });
 
-      await ModuleModel.findByIdAndUpdate(
+      await Module.findByIdAndUpdate(
         moduleId,
         { $push: { lessonRefs: lesson._id } },
         { new: true, session }
@@ -64,7 +63,7 @@ class LessonService {
     id: mongoose.Types.ObjectId,
     title: string
   ): Promise<ILesson> {
-    const lesson = await LessonModel.findByIdAndUpdate(
+    const lesson = await Lesson.findByIdAndUpdate(
       id,
       { title },
       { new: true }
@@ -77,14 +76,14 @@ class LessonService {
   }
 
   async deleteOneById(id: mongoose.Types.ObjectId): Promise<ILesson> {
-    const lesson = await LessonModel.findById(id);
+    const lesson = await Lesson.findById(id);
     if (!lesson) {
       throw new ErrorHandler(HTTP_STATUS.NOT_FOUND, "Lesson not found");
     }
 
-    await deleteFromAWS(new URL(lesson.content));
+    await deleteOneFromAWS(new URL(lesson.content));
 
-    const deletedLesson = await LessonModel.findByIdAndDelete(id).select(
+    const deletedLesson = await Lesson.findByIdAndDelete(id).select(
       "-createdAt -updatedAt -__v"
     );
 

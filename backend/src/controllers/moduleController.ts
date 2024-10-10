@@ -68,6 +68,25 @@ class ModuleController {
       ResponseUtil.sendError(res, error);
     }
   };
+
+  deleteOneById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+
+      const module = await this.moduleService.deleteOneById(
+        new mongoose.Types.ObjectId(id)
+      );
+
+      ResponseUtil.sendSuccess(
+        res,
+        HTTP_STATUS.OK,
+        "Module deleted successfully",
+        module
+      );
+    } catch (error) {
+      ResponseUtil.sendError(res, error);
+    }
+  };
 }
 
 export default new ModuleController(new ModuleService());
