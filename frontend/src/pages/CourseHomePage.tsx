@@ -86,7 +86,7 @@ const CourseHomePage = () => {
       >
         <Toolbar />
         <Box display="flex" justifyContent="space-between">
-          <CourseNavigations menuItemIndex={0} />
+          {/* <CourseNavigations menuItemIndex={0} /> */}
           <Box mr={3}>
             {role === "Teacher" && (
               <Button variant="contained" onClick={toggleDrawer(true)}>
