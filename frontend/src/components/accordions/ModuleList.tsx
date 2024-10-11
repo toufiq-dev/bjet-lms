@@ -193,7 +193,7 @@ const ModuleList: React.FC<Props> = (props) => {
   };
 
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", maxWidth: "1000px", margin: "0 auto" }}>
       {props.modules.map((module, index) => (
         <Accordion
           key={module._id}
@@ -243,14 +243,29 @@ const ModuleList: React.FC<Props> = (props) => {
                 {module.lessonRefs && module.lessonRefs.length > 0 ? (
                   module.lessonRefs.map((lesson: Lesson) => (
                     <Box key={lesson._id} sx={{ marginBottom: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <StyledLink href={lesson.content} target="_blank" rel="noopener noreferrer">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <StyledLink
+                          href={lesson.content}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {lesson.title}
                         </StyledLink>
                         <Box>
                           <IconButton
                             aria-label="edit lesson"
-                            onClick={() => handleOpenLessonEditModal(lesson._id, lesson.title)}
+                            onClick={() =>
+                              handleOpenLessonEditModal(
+                                lesson._id,
+                                lesson.title
+                              )
+                            }
                           >
                             <EditIcon />
                           </IconButton>
