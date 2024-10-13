@@ -4,14 +4,21 @@ import IState from "../interfaces/stateInterface";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Avatar from "@mui/material/Avatar";
+import { deepPurple } from "@mui/material/colors";
 import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
 import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 
-const drawerWidth = 150;  // Consistent drawer width
+const drawerWidth = 150;
 
 const ProfilePage = () => {
   const name = useSelector((state: IState) => state.user.name);
   const role = useSelector((state: IState) => state.user.role);
+
+  // Extract initials for Avatar
+  const initials = (name ?? "").split(" ").map(n => n[0]).join("");
 
   return (
     <Box display="flex">
@@ -32,24 +39,40 @@ const ProfilePage = () => {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />  {/* This maintains space between the drawer and the content */}
+        <Toolbar />  {/* Keeps content properly spaced from the drawer */}
 
-        {/* Profile Information */}
-        <Box sx={{ textAlign: "center", paddingTop: "5%" }}>
-          <Typography variant="h4" gutterBottom>
-            Account Details
-          </Typography>
-          <Typography variant="body1">
-            <strong>Name:</strong> {name}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Role:</strong> {role}
-          </Typography>
+        {/* Profile Information Section */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', paddingTop: "5%" }}>
+          <Card sx={{ maxWidth: 600, padding: 4, boxShadow: 3 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              {/* User Avatar */}
+              <Avatar sx={{
+                bgcolor: deepPurple[500],
+                width: 80,
+                height: 80,
+                fontSize: "2rem",
+                margin: "0 auto"
+              }}>
+                {initials}
+              </Avatar>
 
-          {/* Password Change Form */}
-          <Box sx={{ mt: 4 }}>
-            <ChangePasswordForm />
-          </Box>
+              {/* Account Details */}
+              <Typography variant="h4" gutterBottom sx={{ mt: 3 }}>
+                Account Details
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Name:</strong> {name}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Role:</strong> {role}
+              </Typography>
+
+              {/* Password Change Form */}
+              <Box sx={{ mt: 4 }}>
+                <ChangePasswordForm />
+              </Box>
+            </CardContent>
+          </Card>
         </Box>
       </Box>
     </Box>
