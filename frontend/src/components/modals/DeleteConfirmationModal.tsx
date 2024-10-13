@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Box, Button, Typography } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type Props = {
     open: boolean;
@@ -25,8 +26,9 @@ const DeleteConfirmationModal: React.FC<Props> = ({ open, onClose, onConfirm, ti
                             color: 'gray',
                             '&:hover': {
                                 backgroundColor: 'transparent',
-                                borderColor: 'blue',
-                                color: 'blue',
+                                borderColor: 'gray',
+                                color: 'gray',
+                                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
                             },
                         }}
                     >
@@ -36,6 +38,7 @@ const DeleteConfirmationModal: React.FC<Props> = ({ open, onClose, onConfirm, ti
                         onClick={onConfirm}
                         variant="contained"
                         color="error" // Change the color to "error" for a red button
+                        startIcon={<DeleteIcon />}
                         sx={{ marginLeft: 2 }}
                     >
                         Delete
