@@ -1,39 +1,58 @@
-import React, { useState } from 'react';
-import { Button, Grid, Typography } from '@mui/material';
-import EditProfilePage from './EditProfile'; 
+import React from "react";
+import { useSelector } from "react-redux";
+import IState from "../interfaces/stateInterface";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
+import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 
-const ProfilePage: React.FC = () => {
-  const [name, setName] = useState('John Doe'); 
+const drawerWidth = 150;  // Consistent drawer width
 
-  const handleSaveName = (newName: string) => {
-    setName(newName);
-  };
-
-  const handleCancelEdit = () => {
-  };
+const ProfilePage = () => {
+  const name = useSelector((state: IState) => state.user.name);
+  const role = useSelector((state: IState) => state.user.role);
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Typography variant="h4">Profile</Typography>
-        <Typography variant="body1">Name: {name}</Typography>
-        <Typography variant="body1">Email: meem@gmail.com</Typography>
-        <Typography variant="body1">Contact Number: +1234567890</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Button variant="contained" color="primary">
-          Edit Name
-        </Button>
-      </Grid>
-      
-      <Grid item xs={12}>
-        <EditProfilePage
-          currentName={name}
-          onSave={handleSaveName}
-          onCancel={handleCancelEdit}
-        />
-      </Grid>
-    </Grid>
+    <Box display="flex">
+      {/* Responsive Drawer */}
+      <ResponsiveDrawer
+        breadcrumbs={[
+          { name: "Account", link: "/profile" },
+        ]}
+        drawerItemIndex={0}
+      />
+
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />  {/* This maintains space between the drawer and the content */}
+
+        {/* Profile Information */}
+        <Box sx={{ textAlign: "center", paddingTop: "5%" }}>
+          <Typography variant="h4" gutterBottom>
+            Account Details
+          </Typography>
+          <Typography variant="body1">
+            <strong>Name:</strong> {name}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Role:</strong> {role}
+          </Typography>
+
+          {/* Password Change Form */}
+          <Box sx={{ mt: 4 }}>
+            <ChangePasswordForm />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
