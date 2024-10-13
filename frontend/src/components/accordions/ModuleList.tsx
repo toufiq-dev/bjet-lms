@@ -17,6 +17,8 @@ import LessonEditModal from "../modals/LessonEditModal";
 import useLesson from "../../hooks/useLesson";
 import useModule from "../../hooks/useModule";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
+import { useSelector } from "react-redux";
+import IState from "../../interfaces/stateInterface";
 
 type Props = {
   modules: Module[];
@@ -117,6 +119,9 @@ const ModuleList: React.FC<Props> = (props) => {
   const { deleteLesson } = useLesson();
   const { deleteModule } = useModule();
 
+  // Get role from the Redux state
+  const role = useSelector((state: IState) => state.user.role);
+
   // Open delete modal with appropriate type
   const handleOpenDeleteModal = (id: string, type: "lesson" | "module") => {
     setDeleteTargetId(id);
@@ -207,35 +212,37 @@ const ModuleList: React.FC<Props> = (props) => {
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {module.title}
             </Typography>
-            <Box className="module-actions">
-              <ActionButton
-                aria-label="add lesson"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleOpenModal(module._id);
-                }}
-              >
-                <AddIcon />
-              </ActionButton>
-              <ActionButton
-                aria-label="edit module"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleOpenDrawer(module._id, module.title);
-                }}
-              >
-                <EditIcon />
-              </ActionButton>
-              <ActionButton
-                aria-label="delete module"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleDeleteModule(module._id);
-                }}
-              >
-                <DeleteIcon />
-              </ActionButton>
-            </Box>
+            {role === "Teacher" && ( // Only render if the user is a teacher
+              <Box className="module-actions">
+                <ActionButton
+                  aria-label="add lesson"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleOpenModal(module._id);
+                  }}
+                >
+                  <AddIcon />
+                </ActionButton>
+                <ActionButton
+                  aria-label="edit module"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleOpenDrawer(module._id, module.title);
+                  }}
+                >
+                  <EditIcon />
+                </ActionButton>
+                <ActionButton
+                  aria-label="delete module"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDeleteModule(module._id);
+                  }}
+                >
+                  <DeleteIcon />
+                </ActionButton>
+              </Box>
+            )}
           </AccordionSummary>
           <AccordionDetails>
             <Grid container spacing={2} alignItems="center">
@@ -257,25 +264,27 @@ const ModuleList: React.FC<Props> = (props) => {
                         >
                           {lesson.title}
                         </StyledLink>
-                        <Box>
-                          <IconButton
-                            aria-label="edit lesson"
-                            onClick={() =>
-                              handleOpenLessonEditModal(
-                                lesson._id,
-                                lesson.title
-                              )
-                            }
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            aria-label="delete lesson"
-                            onClick={() => handleDeleteLesson(lesson._id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
+                        {role === "Teacher" && ( // Only render if the user is a teacher
+                          <Box>
+                            <IconButton
+                              aria-label="edit lesson"
+                              onClick={() =>
+                                handleOpenLessonEditModal(
+                                  lesson._id,
+                                  lesson.title
+                                )
+                              }
+                            >
+                              <EditIcon />
+                            </IconButton>
+                            <IconButton
+                              aria-label="delete lesson"
+                              onClick={() => handleDeleteLesson(lesson._id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Box>
+                        )}
                       </Box>
                       <Divider sx={{ marginY: 1 }} />
                     </Box>
