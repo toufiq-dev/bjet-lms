@@ -85,36 +85,36 @@ const CourseHomePage = () => {
         }}
       >
         <Toolbar />
-        <Box display="flex" justifyContent="space-between">
-          <CourseNavigations menuItemIndex={0} />
-          <Box mr={3}>
+        <Box sx={{ width: "100%", maxWidth: "1000px", margin: "0 auto" }}>
+          <Box display="flex" justifyContent="flex-end" mb={2}>
             {role === "Teacher" && (
               <Button variant="contained" onClick={toggleDrawer(true)}>
                 <AddIcon fontSize="small" sx={{ mr: 0.5 }} />
                 Module
               </Button>
             )}
-            <TemporaryDrawer
-              open={open}
-              toggleDrawer={() => setOpen(false)}
-              title="Add Module"
-              refetch={refetch}
-            />
           </Box>
-        </Box>
 
-        <Box mt={4}>
-          {modules.length > 0 ? (
-            <ModuleList
-              modules={modules}
-              open={open}
-              toggleDrawer={() => setOpen(false)}
-              title="Edit Module"
-              refetch={refetch}
-            />
-          ) : (
-            <Box>No modules available yet</Box>
-          )}
+          <TemporaryDrawer
+            open={open}
+            toggleDrawer={() => setOpen(false)}
+            title="Add Module"
+            refetch={refetch}
+          />
+
+          <Box mt={4}>
+            {modules.length > 0 ? (
+              <ModuleList
+                modules={modules}
+                open={open}
+                toggleDrawer={() => setOpen(false)}
+                title="Edit Module"
+                refetch={refetch}
+              />
+            ) : (
+              <Box>No modules available yet</Box>
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>

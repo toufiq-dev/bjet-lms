@@ -1,39 +1,81 @@
-import React, { useState } from 'react';
-import { Button, Grid, Typography } from '@mui/material';
-import EditProfilePage from './EditProfile'; 
+import React from "react";
+import { useSelector } from "react-redux";
+import IState from "../interfaces/stateInterface";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Avatar from "@mui/material/Avatar";
+import { deepPurple } from "@mui/material/colors";
+import ResponsiveDrawer from "../components/drawers/ResponsiveDrawer";
+import ChangePasswordForm from "../components/forms/ChangePasswordForm";
 
-const ProfilePage: React.FC = () => {
-  const [name, setName] = useState('John Doe'); 
+const drawerWidth = 150;
 
-  const handleSaveName = (newName: string) => {
-    setName(newName);
-  };
+const ProfilePage = () => {
+  const name = useSelector((state: IState) => state.user.name);
+  const role = useSelector((state: IState) => state.user.role);
 
-  const handleCancelEdit = () => {
-  };
+  // Extract initials for Avatar
+  const initials = (name ?? "").split(" ").map(n => n[0]).join("");
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Typography variant="h4">Profile</Typography>
-        <Typography variant="body1">Name: {name}</Typography>
-        <Typography variant="body1">Email: meem@gmail.com</Typography>
-        <Typography variant="body1">Contact Number: +1234567890</Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Button variant="contained" color="primary">
-          Edit Name
-        </Button>
-      </Grid>
-      
-      <Grid item xs={12}>
-        <EditProfilePage
-          currentName={name}
-          onSave={handleSaveName}
-          onCancel={handleCancelEdit}
-        />
-      </Grid>
-    </Grid>
+    <Box display="flex">
+      {/* Responsive Drawer */}
+      <ResponsiveDrawer
+        breadcrumbs={[
+          { name: "Account", link: "/profile" },
+        ]}
+        drawerItemIndex={0}
+      />
+
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />  {/* Keeps content properly spaced from the drawer */}
+
+        {/* Profile Information Section */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', paddingTop: "5%" }}>
+          <Card sx={{ maxWidth: 600, padding: 4, boxShadow: 3 }}>
+            <CardContent sx={{ textAlign: "center" }}>
+              {/* User Avatar */}
+              <Avatar sx={{
+                bgcolor: deepPurple[500],
+                width: 80,
+                height: 80,
+                fontSize: "2rem",
+                margin: "0 auto"
+              }}>
+                {initials}
+              </Avatar>
+
+              {/* Account Details */}
+              <Typography variant="h4" gutterBottom sx={{ mt: 3 }}>
+                Account Details
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Name:</strong> {name}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Role:</strong> {role}
+              </Typography>
+
+              {/* Password Change Form */}
+              <Box sx={{ mt: 4 }}>
+                <ChangePasswordForm />
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

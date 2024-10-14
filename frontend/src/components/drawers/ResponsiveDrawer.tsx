@@ -39,7 +39,7 @@ const ResponsiveDrawer = (props: Props) => {
   const role = useSelector((state: IState) => state.user.role);
   const items = ["Account", "Dashboard", "Courses"];
   const filteredItems = role === "Admin" ? ["Account", "Dashboard"] : items;
-  const links = ["", "/", "", ""];
+  const links = ["/profile", "/", "", ""];
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDrawerClosing, setIsDrawerClosing] = useState(false);
@@ -212,7 +212,7 @@ const ResponsiveDrawer = (props: Props) => {
                 >
                   {props.breadcrumbs?.map((breadcrumb, index) =>
                     props.breadcrumbs &&
-                    index === props.breadcrumbs.length - 1 ? (
+                      index === props.breadcrumbs.length - 1 ? (
                       <Typography key={index} variant="h6" color="white">
                         {breadcrumb.name}
                       </Typography>

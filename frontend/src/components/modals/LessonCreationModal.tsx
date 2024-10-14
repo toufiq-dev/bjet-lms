@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Modal, IconButton, Select, MenuItem, TextField, Button, SelectChangeEvent } from '@mui/material';
+import { Box, Typography, Modal, IconButton, /* Select, MenuItem, */ TextField, Button /*, SelectChangeEvent */ } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useParams } from 'react-router-dom';
 import useLesson from '../../hooks/useLesson';
@@ -37,14 +37,14 @@ interface LessonCreationModalProps {
 }
 
 const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose, onLessonCreate, moduleId }) => {
-    const [type, setType] = useState('Lesson');
     const [name, setName] = useState('');
     const [file, setFile] = useState<File | null>(null);
     const { createLesson } = useLesson(); // Use lesson creation API
 
-    const handleTypeChange = (event: SelectChangeEvent<string>) => {
-        setType(event.target.value as string);
-    };
+    // const [type, setType] = useState('Lesson');
+    // const handleTypeChange = (event: SelectChangeEvent<string>) => {
+    //     setType(event.target.value as string);
+    // };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
@@ -87,14 +87,14 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
             <Box sx={style}>
                 <Box sx={headerStyle}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Add New {type}
+                        Add New Lesson
                     </Typography>
                     <IconButton onClick={onClose}>
                         <CloseIcon />
                     </IconButton>
                 </Box>
                 <Box>
-                    <Typography variant="body1" gutterBottom>
+                    {/* <Typography variant="body1" gutterBottom>
                         Select Type:
                     </Typography>
                     <Select
@@ -106,7 +106,7 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
                         <MenuItem value="Lesson">Lesson</MenuItem>
                         <MenuItem value="Assignment">Assignment</MenuItem>
                         <MenuItem value="Quiz">Quiz</MenuItem>
-                    </Select>
+                    </Select> */}
                     <Box mt={2}>
                         <Typography variant="body1" gutterBottom>
                             Name:
@@ -115,7 +115,7 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
                             value={name}
                             onChange={handleNameChange}
                             fullWidth
-                            placeholder={`Enter ${type} name`}
+                            placeholder="Enter Lesson name"
                         />
                     </Box>
                     <Box mt={2}>
@@ -126,7 +126,8 @@ const LessonCreationModal: React.FC<LessonCreationModalProps> = ({ open, onClose
                     </Box>
                     <Box mt={2} display="flex" justifyContent="flex-end">
                         <Button variant="contained" color="primary" onClick={handleAddItem}>
-                            Add Item
+                            {/* Add Item */}
+                            Add Lesson
                         </Button>
                     </Box>
                 </Box>
